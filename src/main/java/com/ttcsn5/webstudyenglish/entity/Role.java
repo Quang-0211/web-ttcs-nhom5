@@ -1,5 +1,6 @@
 package com.ttcsn5.webstudyenglish.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -30,6 +31,10 @@ public class Role {
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "roleId")
-    @JoinColumn
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
+
+    public Role(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
 }
