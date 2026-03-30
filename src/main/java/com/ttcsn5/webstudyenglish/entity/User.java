@@ -34,8 +34,8 @@ public class User {
     @Column(name = "streak_cnt")
     private int streakCnt;
     @Column(nullable = false, updatable = false)
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
@@ -49,8 +49,8 @@ public class User {
     }
 
     @PrePersist // khi chay save thi se ti va chay pre truoc khi save
-    public void createdAt() {
-        this.created_at = LocalDateTime.now();
+    public void createAt() {
+        this.createdAt = LocalDateTime.now();
     }
 
 }

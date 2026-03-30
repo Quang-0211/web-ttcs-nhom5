@@ -50,6 +50,12 @@ public class AuthController {
             model.addAttribute("password", password);
             return "register";
         }
+        if (ase.existsByUsername(username)) {
+            model.addAttribute("error", "Kiem tra lai Username");
+            model.addAttribute("username", username);
+            model.addAttribute("password", password);
+            return "register";
+        }
 
         Role role = rse.findByCode("USER");
         ase.saveUser(new User(username, hashPassword.hashPassword(password), email, role));
@@ -76,7 +82,7 @@ public class AuthController {
             return "login";
         }
         session.setAttribute("roleId", user.getRoleId().getId());
-        return "redirect:/home";
+        return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/home")

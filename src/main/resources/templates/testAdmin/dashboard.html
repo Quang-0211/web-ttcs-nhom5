@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex h-screen">
+
+    <!-- SIDEBAR -->
+    <div class="w-64 bg-white shadow-lg p-4">
+
+        <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+            🐧 ADMIN PAGE
+        </h2>
+
+        <ul class="space-y-3 text-gray-700">
+
+            <li class="font-semibold text-blue-500"><i class="fa fa-chart-line mr-2"></i>Dashboard</li>
+            <li><i class="fa fa-eye mr-2"></i>Monitor</li>
+            <li><i class="fa fa-lock mr-2"></i>Permission</li>
+            <li><i class="fa fa-user mr-2"></i>User</li>
+            <li><i class="fa fa-box mr-2"></i>Plan</li>
+            <li><i class="fa fa-credit-card mr-2"></i>Subscription</li>
+            <li><i class="fa fa-chart-bar mr-2"></i>Statistic</li>
+            <li><i class="fa fa-trophy mr-2"></i>Badge</li>
+            <li><i class="fa fa-file mr-2"></i>Article</li>
+            <li><i class="fa fa-video mr-2"></i>Video</li>
+            <li><i class="fa fa-book mr-2"></i>Grammar</li>
+            <li><i class="fa fa-language mr-2"></i>Vocabulary</li>
+            <li><i class="fa fa-microphone mr-2"></i>Dictation</li>
+
+        </ul>
+    </div>
+
+    <!-- MAIN -->
+    <div class="flex-1 p-6 overflow-y-auto">
+
+        <!-- HEADER -->
+        <div class="flex justify-end mb-6">
+            <div class="flex items-center gap-2">
+                <i class="fa fa-user-circle text-2xl"></i>
+                <span>Admin</span>
+            </div>
+        </div>
+
+        <!-- CARDS -->
+        <div class="grid grid-cols-4 gap-4 mb-6">
+
+            <div class="bg-white p-4 rounded-xl shadow">
+                <p class="text-gray-500">Total Users</p>
+                <h2 class="text-2xl font-bold">11</h2>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow">
+                <p class="text-gray-500">New Users This Month</p>
+                <h2 class="text-2xl font-bold text-green-500">9</h2>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow">
+                <p class="text-gray-500">Total Revenue</p>
+                <h2 class="text-2xl font-bold">6.474.000 đ</h2>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow">
+                <p class="text-gray-500">Active Subscriptions</p>
+                <h2 class="text-2xl font-bold text-blue-500">5</h2>
+            </div>
+
+        </div>
+
+        <!-- SECOND ROW -->
+        <div class="grid grid-cols-4 gap-4 mb-6">
+
+            <div class="bg-white p-4 rounded-xl shadow">Total Vocabularies: 10</div>
+            <div class="bg-white p-4 rounded-xl shadow">Total Quizzes: 10</div>
+            <div class="bg-white p-4 rounded-xl shadow">Total Articles: 10</div>
+            <div class="bg-white p-4 rounded-xl shadow">Total Posts: 10</div>
+
+        </div>
+
+        <!-- CHART 1 -->
+        <div class="bg-white p-4 rounded-xl shadow mb-6">
+            <h3 class="mb-4 font-semibold">New User Registrations (Last 30 Days)</h3>
+            <canvas id="chart1"></canvas>
+        </div>
+
+        <!-- CHART 2 -->
+        <div class="bg-white p-4 rounded-xl shadow">
+            <h3 class="mb-4 font-semibold">Premium Upgrades (Last 30 Days)</h3>
+            <canvas id="chart2"></canvas>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Chart 1
+new Chart(document.getElementById('chart1'), {
+    type: 'line',
+    data: {
+        labels: Array.from({length: 30}, (_, i) => i + 1),
+        datasets: [{
+            label: 'Users',
+            data: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9],
+            borderWidth: 2,
+            fill: false
+        }]
+    }
+});
+
+// Chart 2
+new Chart(document.getElementById('chart2'), {
+    type: 'bar',
+    data: {
+        labels: Array.from({length: 30}, (_, i) => i + 1),
+        datasets: [{
+            label: 'Premium',
+            data: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7],
+            borderWidth: 1
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

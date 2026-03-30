@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gray-100">
+
+
+    <div class="flex h-screen">
+
+        <div class="w-64 bg-white shadow-lg p-4">
+
+            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                🐧 ADMIN PAGE
+            </h2>
+
+            <ul class="space-y-2 text-gray-700">
+
+                <!-- DASHBOARD -->
+                <li>
+                    <a th:href="@{/admin/dashboard}"
+                        th:classappend="${path == 'admin/dashboard'} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500 ">
+                        <i class="fa fa-chart-line"></i> Dashboard
+                    </a>
+                </li>
+
+                <!-- MONITOR -->
+                <!-- <li>
+                    <a th:href="@{/admin/monitor}"
+                        th:classappend="${path.startsWith('admin/monitor')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-eye"></i> Monitor
+                    </a>
+                </li> -->
+
+                <!-- PERMISSION -->
+                <!-- <li>
+                    <a th:href="@{/admin/permission}"
+                        th:classappend="${path.startsWith('admin/permission')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-lock"></i> Permission
+                    </a>
+                </li> -->
+
+                <!-- USER -->
+                <li>
+                    <a th:href="@{/admin/user}"
+                        th:classappend="${path.startsWith('admin/user')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-user"></i> User
+                    </a>
+                </li>
+
+                <!-- PLAN -->
+                <li>
+                    <a th:href="@{/admin/plan}"
+                        th:classappend="${path.startsWith('admin/plan')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-box"></i> Plan
+                    </a>
+                </li>
+
+                <!-- SUBSCRIPTION -->
+                <li>
+                    <a th:href="@{/admin/subscription}"
+                        th:classappend="${path.startsWith('admin/subscription')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-credit-card"></i> Subscription
+                    </a>
+                </li>
+
+                <!-- STATISTIC -->
+                <li>
+                    <a th:href="@{/admin/statistic}"
+                        th:classappend="${path.startsWith('admin/statistic')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-chart-bar"></i> Statistic
+                    </a>
+                </li>
+
+                <!-- BADGE -->
+                <!-- <li>
+                    <a th:href="@{/admin/badge}"
+                        th:classappend="${path.startsWith('admin/badge')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-trophy"></i> Badge
+                    </a>
+                </li> -->
+
+                <!-- ARTICLE -->
+                <li>
+                    <a th:href="@{/admin/article}"
+                        th:classappend="${path.startsWith('admin/article')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-file"></i> Article
+                    </a>
+                </li>
+
+                <!-- VIDEO -->
+                <li>
+                    <a th:href="@{/admin/video}"
+                        th:classappend="${path.startsWith('admin/video')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-video"></i> Video
+                    </a>
+                </li>
+
+                <!-- GRAMMAR -->
+                <li>
+                    <a th:href="@{/admin/grammar}"
+                        th:classappend="${path.startsWith('admin/grammar')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-book"></i> Grammar
+                    </a>
+                </li>
+
+                <!-- VOCABULARY -->
+                <li>
+                    <a th:href="@{/admin/vocabulary}"
+                        th:classappend="${path.startsWith('admin/vocabulary')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-language"></i> Vocabulary
+                    </a>
+                </li>
+
+                <!-- DICTATION -->
+                <li>
+                    <a th:href="@{/admin/dictation}"
+                        th:classappend="${path.startsWith('admin/dictation')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-microphone"></i> Dictation
+                    </a>
+                </li>
+                <hr class="my-4 border-gray-200">
+
+                <li>
+                    <form th:action="@{/logout}" method="get">
+                        <button type="submit"
+                            class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                            <i class="fa fa-sign-out-alt"></i>
+                            <span class="font-medium">Logout</span>
+                        </button>
+                    </form>
+                </li>
+
+            </ul>
+
+        </div>
+        <!-- content -->
+        <div th:replace="~{${path} :: content}" class="flex-1 p-6 overflow-y-auto">
+
+        </div>
+    </div>
+    <!-- SIDEBAR -->
+
+    
+</body>
+
+</html>

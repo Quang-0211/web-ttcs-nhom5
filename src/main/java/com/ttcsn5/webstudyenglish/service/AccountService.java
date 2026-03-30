@@ -1,6 +1,10 @@
 package com.ttcsn5.webstudyenglish.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.ttcsn5.webstudyenglish.entity.User;
@@ -32,5 +36,12 @@ public class AccountService {
 
     public User findByEmail(String email) {
         return are.findByEmail(email);
+    }
+    public boolean existsByUsername(String username) {
+        return are.existsByUsername(username);
+    }
+
+    public List<User> findByCnt(Integer cnt) {
+        return are.findAll(PageRequest.of(cnt, 10, Sort.by("id").ascending())).getContent();
     }
 }

@@ -26,7 +26,7 @@
 
             <h2 class="text-2xl font-bold mb-6 text-center">Register</h2>
             <div th:if="${error}" class="text-red-500 text-sm text-center mb-3">
-                Kiem tra email
+                <p th:text="${error}"></p>
             </div>
             <form th:action="@{/register}" method="post" onsubmit="return validateForm()">
 

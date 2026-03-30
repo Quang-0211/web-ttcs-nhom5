@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+
+    <div class="flex h-screen">
+
+        <!-- SIDEBAR (GIỮ NGUYÊN STYLE) -->
+        <div class="w-64 bg-white shadow-lg p-4">
+            <h2 class="text-xl font-bold mb-6">🐧 ADMIN PAGE</h2>
+
+            <ul class="space-y-2 text-gray-700">
+
+                <li>
+                    <a th:href="@{/admin/dashboard}" class="flex items-center p-2 rounded hover:bg-gray-100">
+                        <i class="fa fa-chart-line mr-2"></i> Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/admin/user}" class="flex items-center p-2 rounded hover:bg-gray-100">
+                        <i class="fa fa-user mr-2"></i> User
+                    </a>
+                </li>
+
+                <!-- thêm các menu khác tương tự -->
+
+            </ul>
+        </div>
+
+        <!-- MAIN -->
+        <div class="flex-1 p-6 overflow-y-auto">
+
+            <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name:</label>
+                        <input type="text" placeholder="Please enter"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email:</label>
+                        <input type="text" placeholder="Please enter"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Role:</label>
+                        <select
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
+                            <option value="">Please select</option>
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="USER">USER</option>
+                            <option value="PREMIUM">PREMIUM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button
+                        class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700">Reset</button>
+                    <button
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2">
+                        Query <i class="fa fa-chevron-down text-xs"></i>
+                    </button>
+                    <button class="text-blue-600 hover:underline text-sm">Expand <i
+                            class="fa fa-chevron-down text-xs"></i></button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">User List</h3>
+                    <div class="flex gap-2">
+                        <button
+                            class="px-3 py-1.5 border rounded-md text-sm flex items-center gap-2 hover:bg-gray-50"><i
+                                class="fa fa-download"></i> Export</button>
+                        <button
+                            class="px-3 py-1.5 border rounded-md text-sm flex items-center gap-2 hover:bg-gray-50"><i
+                                class="fa fa-upload"></i> Import</button>
+                        <button
+                            class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm flex items-center gap-2 hover:bg-blue-700">
+                            <i class="fa fa-plus"></i> Create
+                        </button>
+                        <div class="flex items-center gap-3 ml-2 border-l pl-3 text-gray-400">
+                            <i class="fa fa-redo cursor-pointer hover:text-blue-500"></i>
+                            <i class="fa fa-columns cursor-pointer hover:text-blue-500"></i>
+                            <i class="fa fa-cog cursor-pointer hover:text-blue-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-50 text-gray-600 text-sm uppercase">
+                        <tr>
+                            <th class="p-4 font-semibold border-b">ID</th>
+                            <th class="p-4 font-semibold border-b">Name</th>
+                            <th class="p-4 font-semibold border-b">Email</th>
+                            <th class="p-4 font-semibold border-b">Role</th>
+                            <th class="p-4 font-semibold border-b text-center">Status</th>
+                            <th class="p-4 font-semibold border-b">Created At</th>
+                            <th class="p-4 font-semibold border-b">Updated At</th>
+                            <th class="p-4 font-semibold border-b text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4">1</td>
+                            <td class="p-4 text-blue-600 font-medium">Admin</td>
+                            <td class="p-4">admin@gmail.com</td>
+                            <td class="p-4">
+                                <span
+                                    class="px-2 py-1 bg-red-100 text-red-600 text-xs rounded border border-red-200">ADMIN</span>
+                            </td>
+                            <td class="p-4 text-center">
+                                <div class="relative inline-block w-10 align-middle select-none">
+                                    <input type="checkbox" checked
+                                        class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer right-0 border-blue-600" />
+                                    <label
+                                        class="toggle-label block overflow-hidden h-5 rounded-full bg-blue-600 cursor-pointer"></label>
+                                </div>
+                            </td>
+                            <td class="p-4">01:20:54 08/10/2025</td>
+                            <td class="p-4">15:18:10 08/11/2025</td>
+                            <td class="p-4 text-center flex justify-center gap-2">
+                                <button class="p-2 text-gray-400 hover:text-blue-500"><i
+                                        class="fa fa-edit"></i></button>
+                                <button class="p-2 text-gray-400 hover:text-red-500"><i
+                                        class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="p-4 flex justify-end items-center gap-4 text-sm text-gray-600">
+                    <span>1-10 of 11 items</span>
+                    <div class="flex items-center gap-2">
+                        <button class="p-1 px-2 border rounded hover:bg-gray-100 disabled:opacity-50"
+                            disabled>&lt;</button>
+                        <button class="p-1 px-3 border rounded bg-blue-600 text-white">1</button>
+                        <button class="p-1 px-3 border rounded hover:bg-gray-100">2</button>
+                        <button class="p-1 px-2 border rounded hover:bg-gray-100">&gt;</button>
+                    </div>
+                    <select class="border rounded px-2 py-1 outline-none">
+                        <option>10 / page</option>
+                        <option>20 / page</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
