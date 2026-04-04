@@ -1,5 +1,7 @@
 package com.ttcsn5.webstudyenglish.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,5 +18,8 @@ public class RoleService {
     }
     public Role findByCode(String code) {
         return rre.findByCode(code);
+    }
+    public List<Role> findAll() {
+        return rre.findAll();
     }
 }

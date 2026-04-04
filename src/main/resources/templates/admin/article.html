@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -9,135 +9,191 @@
 
 <body>
     <div th:fragment="content" class="flex-1 p-6 overflow-y-auto bg-gray-50">
-
-        <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Title:</label>
-                    <input type="text" placeholder="Search article title..."
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Category:</label>
-                    <select
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm">
-                        <option value="">All Categories</option>
-                        <option value="NEWS">News</option>
-                        <option value="TECH">Technology</option>
-                        <option value="LIFE">Lifestyle</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
-                    <select
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm">
-                        <option value="">Please select</option>
-                        <option value="true">Active</option>
-                        <option value="false">Disabled</option>
-                    </select>
-                </div>
-                <div class="flex items-end gap-3">
-                    <button
-                        class="flex-1 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 text-sm font-medium">
-                        Query <i class="fa fa-search text-xs"></i>
-                    </button>
-                    <button
-                        class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm">Reset</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-            <div class="p-4 border-b flex justify-between items-center">
-                <h3 class="font-bold text-gray-800">Article List</h3>
-                <div class="flex gap-2">
-                    <button
-                        class="px-3 py-1.5 border rounded-md text-sm flex items-center gap-2 hover:bg-gray-50 text-gray-600">
-                        <i class="fa fa-download"></i> Export
-                    </button>
-                    <button onclick="openArticleModal('create')"
-                        class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm flex items-center gap-2 hover:bg-blue-700 transition-all">
-                        <i class="fa fa-plus"></i> Create
-                    </button>
-                    <div class="flex items-center gap-3 ml-2 border-l pl-3 text-gray-400">
-                        <i class="fa fa-redo cursor-pointer hover:text-blue-500"></i>
-                        <i class="fa fa-columns cursor-pointer hover:text-blue-500"></i>
-                        <i class="fa fa-cog cursor-pointer hover:text-blue-500"></i>
+        <form th:action="@{/admin/articles}" method="get">
+            <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Title:</label>
+                        <input type="text" placeholder="Search article title..." name="title" th:value="${title}"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Category:</label>
+                        <select name="category"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm">
+                            <option value="0">All Categories</option>
+                            <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.name}"
+                                th:selected="${cate.id == categorySelected}"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+                        <select name="status"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm">
+                            <option value="">Please select</option>
+                            <option value="true" th:selected="${statusSelected}">Active</option>
+                            <option value="false" th:selected="${!statusSelected}">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-3">
+                        <button type="submit"
+                            class="flex-1 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 text-sm font-medium">
+                            Query <i class="fa fa-search text-xs"></i>
+                        </button>
+                        <button
+                            class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm">Reset</button>
                     </div>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
-                        <tr>
-                            <th class="p-4 font-semibold border-b">ID</th>
-                            <th class="p-4 font-semibold border-b">Thumbnail</th>
-                            <th class="p-4 font-semibold border-b">Article Title</th>
-                            <th class="p-4 font-semibold border-b">Category</th>
-                            <th class="p-4 font-semibold border-b text-center">Status</th>
-                            <th class="p-4 font-semibold border-b">Created At</th>
-                            <th class="p-4 font-semibold border-b text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-gray-700 text-sm">
-                        <tr class="border-b hover:bg-gray-50 transition-colors">
-                            <td class="p-4">1</td>
-                            <td class="p-4">
-                                <img src="https://via.placeholder.com/60x40"
-                                    class="rounded border object-cover shadow-sm" alt="thumb">
-                            </td>
-                            <td class="p-4">
-                                <a href="#" class="text-blue-600 font-medium hover:underline">Building the City of the
-                                    Future</a>
-                            </td>
-                            <td class="p-4">
-                                <span
-                                    class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded border border-purple-200 font-medium">TECHNOLOGY</span>
-                            </td>
-                            <td class="p-4 text-center">
-                                <div class="relative inline-block w-10 align-middle select-none">
-                                    <input type="checkbox" checked
-                                        class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer right-0 border-blue-600" />
-                                    <label
-                                        class="toggle-label block overflow-hidden h-5 rounded-full bg-blue-600 cursor-pointer"></label>
-                                </div>
-                            </td>
-                            <td class="p-4 text-gray-500">15:15:48 08/11/2025</td>
-                            <td class="p-4 text-center">
-                                <div class="flex justify-center gap-2">
-                                    <button onclick="openArticleModal('update', 1)"
-                                        class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
-                                        <i class="fa fa-edit text-lg"></i>
-                                    </button>
-                                    <button onclick="openArticleModal('create')"
-                                        class="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                                        <i class="fa fa-trash text-lg"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="p-4 border-t flex justify-end items-center gap-4 text-sm text-gray-600 bg-gray-50/50">
-                <span>1-10 of 11 items</span>
-                <div class="flex items-center gap-2">
-                    <button class="p-1 px-2 border rounded hover:bg-white disabled:opacity-50" disabled>&lt;</button>
-                    <button
-                        class="w-8 h-8 flex items-center justify-center border rounded bg-blue-600 text-white shadow-sm">1</button>
-                    <button
-                        class="w-8 h-8 flex items-center justify-center border rounded hover:bg-white transition-colors">2</button>
-                    <button class="p-1 px-2 border rounded hover:bg-white">&gt;</button>
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">Article List</h3>
+                    <div class="flex gap-2">
+                        <button
+                            class="px-3 py-1.5 border rounded-md text-sm flex items-center gap-2 hover:bg-gray-50 text-gray-600">
+                            <i class="fa fa-download"></i> Export
+                        </button>
+                        <button type="button" onclick="openArticleModal('create')"
+                            class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm flex items-center gap-2 hover:bg-blue-700 transition-all">
+                            <i class="fa fa-plus"></i> Create
+                        </button>
+                        <div class="flex items-center gap-3 ml-2 border-l pl-3 text-gray-400">
+                            <i class="fa fa-redo cursor-pointer hover:text-blue-500"></i>
+                            <i class="fa fa-columns cursor-pointer hover:text-blue-500"></i>
+                            <i class="fa fa-cog cursor-pointer hover:text-blue-500"></i>
+                        </div>
+                    </div>
                 </div>
-                <select class="border rounded px-2 py-1 outline-none bg-white">
-                    <option>10 / page</option>
-                    <option>20 / page</option>
-                </select>
-            </div>
-        </div>
 
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="p-4 font-semibold border-b">ID</th>
+                                <th class="p-4 font-semibold border-b">Thumbnail</th>
+                                <th class="p-4 font-semibold border-b">Article Title</th>
+                                <th class="p-4 font-semibold border-b">Category</th>
+                                <th class="p-4 font-semibold border-b text-center">Status</th>
+                                <th class="p-4 font-semibold border-b">Created At</th>
+                                <th class="p-4 font-semibold border-b text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 text-sm">
+                            <tr class="border-b hover:bg-gray-50 transition-colors" th:each="art : ${articles}">
+                                <td class="p-4" th:text="${art.id}">1</td>
+                                <td class="p-4">
+                                    <img class="rounded border object-cover shadow-sm" alt="thumb"
+                                        th:src="@{${art.image}}">
+                                </td>
+                                <td class="p-4">
+                                    <a href="#" class="text-blue-600 font-medium hover:underline"
+                                        th:text="${art.title}">Building the City of the
+                                        Future</a>
+                                </td>
+                                <td class="p-4">
+                                    <span
+                                        class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded border border-purple-200 font-medium"
+                                        th:text="${art.category.name}">TECHNOLOGY</span>
+                                </td>
+                                <td class="p-4 text-center">
+                                    <div class="relative inline-block w-10 align-middle select-none">
+                                        <input type="checkbox" th:checked="${art.status}"
+                                            th:attr="data-article-id = ${art.id}"
+                                            class="publish-checkbox toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer right-0 border-blue-600" />
+                                        <label
+                                            class="toggle-label block overflow-hidden h-5 rounded-full bg-blue-600 cursor-pointer"></label>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-gray-500" th:text="${art.createdAt}">15:15:48 08/11/2025</td>
+                                <td class="p-4 text-center">
+                                    <div class="flex justify-center gap-2">
+                                        <button th:attr="
+                                            data-id=${art.id},
+                                            data-title=${art.title},
+                                            data-img=${art.image},
+                                            data-audio=${art.audio},
+                                            data-content=${art.content},
+                                            data-categoryid=${art.category.id}
+                                        " onclick="openArticleModal('update',this.dataset.id, this.dataset.title, this.dataset.img, this.dataset.audio, this.dataset.content, this.dataset.categoryid)"
+                                            class="p-2 text-gray-400 hover:text-blue-500 transition-colors"
+                                            type="button">
+                                            <i class="fa fa-edit text-lg"></i>
+                                        </button>
+                                        <button onclick="openArticleModal('create')"
+                                            class="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                            type="button">
+                                            <i class="fa fa-trash text-lg"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- ================================================================================================= -->
+                            <!-- <tr class="border-b hover:bg-gray-50 transition-colors">
+                                <td class="p-4">1</td>
+                                <td class="p-4">
+                                    <img src="https://via.placeholder.com/60x40"
+                                        class="rounded border object-cover shadow-sm" alt="thumb">
+                                </td>
+                                <td class="p-4">
+                                    <a href="#" class="text-blue-600 font-medium hover:underline">Building the City of
+                                        the
+                                        Future</a>
+                                </td>
+                                <td class=" p-4">
+                                    <span
+                                        class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded border border-purple-200 font-medium">TECHNOLOGY</span>
+                                </td>
+                                <td class="p-4 text-center">
+                                    <div class="relative inline-block w-10 align-middle select-none">
+                                        <input type="checkbox" checked
+                                            class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer right-0 border-blue-600" />
+                                        <label
+                                            class="toggle-label block overflow-hidden h-5 rounded-full bg-blue-600 cursor-pointer"></label>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-gray-500">15:15:48 08/11/2025</td>
+                                <td class="p-4 text-center">
+                                    <div class="flex justify-center gap-2">
+                                        <button type="button" onclick="openArticleModal('update', 1)"
+                                            class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
+                                            <i class="fa fa-edit text-lg"></i>
+                                        </button>
+                                        <button type="button" onclick="openArticleModal('create')"
+                                            class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                                            <i class="fa fa-trash text-lg"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4 flex justify-end items-center gap-4 text-sm text-gray-600">
+                    <span>1-10 of 11 items</span>
+                    <div class="flex items-center gap-2">
+                        <input type="submit" th:name="cnt" th:if="${cnt>1}"
+                            class="p-1 px-3 border rounded hover:bg-gray-100" th:value="${cnt - 2}"></input>
+                        <input type="submit" th:name="cnt" th:if="${cnt>0}"
+                            class="p-1 px-3 border rounded hover:bg-gray-100" th:value="${cnt - 1}"></input>
+                        <input type="submit" th:name="cnt" class="p-1 px-3 border rounded bg-blue-600 text-white"
+                            th:value="${cnt}"></input>
+                        <input type="submit" th:name="cnt" class="p-1 px-3 border rounded hover:bg-gray-100"
+                            th:value="${cnt + 1}"></input>
+                        <input type="submit" th:name="cnt" class="p-1 px-3 border rounded hover:bg-gray-100"
+                            th:value="${cnt + 2}"></input>
+                        <input type="submit" th:name="cnt" th:if="${1 >= cnt}"
+                            class="p-1 px-3 border rounded hover:bg-gray-100" th:value="${cnt + 3}"></input>
+                        <input type="submit" th:name="cnt" th:if="${0 >= cnt}"
+                            class="p-1 px-3 border rounded hover:bg-gray-100" th:value="${cnt + 4}"></input>
+                    </div>
+                    <select class="border rounded px-2 py-1 outline-none">
+                        <option>10 / page</option>
+                        <option>20 / page</option>
+                    </select>
+                </div>
+            </div>
+        </form>
         <style>
             .toggle-checkbox:checked {
                 right: 0;
@@ -161,44 +217,75 @@
         <div id="articleModal"
             class="fixed inset-0 bg-gray-900 bg-opacity-60 z-50 hidden flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none">
 
-            <div
+            <form th:action="@{/admin/articles}" method="post" enctype="multipart/form-data"
                 class="bg-white rounded-xl shadow-xl w-[70%] max-w-[900px] overflow-hidden transform scale-95 transition-transform duration-300">
 
                 <div class="p-5 border-b flex justify-between items-center">
                     <h3 id="modalTitle" class="text-xl font-semibold text-gray-800">Add a new Article</h3>
-                    <button onclick="closeArticleModal()" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <button onclick="closeArticleModal()" type="button"
+                        class="text-gray-400 hover:text-red-500 transition-colors">
                         <i class="fa fa-times text-xl"></i>
                     </button>
                 </div>
 
                 <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-
+                    <select name="category" id="category-id"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm">
+                        <option value="0">All Categories</option>
+                        <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.name}"></option>
+                    </select>
                     <div>
                         <label for="articleTitle" class="block text-sm font-medium text-gray-700 mb-1.5">
                             <span class="text-red-500">*</span> Article Title
                         </label>
-                        <input type="text" id="articleTitle" placeholder="Building the City of the Future"
+                        <input type="text" id="articleTitle" placeholder="Building the City of the Future" name="title"
+                            checked
                             class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    </div>
+
+                    <input type="hidden" id="articleId" name="articleId">
+                    <!-- upload file image -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Image File</label>
+                        <div class="flex items-center gap-3">
+
+                            <input type="file" id="imageInput" accept="image/*" class="hidden" name="image">
+
+                            <button type="button" onclick="document.getElementById('imageInput').click()"
+                                class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-50">
+                                <i class="fa fa-upload text-blue-500"></i> Click to Upload
+                            </button>
+
+                            <span id="imageFileName" class="text-sm text-gray-500">No file</span>
+                        </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Thumbnail Image</label>
                         <div
                             class="border-2 border-dashed border-gray-300 rounded-lg p-2 w-48 h-28 flex items-center justify-center bg-gray-50">
-                            <img id="thumbnailPreview" src="https://via.placeholder.com/150" alt="Preview"
-                                class="max-w-full max-h-full rounded">
+                            <img id="previewImg" class="max-w-full max-h-full rounded">
                         </div>
                     </div>
 
+                    <!-- upload file audio -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Audio File</label>
+
                         <div class="flex items-center gap-3">
-                            <button
+
+                            <input type="file" id="audioInput" accept="audio/*" class="hidden" name="audio">
+
+                            <button type="button" onclick="document.getElementById('audioInput').click()"
                                 class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-50">
                                 <i class="fa fa-upload text-blue-500"></i> Click to Upload
                             </button>
-                            <span id="audioFileName" class="text-sm text-gray-500">lion.mp3</span>
+
+                            <span id="audioFileName" class="text-sm text-gray-500">No file</span>
                         </div>
+
+                        <!-- player -->
+                        <audio id="audioPreview" controls class="mt-3 w-full"></audio>
                     </div>
 
                     <div>
@@ -230,25 +317,28 @@
                             <button class="p-1.5 rounded hover:bg-gray-200"><i class="fa fa-image"></i></button>
                         </div>
 
-                        <div class="border border-t-0 border-gray-300 rounded-b-lg p-4 bg-white min-h-[200px]">
-                            <div id="contentEditor" contenteditable="true" class="focus:outline-none">
-                                Thành phố tương lai<br><br>Các nhà khoa học đang nghiên cứu...
-                            </div>
-                        </div>
+                        <textarea name="content" id="contentEditor"
+                            class="w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[200px] focus:outline-none"
+                            placeholder="Thành phố tương lai...">
+                            Thành phố tương lai
+
+                            Các nhà khoa học đang nghiên cứu...
+                        </textarea>
                     </div>
                 </div>
 
                 <div class="p-5 border-t bg-gray-50 flex justify-end gap-3">
-                    <button onclick="closeArticleModal()"
+                    <button onclick="closeArticleModal()" type="button"
                         class="px-5 py-2 border border-gray-300 rounded-lg text-sm hover:bg-white text-gray-700">Cancel</button>
-                    <button class="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">OK</button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">OK</button>
                 </div>
-            </div>
 
+            </form>
         </div>
-
-        <script th:src="@{/js/adminarticle.js}"></script>
+        <!-- <script th:src="@{/js/adminarticle.js}"></script> -->
     </div>
+
 </body>
 
 </html>

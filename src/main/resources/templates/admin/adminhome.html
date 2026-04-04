@@ -57,7 +57,7 @@
 
                 <!-- USER -->
                 <li>
-                    <a th:href="@{/admin/user}"
+                    <a th:href="@{/admin/users}"
                         th:classappend="${path.startsWith('admin/user')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
                         <i class="fa fa-user"></i> User
@@ -102,7 +102,7 @@
 
                 <!-- ARTICLE -->
                 <li>
-                    <a th:href="@{/admin/article}"
+                    <a th:href="@{/admin/articles}"
                         th:classappend="${path.startsWith('admin/article')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
                         <i class="fa fa-file"></i> Article
@@ -164,9 +164,8 @@
 
         </div>
     </div>
+    <script th:src="@{/js/adminarticle.js}"></script>
     <!-- SIDEBAR -->
-
-    
 </body>
 
 </html>
