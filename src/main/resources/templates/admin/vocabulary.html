@@ -1,0 +1,700 @@
+<div th:fragment="content" class="flex-1 min-h-0 min-w-0 w-full h-full flex flex-col bg-gray-50/50 overflow-y-auto"
+    x-data="vocabApp()">
+
+    <!-- Top Header & Tabs -->
+    <div class="bg-white px-6 pt-3 border-b shrink-0 flex items-end">
+        <div class="flex gap-6 relative -mb-[1px]">
+            <button
+                class="px-4 py-2 text-blue-600 border-b-2 border-blue-600 font-medium text-sm tracking-wide transition-colors">Vocabulary
+                List</button>
+            <button
+                class="px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300 font-medium text-sm tracking-wide transition-colors">Quiz
+                List</button>
+        </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="flex flex-1 overflow-hidden m-6 gap-6 min-h-0 min-w-0">
+
+        <!-- Categories Sidebar -->
+        <div
+            class="w-64 bg-white rounded shadow-sm flex flex-col border border-gray-100 overflow-hidden shrink-0 self-start h-fit max-h-full">
+            <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10 relative shrink-0">
+                <h2 class="font-bold text-gray-800 text-sm cursor-pointer hover:text-blue-600"
+                    onclick="filterVocab(null)">
+                    Categories
+                </h2>
+                <button id="addCategoryBtn" onclick="promptAddCategory(event, null)"
+                    class="w-6 h-6 flex items-center justify-center rounded border hover:bg-gray-50 text-gray-600 transition"
+                    title="Add Category"><i class="fa fa-plus text-xs"></i></button>
+            </div>
+            <div class="overflow-y-auto p-4" id="categoryTreeContainer">
+                <!-- Tree will be rendered here by JS -->
+            </div>
+        </div>
+
+        <!-- Vocabularies Management -->
+        <div
+            class="flex-1 bg-white rounded shadow-sm flex flex-col border border-gray-100 overflow-hidden relative min-w-0 min-h-0">
+
+            <!-- Filters -->
+            <div class="p-4 border-b bg-white flex flex-wrap items-center gap-6 text-sm">
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-600">Word:</span>
+                    <input type="text" id="searchWord" placeholder="Please enter word"
+                        class="border rounded px-3 py-1.5 w-48 focus:ring-1 focus:ring-blue-500 outline-none text-gray-800"
+                        onkeyup="if(event.key === 'Enter') { currentPage = 1; applyFilters(); }">
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-600">Created at:</span>
+                    <div class="flex items-center border rounded bg-white text-gray-600 overflow-hidden">
+                        <input type="text" id="searchDateFrom" placeholder="From" onfocus="(this.type='date')"
+                            onblur="if(!this.value) this.type='text'"
+                            class="px-2 py-1.5 w-[130px] outline-none border-none bg-transparent text-sm">
+                        <i class="fa fa-arrow-right mx-2 text-xs text-gray-400"></i>
+                        <input type="text" id="searchDateTo" placeholder="To" onfocus="(this.type='date')"
+                            onblur="if(!this.value) this.type='text'"
+                            class="px-2 py-1.5 w-[130px] outline-none border-none bg-transparent text-sm">
+                    </div>
+                </div>
+                <div class="ml-auto flex gap-3">
+                    <button onclick="currentPage = 1; applyFilters()"
+                        class="px-4 py-1.5 bg-blue-500 text-white rounded font-medium shadow-sm hover:bg-blue-600 transition">Query</button>
+                </div>
+            </div>
+
+            <!-- Table Header -->
+            <div class="p-4 flex justify-between items-center bg-white border-b border-gray-50">
+                <h3 class="font-bold text-gray-800">Vocabulary Management</h3>
+                <div class="flex items-center gap-3">
+                    <button onclick="openAddModal()"
+                        class="bg-blue-500 text-white px-4 py-1.5 rounded flex items-center gap-1.5 text-sm font-medium hover:bg-blue-600 transition shadow-sm">
+                        <i class="fa fa-plus"></i> Create
+                    </button>
+                    <button
+                        class="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center transition"
+                        onclick="window.location.reload()" title="Refresh"><i class="fa fa-redo text-sm"></i></button>
+                </div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="flex-1 overflow-auto">
+                <table class="w-full text-left text-sm whitespace-nowrap">
+                    <thead class="bg-gray-50 border-b border-t text-gray-700 sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 py-3 font-medium w-12 text-center">ID</th>
+                            <th class="px-4 py-3 font-medium w-max text-left">Image</th>
+                            <th class="px-4 py-3 font-medium text-left">
+                                <div class="flex items-center gap-2 group cursor-pointer w-max">Word <i
+                                        class="fa fa-sort text-gray-300 opacity-0 group-hover:opacity-100"></i></div>
+                            </th>
+                            <th class="px-4 py-3 font-medium text-left">Pronunciation</th>
+                            <th class="px-4 py-3 font-medium text-left">Definition (EN)</th>
+                            <th class="px-4 py-3 font-medium text-left">Definition (VI)</th>
+                            <th class="px-4 py-3 font-medium text-center w-24">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Replace with real variables, loop -->
+                        <tr th:each="v : ${vocabularies}" class="vocab-row border-b hover:bg-gray-50/50 transition"
+                            th:data-category-id="${v.category != null ? v.category.id : ''}"
+                            th:data-created-at="${v.created_at}">
+                            <td class="p-4 text-gray-600 text-center" th:text="${v.id}">1</td>
+                            <td class="p-4">
+                                <img th:if="${v.image != null}" th:src="${v.image}"
+                                    class="w-10 h-10 object-cover rounded shadow-sm border border-gray-200" />
+                                <div th:unless="${v.image != null}"
+                                    class="w-10 h-10 bg-gray-100 border border-gray-200 border-dashed rounded flex flex-col justify-center items-center text-gray-400 text-[10px]">
+                                    No Img</div>
+                            </td>
+                            <td class="p-4">
+                                <span
+                                    class="text-blue-500 cursor-pointer font-medium hover:underline flex items-center gap-2"
+                                    th:onclick="'openDrawer(' + ${v.id} + ')'">
+                                    <span th:text="${v.word}" class="vocab-word">Word</span>
+                                </span>
+                            </td>
+                            <td class="p-4 text-gray-600" th:text="${v.pronunciation}">/word/</td>
+                            <td class="p-4 text-gray-600 max-w-[200px] truncate" th:title="${v.definitionEn}"
+                                th:text="${v.definitionEn}">Def EN</td>
+                            <td class="p-4 text-gray-600 max-w-[200px] truncate" th:title="${v.meaningVi}"
+                                th:text="${v.meaningVi}">Def VI</td>
+                            <td class="p-4">
+                                <div class="flex justify-center gap-2 items-center">
+                                    <button th:onclick="'promptEditVocab(event, ' + ${v.id} + ')'"
+                                        class="w-7 h-7 rounded border border-gray-200 flex justify-center items-center text-gray-500 hover:text-blue-500 hover:border-blue-200 transition bg-white"><i
+                                            class="fa fa-pencil text-xs"></i></button>
+                                    <button th:onclick="'deleteVocab(event, ' + ${v.id} + ')'"
+                                        class="w-7 h-7 rounded border border-red-200 flex justify-center items-center text-red-400 hover:bg-red-50 hover:text-red-500 transition bg-white"><i
+                                            class="fa fa-trash-alt text-xs"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Footer -->
+            <div class="p-3 border-t bg-white flex justify-end items-center gap-4 text-sm text-gray-600 shrink-0">
+                <span id="itemCountDisplay" th:text="'Showing 0 to 0 of ' + ${vocabularies.size()} + ' item(s)'">Showing
+                    0 item(s)</span>
+                <div class="flex items-center gap-2 mr-2" id="paginationControls">
+                    <button onclick="changePage(-1)" id="prevPageBtn"
+                        class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-blue-500 transition disabled:text-gray-300 disabled:cursor-not-allowed"><i
+                            class="fa fa-chevron-left text-xs"></i></button>
+                    <div class="flex items-center gap-1 border border-blue-500 bg-blue-50 rounded px-1.5 py-0.5">
+                        <select id="currentPageSelect" onchange="jumpToPage()"
+                            class="outline-none bg-transparent cursor-pointer text-blue-600 font-medium appearance-none text-center">
+                            <option value="1">1</option>
+                        </select>
+                        <span id="totalPagesDisplay" class="text-blue-400 font-medium text-xs">/ 1</span>
+                    </div>
+                    <button onclick="changePage(1)" id="nextPageBtn"
+                        class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-blue-500 transition disabled:text-gray-300 disabled:cursor-not-allowed"><i
+                            class="fa fa-chevron-right text-xs"></i></button>
+                </div>
+                <div class="flex items-center border rounded px-2 py-1 gap-2 bg-white">
+                    <select id="itemsPerPageSelect" onchange="changeItemsPerPage()"
+                        class="outline-none bg-transparent cursor-pointer text-gray-600">
+                        <option value="10">10 / page</option>
+                        <option value="20">20 / page</option>
+                        <option value="50">50 / page</option>
+                        <option value="999999">All</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Detail Drawer Overlay -->
+            <div id="vocabDrawer"
+                class="absolute inset-y-0 right-0 w-[500px] bg-white shadow-[0_0_15px_rgba(0,0,0,0.1)] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col z-20 border-l border-gray-100">
+                <div class="p-4 border-b flex items-center gap-3 bg-white">
+                    <button onclick="closeDrawer()" class="text-gray-400 hover:text-gray-800 transition"><i
+                            class="fa fa-times text-lg"></i></button>
+                    <h3 class="font-semibold text-gray-800">Vocabulary Details</h3>
+                </div>
+                <div class="p-8 overflow-y-auto flex-1 font-sans" id="drawerContent">
+                    <!-- Javascript will inject data here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Vocabulary Modal -->
+    <div id="addModal"
+        class="fixed inset-0 bg-gray-900 bg-opacity-40 backdrop-blur-sm z-50 flex justify-center items-center hidden transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-lg shadow-2xl w-3/4 max-w-4xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-all duration-300"
+            id="modalDialog">
+            <div class="p-5 border-b flex justify-between items-center bg-gray-50/50">
+                <h3 id="modalTitle" class="font-bold text-lg text-gray-800">Add New Vocabulary</h3>
+                <button onclick="closeAddModal()"
+                    class="text-gray-400 hover:text-gray-800 w-8 h-8 rounded-full hover:bg-gray-100 transition flex items-center justify-center"><i
+                        class="fa fa-times text-lg"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <form id="addForm" class="grid grid-cols-2 gap-6" onsubmit="submitForm(event)">
+                    <input type="hidden" name="id" id="vocabIdInput">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Word <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="word" required
+                            class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Pronunciation <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="pronunciation" placeholder="/word/" required
+                            class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Part of Speech <span
+                                class="text-red-500">*</span></label>
+                        <select name="partOfSpeech"
+                            class="w-full border border-gray-300 bg-white rounded p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition">
+                            <option value="Noun">Noun</option>
+                            <option value="Verb">Verb</option>
+                            <option value="Adjective">Adjective</option>
+                            <option value="Adverb">Adverb</option>
+                            <option value="Preposition">Preposition</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Category <span
+                                class="text-red-500">*</span></label>
+                        <select name="categoryId" required
+                            class="w-full border border-gray-300 bg-white rounded p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Meaning (Vietnamese) <span
+                                class="text-red-500">*</span></label>
+                        <textarea name="meaningVi" required rows="2"
+                            class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition"></textarea>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Definition (English) <span
+                                class="text-red-500">*</span></label>
+                        <textarea name="definitionEn" required rows="2"
+                            class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition"></textarea>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Example (English) <span
+                                class="text-red-500">*</span></label>
+                        <textarea name="exampleEn" required rows="2"
+                            class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition"></textarea>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Example (Vietnamese)</label>
+                        <textarea name="exampleVi" rows="2"
+                            class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition"></textarea>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2"><i
+                                class="fa fa-image text-gray-400 mr-2"></i> Image Upload</label>
+                        <input type="file" name="image" accept="image/*"
+                            class="w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition">
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2"><i
+                                class="fa fa-volume-up text-gray-400 mr-2"></i> Audio Upload</label>
+                        <input type="file" name="audio" accept="audio/*"
+                            class="w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer transition">
+                    </div>
+
+                    <div class="col-span-2 mt-4 flex justify-end gap-3 pt-4 border-t">
+                        <button type="button" onclick="closeAddModal()"
+                            class="px-5 py-2.5 text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium transition">Cancel</button>
+                        <button type="submit" id="submitBtn"
+                            class="px-5 py-2.5 text-white bg-blue-500 rounded hover:bg-blue-600 text-sm font-medium shadow-sm transition flex items-center gap-2">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const vocabularies = /*[[${vocabularies}]]*/[];
+        const rawCategories = /*[[${categories}]]*/[];
+        let currentAudio = null;
+        function playAudio(event, url, wordText) {
+            event.stopPropagation();
+
+            // Always stop whatever is currently playing first
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+            window.speechSynthesis.cancel();
+
+            if (url && url !== 'null' && url.trim() !== '') {
+                currentAudio = new Audio(url);
+                currentAudio.play().catch(e => console.error(e));
+            } else if (wordText && 'speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(wordText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("No audio available");
+            }
+        }
+
+        async function promptDeleteCategory(event, id) {
+            if (event) event.stopPropagation();
+            if (!confirm("Are you sure you want to delete this category?")) return;
+            try {
+                const response = await fetch('/admin/api/category/' + id, { method: 'DELETE' });
+                if (response.ok) window.location.reload();
+                else alert("Cannot delete category. Make sure it has no sub-categories or vocabularies.");
+            } catch (e) {
+                alert("Network error.");
+            }
+        }
+
+        async function deleteVocab(event, id) {
+            event.stopPropagation();
+            if (!confirm("Are you sure you want to delete this vocabulary?")) return;
+            try {
+                const response = await fetch('/admin/api/vocabulary/' + id, { method: 'DELETE' });
+                if (response.ok) window.location.reload();
+                else alert("Failed to delete vocabulary.");
+            } catch (e) {
+                alert("Network error.");
+            }
+        }
+
+        // Vocab Filtering Logic
+        function getDescendantCategoryIds(catId) {
+            let ids = [catId];
+            const children = rawCategories.filter(c => c.parent && c.parent.id === catId);
+            for (let child of children) {
+                ids = ids.concat(getDescendantCategoryIds(child.id));
+            }
+            return ids;
+        }
+
+        let currentCategoryFilter = null;
+        let currentPage = 1;
+        let itemsPerPage = 10;
+
+        function filterVocab(categoryId) {
+            currentCategoryFilter = categoryId;
+            currentPage = 1;
+            applyFilters();
+        }
+
+        function changeItemsPerPage() {
+            const select = document.getElementById('itemsPerPageSelect');
+            itemsPerPage = parseInt(select.value, 10);
+            currentPage = 1;
+            applyFilters();
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            applyFilters();
+        }
+
+        function jumpToPage() {
+            const select = document.getElementById('currentPageSelect');
+            currentPage = parseInt(select.value, 10);
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const wordQuery = (document.getElementById('searchWord').value || "").trim().toLowerCase();
+            const fromQuery = document.getElementById('searchDateFrom').value;
+            const toQuery = document.getElementById('searchDateTo').value;
+
+            const fromDateObj = fromQuery ? new Date(fromQuery) : null;
+            if (fromDateObj) fromDateObj.setHours(0, 0, 0, 0);
+            const toDateObj = toQuery ? new Date(toQuery) : null;
+            if (toDateObj) toDateObj.setHours(23, 59, 59, 999);
+
+            const validIds = currentCategoryFilter === null ? [] : getDescendantCategoryIds(currentCategoryFilter);
+
+            const rows = Array.from(document.querySelectorAll('.vocab-row'));
+
+            const matchedRows = rows.filter(row => {
+                const rowCatIdStr = row.getAttribute('data-category-id');
+                const catMatch = currentCategoryFilter === null || (rowCatIdStr && validIds.includes(parseInt(rowCatIdStr)));
+                const wordEl = row.querySelector('.vocab-word');
+                const rowWord = wordEl ? wordEl.innerText.toLowerCase() : "";
+                const wordMatch = wordQuery === "" || rowWord.includes(wordQuery);
+                const dateStr = row.getAttribute('data-created-at');
+                let dateMatch = true;
+                if (dateStr && (fromDateObj || toDateObj)) {
+                    const rowDate = new Date(dateStr);
+                    if (fromDateObj && rowDate < fromDateObj) dateMatch = false;
+                    if (toDateObj && rowDate > toDateObj) dateMatch = false;
+                }
+                return catMatch && wordMatch && dateMatch;
+            });
+
+            const totalItems = matchedRows.length;
+            const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            rows.forEach(row => row.style.display = 'none');
+
+            matchedRows.slice(startIndex, endIndex).forEach(row => {
+                row.style.display = '';
+            });
+
+            const countEl = document.getElementById('itemCountDisplay');
+            if (countEl) {
+                const upTo = Math.min(endIndex, totalItems);
+                const startDisp = totalItems === 0 ? 0 : startIndex + 1;
+                countEl.innerText = `Showing ${startDisp} to ${upTo} of ${totalItems} item(s)`;
+            }
+
+            const pageSelect = document.getElementById('currentPageSelect');
+            let currentTotal = pageSelect.options.length;
+            if (currentTotal !== totalPages) {
+                pageSelect.innerHTML = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.text = i;
+                    pageSelect.appendChild(opt);
+                }
+            }
+            pageSelect.value = currentPage;
+
+            document.getElementById('totalPagesDisplay').innerText = '/ ' + totalPages;
+            document.getElementById('prevPageBtn').disabled = currentPage <= 1;
+            document.getElementById('nextPageBtn').disabled = currentPage >= totalPages;
+
+            document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('font-bold', 'text-blue-600', 'bg-blue-50'));
+            if (currentCategoryFilter !== null) {
+                const el = document.getElementById('cat-el-' + currentCategoryFilter);
+                if (el) el.classList.add('font-bold', 'text-blue-600', 'bg-blue-50');
+            }
+        }
+
+        // Category UI Actions
+        async function promptAddCategory(event, parentId) {
+            if (event) event.stopPropagation();
+            const name = prompt("Enter new category name:");
+            if (!name || name.trim() === '') return;
+
+            const formData = new FormData();
+            formData.append('name', name);
+            if (parentId) formData.append('parentId', parentId);
+
+            try {
+                const response = await fetch('/admin/api/category', { method: 'POST', body: formData });
+                if (response.ok) window.location.reload();
+                else alert("Failed to add category.");
+            } catch (e) {
+                alert("Network error.");
+            }
+        }
+
+        async function promptEditCategory(event, id, oldName) {
+            if (event) event.stopPropagation();
+            const name = prompt("Edit category name:", oldName);
+            if (!name || name.trim() === '' || name === oldName) return;
+
+            const formData = new FormData();
+            formData.append('name', name);
+
+            try {
+                const response = await fetch('/admin/api/category/' + id, { method: 'PUT', body: formData });
+                if (response.ok) window.location.reload();
+                else alert("Failed to edit category.");
+            } catch (e) {
+                alert("Network error.");
+            }
+        }
+
+        // Drawer logic
+        function openDrawer(id) {
+            const vocab = vocabularies.find(v => v.id === id);
+            if (!vocab) return;
+            const content = document.getElementById('drawerContent');
+            const catName = vocab.category ? vocab.category.name : '';
+
+            // Format dates
+            const createdAt = new Date(vocab.created_at).toLocaleString('vi-VN', { hour12: false });
+            const updatedAt = new Date(vocab.updated_at).toLocaleString('vi-VN', { hour12: false });
+
+            content.innerHTML = `
+                <div class="flex gap-6 mb-8 mt-2">
+                    <img src="${vocab.image || 'https://via.placeholder.com/150'}" class="w-32 h-32 object-cover rounded-xl shadow-sm border border-gray-200 shrink-0" />
+                    <div class="flex flex-col justify-center">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h2 class="text-3xl font-bold text-gray-900">${vocab.word}</h2>
+                            <button onclick="playAudio(event, '${vocab.audio}', '${vocab.word ? vocab.word.replace(/'/g, "\\'") : ''}')" class="w-8 h-8 rounded-full border border-blue-200 text-blue-500 hover:text-white hover:bg-blue-500 transition flex items-center justify-center">
+                                <i class="fa fa-volume-up text-sm"></i>
+                            </button>
+                        </div>
+                        <div class="text-gray-500 text-sm mb-2">${vocab.pronunciation}</div>
+                        <div><span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[11px] font-medium uppercase">${vocab.partOfSpeech}</span></div>
+                    </div>
+                </div>
+                
+                <div class="space-y-6 text-sm text-gray-800 mb-8">
+                    <div>
+                        <h4 class="font-bold text-gray-900 mb-2 text-base">Definition</h4>
+                        <p class="mb-1 text-gray-700">${vocab.definitionEn}</p>
+                        <p class="italic text-gray-600">${vocab.meaningVi}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 mb-2 text-base">Example</h4>
+                        <p class="mb-1 text-gray-700">"${vocab.exampleEn}"</p>
+                        <p class="italic text-gray-600">"${vocab.exampleVi || ''}"</p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-100 rounded-xl overflow-hidden mt-10 shadow-sm">
+                    <table class="w-full text-sm text-left text-gray-600">
+                        <tr class="border-b border-gray-100"><th class="w-1/3 p-4 bg-white font-normal text-gray-500">ID</th><td class="p-4 bg-white">${vocab.id}</td></tr>
+                        <tr class="border-b border-gray-100"><th class="w-1/3 p-4 bg-white font-normal text-gray-500">Category</th><td class="p-4 bg-white"><span class="px-2 py-1 text-blue-600 bg-blue-50 border border-blue-100 rounded text-xs">${catName}</span></td></tr>
+                        <tr class="border-b border-gray-100"><th class="w-1/3 p-4 bg-white font-normal text-gray-500">Created At</th><td class="p-4 bg-white">${createdAt}</td></tr>
+                        <tr><th class="w-1/3 p-4 bg-white font-normal text-gray-500">Updated At</th><td class="p-4 bg-white">${updatedAt}</td></tr>
+                    </table>
+                </div>
+            `;
+            document.getElementById('vocabDrawer').classList.remove('translate-x-full');
+        }
+
+        function closeDrawer() {
+            document.getElementById('vocabDrawer').classList.add('translate-x-full');
+        }
+
+        function openAddModal() {
+            document.getElementById('addForm').reset();
+            document.getElementById('vocabIdInput').value = '';
+            document.getElementById('modalTitle').innerText = 'Add New Vocabulary';
+
+            const modal = document.getElementById('addModal');
+            const dialog = document.getElementById('modalDialog');
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+                dialog.classList.remove('scale-95');
+                dialog.classList.add('scale-100');
+            });
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('addModal');
+            const dialog = document.getElementById('modalDialog');
+            modal.classList.add('opacity-0');
+            dialog.classList.remove('scale-100');
+            dialog.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('addForm').reset();
+            }, 300);
+        }
+
+        function promptEditVocab(event, id) {
+            event.stopPropagation();
+            const vocab = vocabularies.find(v => v.id === id);
+            if (!vocab) return;
+
+            document.getElementById('vocabIdInput').value = vocab.id;
+            const form = document.getElementById('addForm');
+            form.word.value = vocab.word;
+            form.pronunciation.value = vocab.pronunciation;
+            form.partOfSpeech.value = vocab.partOfSpeech;
+
+            if (vocab.category) form.categoryId.value = vocab.category.id;
+
+            form.meaningVi.value = vocab.meaningVi;
+            form.definitionEn.value = vocab.definitionEn;
+            form.exampleEn.value = vocab.exampleEn;
+            form.exampleVi.value = vocab.exampleVi || '';
+
+            document.getElementById('modalTitle').innerText = 'Edit Vocabulary';
+
+            form.image.value = '';
+            form.audio.value = '';
+
+            const modal = document.getElementById('addModal');
+            const dialog = document.getElementById('modalDialog');
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+                dialog.classList.remove('scale-95');
+                dialog.classList.add('scale-100');
+            });
+        }
+
+        async function submitForm(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/admin/api/vocabulary', {
+                    method: 'POST',
+                    body: new FormData(e.target)
+                });
+                if (response.ok) window.location.reload();
+                else alert("Failed to save vocabulary. Please double check inputs.");
+            } catch (err) {
+                alert("Network connection error.");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        let vocabRootId = null;
+
+        // Setup the DOM Tree
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('categoryTreeContainer');
+
+            // Find root category for vocabulary
+            let vocabRoot = rawCategories.find(c => !c.parent && c.name.toLowerCase().includes('vocab'));
+
+            if (!vocabRoot) {
+                const formData = new FormData();
+                formData.append('name', 'Vocabulary');
+                try {
+                    const res = await fetch('/admin/api/category', { method: 'POST', body: formData });
+                    if (res.ok) {
+                        vocabRoot = await res.json();
+                        rawCategories.push(vocabRoot);
+                    }
+                } catch (e) { console.error("Could not create root category"); }
+            }
+
+            if (vocabRoot) {
+                vocabRootId = vocabRoot.id;
+                const addBtn = document.getElementById('addCategoryBtn');
+                if (addBtn) addBtn.onclick = (e) => promptAddCategory(e, vocabRootId);
+            }
+
+            const children = rawCategories.filter(c => c.parent && c.parent.id === vocabRootId);
+
+            // Update modal select 
+            const categorySelect = document.querySelector('select[name="categoryId"]');
+            if (categorySelect) {
+                categorySelect.innerHTML = '';
+                children.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.innerText = cat.name;
+                    categorySelect.appendChild(opt);
+                });
+            }
+
+            if (children.length === 0) {
+                container.innerHTML = '<div class="text-sm text-gray-400 p-2">No categories found.</div>';
+                applyFilters();
+                return;
+            }
+
+            const ul = document.createElement('ul');
+            ul.className = 'space-y-1';
+
+            children.forEach(cat => {
+                const li = document.createElement('li');
+
+                const div = document.createElement('div');
+                div.className = "cat-item flex items-center justify-between p-1.5 rounded hover:bg-gray-50 group cursor-pointer text-gray-700 hover:text-blue-600 transition";
+                div.id = 'cat-el-' + cat.id;
+                div.onclick = () => filterVocab(cat.id);
+
+                const safeName = cat.name.replace(/'/g, "\\'");
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <i class="fa fa-folder-o text-blue-400 text-xs"></i>
+                        <span class="text-sm select-none">${cat.name}</span>
+                    </div>
+                    <div class="hidden group-hover:flex items-center gap-2 pr-1">
+                        <button onclick="promptEditCategory(event, ${cat.id}, '${safeName}')" class="text-gray-400 hover:text-blue-500" title="Rename"><i class="fa fa-pencil text-[10px]"></i></button>
+                        <button onclick="promptDeleteCategory(event, ${cat.id})" class="text-gray-400 hover:text-red-500" title="Delete"><i class="fa fa-trash text-[10px]"></i></button>
+                    </div>
+                `;
+
+                li.appendChild(div);
+                ul.appendChild(li);
+            });
+            container.appendChild(ul);
+
+            // Initialization Phase Boot-load Filter Constraints 
+            applyFilters();
+        });
+        /*]]>*/
+    </script>
+</div>

@@ -82,14 +82,26 @@ public class AuthController {
             return "login";
         }
         session.setAttribute("roleId", user.getRoleId().getId());
-        return "redirect:/admin/dashboard";
+        session.setAttribute("userId", user.getId());
+
+        if ("ADMIN".equals(user.getRoleId().getCode())) {
+            return "redirect:/admin/dashboard";
+        }
+        return "redirect:/home";
     }
 
     @GetMapping("/home")
-    public String home(HttpSession session, Model model) {
-        int roleId = (int) session.getAttribute("roleId");
-        model.addAttribute("roleId", roleId);
-        return "home";
+    public String home(HttpSession session, Model model, jakarta.servlet.http.HttpServletResponse response) {
+
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        Object roleIdObj = session.getAttribute("roleId");
+        if (roleIdObj != null) {
+            model.addAttribute("roleId", (int) roleIdObj);
+        }
+        return "user/home";
     }
 
     @GetMapping("/logout")

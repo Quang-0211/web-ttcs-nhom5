@@ -41,11 +41,22 @@ public class Vocabulary {
     @Column(columnDefinition = "TEXT")
     private String exampleEn;
 
+    @org.hibernate.annotations.CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime created_at;
+    
+    @org.hibernate.annotations.UpdateTimestamp
     private LocalDateTime updated_at;
 
     @ManyToOne
     @JoinColumn(name="cate_id")
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
 }

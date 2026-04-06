@@ -14,7 +14,7 @@ public class UserController {
     @Autowired
     private AccountService ase;
 
-    @GetMapping("/admin/users")
+    @GetMapping("/admin/user")
     public String user(@RequestParam(value = "cnt", required = false, defaultValue = "0") String cntString,
             Model model) {
         int cnt = Integer.parseInt(cntString);
