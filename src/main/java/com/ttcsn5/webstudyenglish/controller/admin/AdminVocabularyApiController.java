@@ -1,4 +1,4 @@
-package com.ttcsn5.webstudyenglish.controller;
+package com.ttcsn5.webstudyenglish.controller.admin;
 
 import java.util.List;
 

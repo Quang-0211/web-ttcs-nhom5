@@ -1,4 +1,4 @@
-package com.ttcsn5.webstudyenglish.controller;
+package com.ttcsn5.webstudyenglish.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +33,12 @@ public class AdminCategoryApiController {
             HttpSession session) {
         
         Long userId = (Long) session.getAttribute("userId");
-        User currentUser = null;
-        if (userId != null) {
-            currentUser = accountRepo.findById(userId).orElse(null);
+        if (userId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        User currentUser = accountRepo.findById(userId).orElse(null);
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
         }
 
         Category category = new Category();
@@ -64,9 +67,12 @@ public class AdminCategoryApiController {
             HttpSession session) {
         
         Long userId = (Long) session.getAttribute("userId");
-        User currentUser = null;
-        if (userId != null) {
-            currentUser = accountRepo.findById(userId).orElse(null);
+        if (userId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        User currentUser = accountRepo.findById(userId).orElse(null);
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
         }
         
         Category category = categoryRepo.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));

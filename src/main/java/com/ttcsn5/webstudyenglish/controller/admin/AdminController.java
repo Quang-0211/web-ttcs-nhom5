@@ -1,4 +1,4 @@
-package com.ttcsn5.webstudyenglish.controller;
+package com.ttcsn5.webstudyenglish.controller.admin;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
 import com.ttcsn5.webstudyenglish.repository.VocabularyRepo;
+import com.ttcsn5.webstudyenglish.repository.GrammarRepo;
+import com.ttcsn5.webstudyenglish.repository.DictationTopicRepo;
 
 @Controller
 public class AdminController {
@@ -21,16 +23,26 @@ public class AdminController {
     @Autowired
     private VocabularyRepo vocabularyRepo;
 
+    @Autowired
+    private GrammarRepo grammarRepo;
+
+    @Autowired
+    private DictationTopicRepo dictationTopicRepo;
+
     @GetMapping("/admin/{path}")
     public String redirect(@PathVariable("path") String path, Model model, jakarta.servlet.http.HttpSession session,
             jakarta.servlet.http.HttpServletResponse response) {
+
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/login";
+        }
 
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
 
         List<String> allowedPaths = Arrays.asList("dashboard", "user", "categories",
-                "lessons", "article", "vocabulary");
+                "lessons", "article", "vocabulary", "grammar", "dictation");
         if (!allowedPaths.contains(path)) {
             return "error/404";
         }
@@ -40,7 +52,22 @@ public class AdminController {
             model.addAttribute("vocabularies", vocabularyRepo.findAll());
         }
 
-        model.addAttribute("path", "admin/" + path);
+        if ("grammar".equals(path)) {
+            model.addAttribute("categories", categoryRepo.findAll());
+            model.addAttribute("grammars", grammarRepo.findAll());
+        }
+
+        if ("dictation".equals(path)) {
+            model.addAttribute("categories", categoryRepo.findAll());
+            model.addAttribute("dictationTopics", dictationTopicRepo.findAll());
+        }
+
+        if (Arrays.asList("dictation", "grammar", "vocabulary").contains(path)) {
+            model.addAttribute("path", "admin/" + path + "/index");
+        } else {
+            model.addAttribute("path", "admin/" + path);
+        }
+
         model.addAttribute("current", path);
         return "admin/adminhome";
     }
