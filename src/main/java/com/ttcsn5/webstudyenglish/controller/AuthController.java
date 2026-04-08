@@ -13,6 +13,8 @@ import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.service.AccountService;
 import com.ttcsn5.webstudyenglish.service.HashPassword;
 import com.ttcsn5.webstudyenglish.service.RoleService;
+import com.ttcsn5.webstudyenglish.totalenum.LoginResponse;
+import com.ttcsn5.webstudyenglish.totalenum.RegisterStatus;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -43,21 +45,23 @@ public class AuthController {
             @RequestParam("email") String email,
             RedirectAttributes redirectAttribute,
             Model model) {
-        System.out.println(email + " " + password + " " + username + " " + ase.existsByEmail(email));
-        if (ase.existsByEmail(email)) {
-            model.addAttribute("error", "Kiem tra lai Email");
-            model.addAttribute("username", username);
-            model.addAttribute("password", password);
-            return "register";
-        }
-        if (ase.existsByUsername(username)) {
-            model.addAttribute("error", "Kiem tra lai Username");
-            model.addAttribute("username", username);
-            model.addAttribute("password", password);
-            return "register";
+        // System.out.println(email + " " + password + " " + username + " " +
+        // ase.existsByEmail(email));
+        RegisterStatus registerStatus = ase.checkRegister(username, email, password);
+        switch (registerStatus) {
+            case EMAIL_EXISTS:
+                model.addAttribute("error", "Kiem tra lai Email");
+                model.addAttribute("username", username);
+                return "register";
+            case USERNAME_EXISTS:
+                model.addAttribute("error", "Kiem tra lai Username");
+                model.addAttribute("username", username);
+                return "register";
+            case SUCCESS:
+                break;
         }
 
-        Role role = rse.findByCode("USER");
+        Role role = rse.findByCode("ADMIN");
         ase.saveUser(new User(username, hashPassword.hashPassword(password), email, role));
         redirectAttribute.addFlashAttribute("success", "Tao tai khoan thanh cong");
         return "redirect:/login";
@@ -69,25 +73,31 @@ public class AuthController {
             @RequestParam("password") String password,
             Model model,
             HttpSession session) {
-        User user = ase.findByEmail(email);
-        if (user == null) {
-            model.addAttribute("errorLogin", "1");
-            model.addAttribute("email", email);
-            model.addAttribute("password", password);
-            return "login";
-        } else if (hashPassword.checkPassword(password, user.getPassword()) == false) {
-            model.addAttribute("errorLogin", "2");
-            model.addAttribute("email", email);
-            model.addAttribute("password", password);
-            return "login";
+        LoginResponse loginStatus = ase.checkLogin(email, password);
+        switch (loginStatus.getStatus()) {
+            case INVALID_EMAIL:
+                model.addAttribute("errorLogin", "1");
+                model.addAttribute("email", email);
+                model.addAttribute("password", password);
+                return "login";
+            case INVALID_PASSWORD:
+                model.addAttribute("errorLogin", "2");
+                model.addAttribute("email", email);
+                model.addAttribute("password", password);
+                return "login";
+            case SUCCESS:
+                break;
         }
-        session.setAttribute("roleId", user.getRoleId().getId());
-        session.setAttribute("userId", user.getId());
-
-        if ("ADMIN".equals(user.getRoleId().getCode())) {
+        User user = loginStatus.getUser();
+        if (user.getRoleId().getCode().equals("ADMIN")) {
+            session.setAttribute("userId", user.getId());
+            session.setAttribute("roleId", user.getRoleId().getId());
+            session.setAttribute("username", user.getUsername());
+            session.setAttribute("email", user.getEmail());
             return "redirect:/admin/dashboard";
         }
         return "redirect:/home";
+
     }
 
     @GetMapping("/home")

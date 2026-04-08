@@ -1,6 +1,6 @@
 let modal, modalTitle, modalDialog;
 let isModalInitialized = false;
-
+console.log("JS LOADED OK");
 function initializeModal() {
     if (!isModalInitialized) {
         modal = document.getElementById('articleModal');
@@ -15,7 +15,7 @@ function initializeModal() {
     }
 }
 
-window.openArticleModal = function (type = 'create', articleId = null) {
+window.openArticleModal = function (type = 'create', articleId = null, title = null, img = null, audio = null, content = null, categoryId = null) {
     initializeModal();
 
     if (!modal) {
@@ -24,24 +24,32 @@ window.openArticleModal = function (type = 'create', articleId = null) {
     }
 
     console.log("da an " + type);
-
-    if (type === 'create') {
-        modalTitle.innerText = "Add a new Article";
-        resetForm();
-    } else {
-        modalTitle.innerText = "Update Article";
-        fillDemoData();
-    }
-
     modal.classList.remove('hidden', 'pointer-events-none');
     modal.classList.add('pointer-events-auto');
-
+    console.log(articleId, typeof (articleId), title, img, audio, content, categoryId)
     setTimeout(() => {
         modal.classList.remove('opacity-0');
         modal.classList.add('opacity-100');
         modalDialog.classList.remove('scale-95');
         modalDialog.classList.add('scale-100');
     }, 10);
+
+    if (type === 'create') {
+        modalTitle.innerText = "Add a new Article";
+        document.getElementById('articleTitle').value = '';
+        document.getElementById('previewImg').src = "";
+        document.getElementById('audioPreview').src = '';
+        document.getElementById('contentEditor').innerHTML = '';
+    } else {
+        modalTitle.innerText = "Update Article";
+        document.getElementById('articleId').value = articleId + "";
+        document.getElementById('articleTitle').value = title;
+        document.getElementById('previewImg').src = img || "https://i.ibb.co/Xz9K5Yn/demo-thumbnail.png";
+        document.getElementById("category-id").value = categoryId + "";
+        document.getElementById('audioPreview').src = audio;
+        document.getElementById('contentEditor').innerHTML = content;
+    }
+
 }
 
 window.closeArticleModal = function () {
@@ -61,16 +69,41 @@ window.closeArticleModal = function () {
     }, 300);
 }
 
-function resetForm() {
-    document.getElementById('articleTitle').value = '';
-    document.getElementById('thumbnailPreview').src = 'https://via.placeholder.com/150';
-    document.getElementById('audioFileName').innerText = 'lion.mp3';
-    document.getElementById('contentEditor').innerHTML = '<br>';
-}
+// xem truoc anh
+document.getElementById('imageInput').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-function fillDemoData() {
-    document.getElementById('articleTitle').value = 'Building the City of the Future';
-    document.getElementById('thumbnailPreview').src = 'https://i.ibb.co/Xz9K5Yn/demo-thumbnail.png';
-    document.getElementById('audioFileName').innerText = 'lion.mp3';
-    document.getElementById('contentEditor').innerHTML = 'Thành phố tương lai<br><br>Các nhà khoa học đang nghiên cứu...';
-}
+    // Hiển thị tên file
+    document.getElementById('imageFileName').textContent = file.name;
+
+    // Preview ảnh
+    const img = document.querySelector('#previewImg');
+    img.src = URL.createObjectURL(file);
+});
+
+// nghe truoc audio
+document.getElementById('audioInput').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Hiển thị tên file
+    document.getElementById('audioFileName').textContent = file.name;
+
+    // Tạo URL để phát
+    const audio = document.getElementById('audioPreview');
+    audio.src = URL.createObjectURL(file);
+});
+
+document.querySelectorAll(".publish-checkbox").forEach(checkbox => {
+    checkbox.addEventListener("change", function () {
+        const articleId = this.dataset.articleId;
+        const status = this.checked;
+        console.log(articleId, status);
+        fetch('articles/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'articleId=' + articleId + '&status=' + status
+        });
+    });
+});

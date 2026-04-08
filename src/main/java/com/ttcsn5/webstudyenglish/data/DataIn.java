@@ -14,12 +14,9 @@ public class DataIn implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (rre.findByCode("ADMIN") == null) {
-            rre.save(new Role("ADMIN", "Admin"));
-        }
-        if (rre.findByCode("USER") == null) {
-            rre.save(new Role("USER", "User"));
-        }
+        rre.save(new Role("ADMIN", "Admin"));
+        rre.save(new Role("USER", "User"));
+
     }
 
 }
