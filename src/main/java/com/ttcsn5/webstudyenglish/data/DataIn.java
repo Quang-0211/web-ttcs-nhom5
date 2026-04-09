@@ -14,8 +14,8 @@ public class DataIn implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        rre.save(new Role("ADMIN", "Admin"));
-        rre.save(new Role("USER", "User"));
+        // rre.save(new Role("ADMIN", "Admin"));
+        // rre.save(new Role("USER", "User"));
 
     }
 
