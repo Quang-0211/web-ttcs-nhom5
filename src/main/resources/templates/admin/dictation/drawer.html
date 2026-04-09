@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!-- Drawer -->
+<div th:fragment="drawer">
+    <div id="dictationDrawer"
+        class="fixed inset-y-0 right-0 w-[450px] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col border-l">
+        <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50/50 shrink-0">
+            <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2"><i
+                    class="fa fa-book text-blue-500"></i> Dictation Details</h3>
+            <button onclick="closeDrawer()"
+                class="text-gray-400 hover:text-gray-700 p-2 rounded-full hover:bg-gray-200 transition"><i
+                    class="fa fa-times text-lg"></i></button>
+        </div>
+        <div id="drawerContent" class="overflow-y-auto px-6 py-6 pb-24 h-full custom-scrollbar space-y-6"></div>
+    </div>
+</div>
+</html>

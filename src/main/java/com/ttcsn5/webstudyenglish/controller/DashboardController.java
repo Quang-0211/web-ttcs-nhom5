@@ -13,7 +13,11 @@ public class DashboardController {
 
     @GetMapping("/admin/dashboard")
     public String dashboard(Model model, HttpSession session) {
-        int roleId = (int) session.getAttribute("roleId");
+        Object roleIdObj = session.getAttribute("roleId");
+        if (roleIdObj == null) {
+            return "redirect:/login";
+        }
+        int roleId = (int) roleIdObj;
         if (roleId != 1) {
             return "redirect:/login";
         }

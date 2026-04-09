@@ -18,12 +18,12 @@
 <body class="bg-gray-100">
 
 
-    <div class="flex h-screen">
+    <div class="flex h-screen w-full overflow-hidden bg-gray-100">
 
-        <div class="w-64 bg-white shadow-lg p-4">
+        <div class="w-64 shrink-0 bg-white shadow-lg p-4 flex flex-col overflow-y-auto z-20">
 
             <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                🐧 ADMIN PAGE
+                ADMIN PAGE
             </h2>
 
             <ul class="space-y-2 text-gray-700">
@@ -144,23 +144,23 @@
                         <i class="fa fa-microphone"></i> Dictation
                     </a>
                 </li>
-                <hr class="my-4 border-gray-200">
-
-                <li>
-                    <form th:action="@{/logout}" method="get">
-                        <button type="submit"
-                            class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
-                            <i class="fa fa-sign-out-alt"></i>
-                            <span class="font-medium">Logout</span>
-                        </button>
-                    </form>
-                </li>
 
             </ul>
 
+            <!-- Logout pinned to bottom -->
+            <div class="mt-auto pt-4 border-t border-gray-200">
+                <form th:action="@{/logout}" method="get">
+                    <button type="submit"
+                        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                        <i class="fa fa-sign-out-alt"></i>
+                        <span class="font-medium">Logout</span>
+                    </button>
+                </form>
+            </div>
+
         </div>
         <!-- content -->
-        <div th:replace="~{${path} :: content}" class="flex-1 p-6 overflow-y-auto">
+        <div th:replace="~{${path} :: content}" class="flex-1 min-h-0 min-w-0 overflow-y-auto">
 
         </div>
     </div>

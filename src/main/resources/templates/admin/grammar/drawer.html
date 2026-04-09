@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="drawer">
+    <div id="grammarDrawer"
+        class="absolute inset-y-0 right-0 w-[600px] bg-white shadow-[-5px_0_15px_rgba(0,0,0,0.1)] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col z-20 border-l border-gray-100">
+        <div class="p-4 border-b flex items-center gap-3 bg-white">
+            <button onclick="closeDrawer()" class="text-gray-400 hover:text-gray-800"><i
+                    class="fa fa-times text-lg"></i></button>
+            <h3 class="font-semibold text-gray-800">Grammar Content</h3>
+        </div>
+        <div class="p-8 overflow-y-auto flex-1 font-sans" id="drawerContent"></div>
+    </div>
+</div>
+</html>

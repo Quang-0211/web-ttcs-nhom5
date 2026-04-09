@@ -30,6 +30,7 @@ public class Role {
     @Column(nullable = false, columnDefinition = "varchar(50)")
     private String name;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "roleId")
     private List<User> users = new ArrayList<>();
 
