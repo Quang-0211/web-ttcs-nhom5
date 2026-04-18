@@ -83,7 +83,7 @@
                             <tr class="border-b hover:bg-gray-50 transition-colors" th:each="art : ${articles}">
                                 <td class="p-4" th:text="${art.id}">1</td>
                                 <td class="p-4">
-                                    <img class="rounded border object-cover shadow-sm" alt="thumb"
+                                    <img class="w-28 h-20 rounded border object-cover shadow-sm" alt="thumb"
                                         th:src="@{${art.image}}">
                                 </td>
                                 <td class="p-4">
@@ -94,7 +94,7 @@
                                 <td class="p-4">
                                     <span
                                         class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded border border-purple-200 font-medium"
-                                        th:text="${art.category.name}">TECHNOLOGY</span>
+                                        th:text="${art.category?.name}">TECHNOLOGY</span>
                                 </td>
                                 <td class="p-4 text-center">
                                     <div class="relative inline-block w-10 align-middle select-none">
@@ -108,7 +108,7 @@
                                 <td class="p-4 text-gray-500" th:text="${art.createdAt}">15:15:48 08/11/2025</td>
                                 <td class="p-4 text-center">
                                     <div class="flex justify-center gap-2">
-                                        <button th:attr="
+                                        <button type="button" th:attr="
                                             data-id=${art.id},
                                             data-title=${art.title},
                                             data-img=${art.image},
@@ -116,8 +116,7 @@
                                             data-content=${art.content},
                                             data-categoryid=${art.category.id}
                                         " onclick="openArticleModal('update',this.dataset.id, this.dataset.title, this.dataset.img, this.dataset.audio, this.dataset.content, this.dataset.categoryid)"
-                                            class="p-2 text-gray-400 hover:text-blue-500 transition-colors"
-                                            type="button">
+                                            class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
                                             <i class="fa fa-edit text-lg"></i>
                                         </button>
                                         <button onclick="openArticleModal('create')"
@@ -231,7 +230,7 @@
                 <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
                     <select name="category" id="category-id"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm">
-                        <option value="0">All Categories</option>
+                        <!-- <option value="0">All Categories</option> -->
                         <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.name}"></option>
                     </select>
                     <div>

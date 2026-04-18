@@ -45,9 +45,9 @@ public class AuthController {
             @RequestParam("email") String email,
             RedirectAttributes redirectAttribute,
             Model model) {
-        // System.out.println(email + " " + password + " " + username + " " +
-        // ase.existsByEmail(email));
-        RegisterStatus registerStatus = ase.checkRegister(username, email, password);
+        System.out.println(email + " " + password + " " + username + " " +
+                ase.existsByEmail(email));
+        RegisterStatus registerStatus = ase.checkRegister(username, email);
         switch (registerStatus) {
             case EMAIL_EXISTS:
                 model.addAttribute("error", "Kiem tra lai Email");

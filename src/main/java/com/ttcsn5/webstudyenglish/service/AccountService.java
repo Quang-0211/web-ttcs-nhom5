@@ -38,7 +38,7 @@ public class AccountService {
         return new LoginResponse(LoginStatus.SUCCESS, user);
     }
 
-    public RegisterStatus checkRegister(String username, String email, String password) {
+    public RegisterStatus checkRegister(String username, String email) {
         if (this.existsByEmail(email)) {
             return RegisterStatus.EMAIL_EXISTS;
         }

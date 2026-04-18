@@ -20,25 +20,18 @@ public class UploadImageAudio {
             Path imgDir = Paths.get("uploads/" + type);
             if (!Files.exists(imgDir)) {
                 Files.createDirectories(imgDir);
-
-                if (file != null) {
-                    String imgFileName = uniqueId + "__" + file;
-                    Path imgPath = imgDir.resolve(imgFileName);
-                    Files.write(imgPath, image.getBytes());
-                    // Lưu đường dẫn public (bằng /uploads/...) để frontend có thể truy cập được
-                    filePathStr = "/uploads/" + type + "/" + imgFileName;
-                }
+            }
+            if (file != null) {
+                String imgFileName = uniqueId + "__" + file;
+                Path imgPath = imgDir.resolve(imgFileName);
+                Files.write(imgPath, image.getBytes());
+                // Lưu đường dẫn public (bằng /uploads/...) để frontend có thể truy cập được
+                filePathStr = "/uploads/" + type + "/" + imgFileName;
             }
         }
 
         return filePathStr;
     }
-
-
-
-
-
-
 
     // nen tnag
 

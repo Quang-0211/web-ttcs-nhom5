@@ -14,7 +14,8 @@ public class CategoryService {
     private CategoryRepo cateRepo;
 
     public List<Category> findAll() {
-        return cateRepo.findAll();
+        Category cate = cateRepo.findAllById(1);
+        return cateRepo.findByParent(cate);
     }
 
     public Category findById(int id) {

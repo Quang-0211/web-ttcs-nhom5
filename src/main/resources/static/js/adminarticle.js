@@ -36,6 +36,7 @@ window.openArticleModal = function (type = 'create', articleId = null, title = n
 
     if (type === 'create') {
         modalTitle.innerText = "Add a new Article";
+        document.getElementById('articleId').value = "";
         document.getElementById('articleTitle').value = '';
         document.getElementById('previewImg').src = "";
         document.getElementById('audioPreview').src = '';
@@ -47,7 +48,7 @@ window.openArticleModal = function (type = 'create', articleId = null, title = n
         document.getElementById('previewImg').src = img || "https://i.ibb.co/Xz9K5Yn/demo-thumbnail.png";
         document.getElementById("category-id").value = categoryId + "";
         document.getElementById('audioPreview').src = audio;
-        document.getElementById('contentEditor').innerHTML = content;
+        document.getElementById('contentEditor').value = content;
     }
 
 }
