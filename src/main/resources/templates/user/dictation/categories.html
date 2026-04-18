@@ -1,0 +1,31 @@
+        <div th:fragment="content" class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
+                <h2 class="text-xl font-extrabold text-gray-700 tracking-wide mb-10 text-center uppercase">
+                    Dictation Categories
+                </h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Category Card -->
+                    <a th:each="cat : ${categories}" th:href="@{/dictation/category/{id}(id=${cat.id})}" 
+                       class="group bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition cursor-pointer relative overflow-hidden">
+                        <div class="w-1.5 h-full bg-blue-400 absolute left-0 top-0 rounded-l-2xl"></div>
+                        
+                        <div class="w-12 h-14 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg flex items-center justify-center shadow-inner relative flex-shrink-0">
+                            <span class="text-white font-black text-xl z-10 font-serif translate-y-[-2px]"
+                                th:text="${cat.name != null && cat.name.length() >= 2 ? cat.name.substring(0, 2) : 'Di'}">
+                                Di
+                            </span>
+                            <div class="absolute bottom-0 w-full h-3 bg-white/20 rounded-b-lg"></div>
+                            <div class="absolute bottom-1 w-full h-[1px] bg-white/30"></div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-500 transition capitalize" th:text="${cat.name}">Category Name</h3>
+                            <p class="text-[11px] text-blue-500 font-medium mt-0.5 whitespace-nowrap">Luyện nghe chép chính tả</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </div>

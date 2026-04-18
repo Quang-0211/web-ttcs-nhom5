@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="sidebar(activeMenu)"
+        class="w-64 shrink-0 bg-white shadow-lg p-4 flex flex-col overflow-y-auto z-20 h-full">
+
+        <h2 class="text-xl font-bold mb-6 flex items-center gap-2 text-blue-500">
+            English Pro
+        </h2>
+
+        <ul class="space-y-2 text-gray-700">
+            <li>
+                <a th:href="@{/home}"
+                    th:class="${activeMenu == 'home'} ? 'bg-blue-100 text-blue-600 font-semibold flex items-center gap-3 px-3 py-2 rounded-lg' : 'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500'">
+                    <i class="fa fa-home"></i> Home
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/vocabularies}"
+                    th:class="${activeMenu == 'vocabulary'} ? 'bg-blue-100 text-blue-600 font-semibold flex items-center gap-3 px-3 py-2 rounded-lg' : 'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500'">
+                    <i class="fa fa-lightbulb"></i> Vocabulary
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/grammar}"
+                    th:class="${activeMenu == 'grammar'} ? 'bg-blue-100 text-blue-600 font-semibold flex items-center gap-3 px-3 py-2 rounded-lg' : 'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500'">
+                    <i class="fa fa-list"></i> Grammar
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                    <i class="fa fa-bars"></i> Blog
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                    <i class="fa fa-video"></i> Video
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/dictation}" th:class="${activeMenu == 'dictation'} ? 'bg-blue-100 text-blue-600 font-semibold flex items-center gap-3 px-3 py-2 rounded-lg' : 'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500'">
+                    <i class="fa fa-headphones"></i> Dictation
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                    <i class="fa fa-store"></i> Store
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                    <i class="fa fa-user"></i> Profile
+                </a>
+            </li>
+        </ul>
+
+        <!-- Logout pinned to bottom -->
+        <div class="mt-auto pt-4 border-t border-gray-200">
+            <form th:action="@{/logout}" method="get">
+                <button type="submit"
+                    class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                    <i class="fa fa-sign-out-alt"></i>
+                    <span class="font-medium">Logout</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

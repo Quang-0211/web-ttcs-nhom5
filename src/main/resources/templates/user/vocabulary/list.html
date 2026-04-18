@@ -1,0 +1,93 @@
+        <div th:fragment="content" class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
+                
+                <h2 class="text-xl font-extrabold text-gray-700 tracking-wide mb-6 text-center uppercase" th:text="${category != null ? category.name : 'Vocabulary'}">
+                    Animals
+                </h2>
+
+                <div class="text-sm text-gray-500 mb-6 px-1 flex flex-wrap gap-2 items-center justify-center">
+                    <a th:href="@{/home}" class="hover:text-gray-800"><i class="fa fa-home"></i></a>
+                    <span class="text-gray-300">/</span>
+                    <a th:href="@{/vocabularies}" class="hover:text-gray-800">Vocabulary</a>
+                    <span class="text-gray-300">/</span>
+                    <span class="text-gray-800 font-bold" th:text="${category != null ? category.name : ''}">Animals</span>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
+                    <!-- Search -->
+                    <form method="get" class="w-full max-w-lg relative">
+                        <input type="text" name="search" th:value="${search}" placeholder="Search for vocabularies..." class="w-full pl-4 pr-12 py-2 rounded-lg border border-gray-200 outline-none focus:border-blue-500 text-sm shadow-sm transition">
+                        <button type="submit" class="absolute right-2 top-1.5 text-gray-400 hover:text-blue-500">
+                            <i class="fa fa-search text-sm"></i>
+                        </button>
+                    </form>
+
+                    <!-- Flashcards / Learn -->
+                    <div class="flex gap-3">
+                        <a th:href="@{/review/flashcards(categoryId=${category.id})}" class="px-5 py-2 bg-white border border-blue-500 text-blue-500 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-50 flex items-center gap-2 transition">
+                            <i class="fa fa-window-restore"></i> Flashcards
+                        </a>
+                        <button class="px-5 py-2 bg-blue-500 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-blue-600 flex items-center gap-2 transition">
+                            <i class="fa fa-pen"></i> Learn New Vocabulary
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vocabulary Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    
+                    <!-- Card -->
+                    <a th:each="vocab : ${vocabularies}" th:href="@{/vocabularies/{id}(id=${vocab.id})}" 
+                       class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer flex flex-col gap-3">
+                        
+                        <div class="w-full aspect-[4/3] relative rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
+                            <img th:if="${vocab.image != null}" th:src="${vocab.image}" class="w-full h-full object-cover" />
+                            <div th:unless="${vocab.image != null}" class="text-xs text-gray-400">No Image</div>
+                        </div>
+                        
+                        <div class="flex flex-col flex-1 min-w-0 px-1">
+                            <div class="flex justify-between items-start gap-1">
+                                <div class="min-w-0 flex-1">
+                                    <span class="inline-block px-2 py-0.5 bg-blue-50 text-blue-500 border border-blue-100 rounded text-[10px] uppercase font-bold mb-1" th:text="${vocab.partOfSpeech}">noun</span>
+                                    <h3 class="font-bold text-gray-900 text-lg leading-tight truncate" th:text="${vocab.word}">Lion</h3>
+                                    <p class="text-[13px] text-gray-400 font-medium truncate" th:text="${vocab.pronunciation}">/ˈlaɪ.ən/</p>
+                                </div>
+                                <!-- Fix playAudio to pass the word correctly -->
+                                <button th:data-audio="${vocab.audio}" th:data-word="${vocab.word}" onclick="playAudio(event, this.getAttribute('data-audio'), this.getAttribute('data-word'))" class="w-8 h-8 mt-4 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-50 transition border border-blue-100 shrink-0 z-10">
+                                    <i class="fa fa-volume-up text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+
+    <script th:inline="javascript">
+        let currentAudio = null;
+        function playAudio(event, url, wordText) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            if (url && url !== 'null' && url.trim() !== '') {
+                currentAudio = new Audio(url);
+                currentAudio.play().catch(e => console.error(e));
+            } else if (wordText && window.speechSynthesis) {
+                const utterance = new SpeechSynthesisUtterance(wordText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("No audio available");
+            }
+        }
+    </script>
