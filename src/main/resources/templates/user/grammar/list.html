@@ -1,0 +1,55 @@
+        <div th:fragment="content" class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
+                
+                <h2 class="text-xl font-extrabold text-gray-700 tracking-wide mb-6 text-center uppercase" th:text="${category != null ? category.name : 'Grammar Lessons'}">
+                    Tense
+                </h2>
+
+                <div class="text-sm text-gray-500 mb-6 px-1 flex flex-wrap gap-2 items-center justify-center">
+                    <a th:href="@{/home}" class="hover:text-gray-800"><i class="fa fa-home"></i></a>
+                    <span class="text-gray-300">/</span>
+                    <a th:href="@{/grammar}" class="hover:text-gray-800">Grammar</a>
+                    <span class="text-gray-300">/</span>
+                    <span class="text-gray-800 font-bold" th:text="${category != null ? category.name : ''}">Tense</span>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
+                    <!-- Search -->
+                    <form method="get" class="w-full max-w-lg relative">
+                        <input type="text" name="search" th:value="${search}" placeholder="Search for grammar rules..." class="w-full pl-4 pr-12 py-2 rounded-lg border border-gray-200 outline-none focus:border-blue-500 text-sm shadow-sm transition">
+                        <button type="submit" class="absolute right-2 top-1.5 text-gray-400 hover:text-blue-500">
+                            <i class="fa fa-search text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Grammar Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    
+                    <!-- Card -->
+                    <a th:each="grammar : ${grammars}" th:href="@{/grammar/{id}(id=${grammar.id})}" 
+                       class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer flex flex-col gap-4 relative overflow-hidden group">
+                        
+                        <div class="w-full h-1 bg-gray-100 absolute top-0 left-0">
+                            <div class="h-full bg-blue-500 w-0 group-hover:w-full transition-all duration-300"></div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 flex flex-shrink-0 items-center justify-center text-blue-500 border border-blue-100">
+                                <i class="fa fa-book-open text-sm"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-900 text-lg leading-tight" th:text="${grammar.name}">Present Simple</h3>
+                        </div>
+
+                        <!-- We just show a snippet of content if we want, but since content is rich HTML it might look weird. We just show a dummy excerpt or strip tags. We can just show "Read lesson ->" -->
+                        <div class="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between text-gray-400 text-sm font-bold group-hover:text-blue-500 transition">
+                            <span>Read Lesson</span>
+                            <i class="fa fa-arrow-right"></i>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div>
+        </div>

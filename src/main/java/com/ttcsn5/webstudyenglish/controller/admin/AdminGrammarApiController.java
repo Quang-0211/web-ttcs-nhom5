@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ttcsn5.webstudyenglish.entity.Category;
 import com.ttcsn5.webstudyenglish.entity.Grammar;
+import com.ttcsn5.webstudyenglish.entity.User;
+import com.ttcsn5.webstudyenglish.repository.AccountRepo;
 import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
 import com.ttcsn5.webstudyenglish.repository.GrammarRepo;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/admin/api/grammar")
@@ -26,23 +29,35 @@ public class AdminGrammarApiController {
     @Autowired
     private CategoryRepo categoryRepo;
 
+    @Autowired
+    private AccountRepo accountRepo;
+
     @PostMapping
     public ResponseEntity<Grammar> createOrUpdate(
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam("name") String name,
             @RequestParam("content") String content,
-            @RequestParam("categoryId") Integer categoryId) {
+            @RequestParam("categoryId") Integer categoryId,
+            HttpSession session) {
 
         Category category = categoryRepo.findById(categoryId).orElseThrow();
+        
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return ResponseEntity.status(401).build();
+        User currentUser = accountRepo.findById(userId).orElse(null);
+        if (currentUser == null) return ResponseEntity.status(401).build();
 
         Grammar grammar;
         if (id != null) {
             grammar = grammarRepo.findById(id).orElseThrow();
             grammar.setUpdated_at(LocalDateTime.now());
+            grammar.setUpdatedBy(currentUser);
         } else {
             grammar = new Grammar();
             grammar.setCreated_at(LocalDateTime.now());
             grammar.setUpdated_at(LocalDateTime.now());
+            grammar.setCreatedBy(currentUser);
+            grammar.setUpdatedBy(currentUser);
         }
 
         grammar.setName(name);

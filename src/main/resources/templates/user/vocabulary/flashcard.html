@@ -1,0 +1,171 @@
+        <div th:fragment="content" class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
+            <style>
+                .flip-card { perspective: 1000px; }
+                .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+                .flipped .flip-card-inner { transform: rotateX(180deg); }
+                .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+                .flip-card-front { background-color: white; z-index: 2; }
+                .flip-card-back { transform: rotateX(180deg); }
+            </style>
+            
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col items-center">
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    const rawCards = /*[[${flashcards}]]*/ [];
+                    /*]]>*/
+                </script>
+
+                <div x-data="flashcardApp()" class="w-full h-full flex flex-col items-center max-w-3xl pt-4">
+                    
+                    <!-- Top Bar -->
+                    <div class="w-full flex justify-between items-center mb-8">
+                        <a href="javascript:history.back()" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition">
+                            <i class="fa fa-arrow-left"></i> Back
+                        </a>
+                        <h2 class="text-xl font-extrabold text-gray-700 tracking-wide uppercase">Flashcards</h2>
+                        <button @click="shuffleCards()" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition">
+                            <i class="fa fa-random"></i> Shuffle
+                        </button>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full max-w-[600px] bg-gray-100 h-2.5 rounded-full mb-4 relative overflow-hidden shadow-inner">
+                        <div class="bg-blue-500 h-full transition-all duration-300" :style="`width: ${progressPercentage}%`"></div>
+                    </div>
+                    <div class="text-sm font-extrabold text-gray-400 mb-10 tracking-widest" x-text="`${currentIndex + 1}/${cards.length}`"></div>
+
+                    <!-- Card Area -->
+                    <template x-if="cards.length > 0">
+                        <div class="w-full max-w-[600px] aspect-[4/3] relative">
+                            
+                            <div class="flip-card w-full h-full cursor-pointer" :class="isFlipped ? 'flipped' : ''" @click="isFlipped = !isFlipped">
+                                <div class="flip-card-inner rounded-3xl bg-white shadow-lg border border-gray-100 transition hover:shadow-xl">
+                                    
+                                    <!-- FRONT (Word) -->
+                                    <div class="flip-card-front p-8">
+                                        <h3 class="text-[44px] font-extrabold text-gray-800 mb-2" x-text="currentCard.word">Word</h3>
+                                        <p class="text-gray-400 font-bold tracking-wide text-lg mb-8" x-text="currentCard.pronunciation">/pron/</p>
+                                        
+                                        <button @click.stop="playAudio()" class="w-14 h-14 rounded-full border-2 border-blue-100 text-blue-500 flex items-center justify-center hover:bg-blue-50 shadow-sm mb-8 transition">
+                                            <i class="fa fa-volume-up text-xl"></i>
+                                        </button>
+                                        
+                                        <p class="text-gray-500 font-bold text-center px-4" x-text="currentCard.exampleEn">Example sentence</p>
+                                    </div>
+                                    
+                                    <!-- BACK (Meaning) -->
+                                    <div class="flip-card-back p-8 text-center bg-gray-50 rounded-3xl border border-gray-200 shadow-inner">
+                                        <h3 class="text-3xl font-extrabold text-blue-600 mb-6" x-text="currentCard.meaningVi">Nghĩa tiếng Việt</h3>
+                                        <p class="text-gray-700 font-bold text-lg mb-8" x-text="currentCard.definitionEn">English Definition</p>
+                                        
+                                        <div class="absolute bottom-6 left-0 w-full flex justify-center">
+                                            <span class="text-xs font-bold text-gray-400 tracking-widest uppercase"><i class="fa fa-undo"></i> Click to flip back</span>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            
+                            <!-- Next/Prev Buttons Absolute positioned -->
+                            <div class="absolute -bottom-24 left-0 w-full flex justify-center gap-6 px-4">
+                                <button @click="prevCard()" class="px-8 py-3 bg-white border border-gray-200 hover:border-gray-300 text-gray-600 font-bold rounded-xl transition shadow-sm flex items-center gap-2" :class="currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''" :disabled="currentIndex === 0">
+                                    <i class="fa fa-arrow-left text-xs"></i> Prev
+                                </button>
+                                <button @click="nextCard()" class="px-8 py-3 bg-blue-500 border border-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition shadow-sm flex items-center gap-2" :class="currentIndex === cards.length - 1 ? 'opacity-50 cursor-not-allowed' : ''" :disabled="currentIndex === cards.length - 1">
+                                    Next <i class="fa fa-arrow-right text-xs"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </template>
+                    
+                    <template x-if="cards.length === 0">
+                        <div class="flex flex-col items-center justify-center h-64">
+                            <i class="fa fa-folder-open text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-[15px] font-bold text-gray-400 uppercase tracking-wide">No flashcards available</p>
+                        </div>
+                    </template>
+
+                </div>
+
+                <script>
+                    function flashcardApp() {
+                        return {
+                            cards: [...rawCards],
+                            currentIndex: 0,
+                            isFlipped: false,
+                            audio: null,
+                            
+                            init() {
+                                if (this.cards.length === 0) return;
+                            },
+                            
+                            get currentCard() {
+                                return this.cards.length > 0 ? this.cards[this.currentIndex] : null;
+                            },
+                            
+                            get progressPercentage() {
+                                if (this.cards.length === 0) return 0;
+                                return ((this.currentIndex + 1) / this.cards.length) * 100;
+                            },
+                            
+                            nextCard() {
+                                if (this.currentIndex < this.cards.length - 1) {
+                                    this.isFlipped = false;
+                                    setTimeout(() => {
+                                        this.currentIndex++;
+                                    }, 150); // wait for flip animation a bit if it was flipped
+                                }
+                            },
+                            
+                            prevCard() {
+                                if (this.currentIndex > 0) {
+                                    this.isFlipped = false;
+                                    setTimeout(() => {
+                                        this.currentIndex--;
+                                    }, 150);
+                                }
+                            },
+                            
+                            shuffleCards() {
+                                this.isFlipped = false;
+                                setTimeout(() => {
+                                    let shuffled = [...this.cards];
+                                    for (let i = shuffled.length - 1; i > 0; i--) {
+                                        const j = Math.floor(Math.random() * (i + 1));
+                                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                                    }
+                                    this.cards = shuffled;
+                                    this.currentIndex = 0;
+                                }, 200);
+                            },
+                            
+                            playAudio() {
+                                const card = this.currentCard;
+                                const url = card.audio;
+                                const wordText = card.word;
+                                if (this.audio) {
+                                    this.audio.pause();
+                                    this.audio.currentTime = 0;
+                                }
+                                if (window.speechSynthesis) {
+                                    window.speechSynthesis.cancel();
+                                }
+                                if (url && url !== 'null' && url.trim() !== '') {
+                                    this.audio = new window.Audio(url);
+                                    this.audio.play().catch(e => console.error(e));
+                                } else if (wordText && window.speechSynthesis) {
+                                    const utterance = new SpeechSynthesisUtterance(wordText);
+                                    utterance.lang = 'en-US';
+                                    utterance.rate = 0.9;
+                                    window.speechSynthesis.speak(utterance);
+                                } else {
+                                    alert('No audio available');
+                                }
+                            }
+                        }
+                    }
+                </script>
+
+            </div>
+        </div>

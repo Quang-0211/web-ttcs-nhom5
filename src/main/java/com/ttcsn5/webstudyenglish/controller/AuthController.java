@@ -111,7 +111,10 @@ public class AuthController {
         if (roleIdObj != null) {
             model.addAttribute("roleId", (int) roleIdObj);
         }
-        return "user/home";
+        
+        model.addAttribute("activeMenu", "home");
+        model.addAttribute("userPath", "user/home");
+        return "user/index";
     }
 
     @GetMapping("/logout")
