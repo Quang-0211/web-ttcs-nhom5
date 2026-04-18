@@ -1,0 +1,217 @@
+        <div th:fragment="content" class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6" x-data="dictationApp()">
+
+            <!-- Bounding Box -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
+
+                <!-- Top Nav -->
+                <div class="flex items-center mb-2">
+                    <a th:href="@{/dictation/category/{id}(id=${topic.category.id})}" class="text-sm font-medium text-gray-500 hover:text-blue-500 transition flex items-center gap-2">
+                        <i class="fa fa-arrow-left"></i> Back
+                    </a>
+                </div>
+
+                <!-- Header -->
+                <div class="text-center mb-2">
+                    <h2 class="text-2xl font-extrabold text-gray-800 tracking-tight" th:text="${topic.title}">Topic Title</h2>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex justify-center border-b border-gray-200 mt-4 mb-8">
+                    <button type="button"
+                            @click="activeTab = 'practice'"
+                            :class="activeTab === 'practice' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                            class="px-6 py-3 border-b-2 font-medium text-sm transition-colors">
+                        Practice
+                    </button>
+                    <button type="button"
+                            @click="activeTab = 'transcript'"
+                            :class="activeTab === 'transcript' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                            class="px-6 py-3 border-b-2 font-medium text-sm transition-colors">
+                        Full Transcript
+                    </button>
+                </div>
+
+                <!-- Tab Content: Practice -->
+                <div x-show="activeTab === 'practice'" class="flex flex-col items-center max-w-3xl w-full mx-auto" x-cloak>
+
+                    <!-- Progress Circle -->
+                    <div class="mb-8 relative flex items-center justify-center w-24 h-24">
+                        <svg class="absolute top-0 left-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="#e5e7eb" stroke-width="8"></circle>
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"
+                                    :stroke-dasharray="2 * Math.PI * 42"
+                                    :stroke-dashoffset="2 * Math.PI * 42 * (1 - (currentIndex + 1) / total)"></circle>
+                        </svg>
+                        <div class="text-lg font-bold text-gray-700 z-10" x-text="`${currentIndex + 1}/${total}`">1/1</div>
+                    </div>
+
+                    <!-- Audio Controls -->
+                    <div class="flex items-center gap-4 mb-8">
+                        <button @click="playAudio(false)" class="w-14 h-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm text-xl">
+                            <i class="fa fa-volume-up"></i>
+                        </button>
+                        <button @click="isSlow = !isSlow; if(isSlow) playAudio(true)"
+                                :class="isSlow ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-500 border-gray-200'"
+                                class="px-4 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider hover:shadow-sm transition">
+                            Slow
+                        </button>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="w-full relative rounded-2xl overflow-hidden border-2 transition-colors"
+                         :class="{'border-gray-200': isCorrect === null, 'border-green-400': isCorrect === true, 'border-red-400': isCorrect === false}">
+                        <textarea x-model="inputText"
+                                  @keydown.enter.prevent="isCorrect ? nextSentence() : checkAnswer()"
+                                  class="w-full p-5 min-h-[130px] outline-none resize-none font-medium text-gray-700 text-base bg-gray-50"
+                                  :class="{'bg-green-50': isCorrect === true}"
+                                  placeholder="Type what you hear..."></textarea>
+
+                        <!-- Result indicators -->
+                        <div x-show="isCorrect === true" class="px-5 pb-4 text-green-600 font-bold flex items-center gap-2">
+                            <i class="fa fa-check-circle"></i> Correct!
+                        </div>
+                        <div x-show="isCorrect === false" class="px-5 pb-4 text-red-500 font-bold flex items-center gap-2">
+                            <i class="fa fa-times-circle"></i> Try again.
+                            <button @click="showAnswer = true" class="ml-2 text-xs text-blue-500 underline font-medium">Show answer</button>
+                        </div>
+
+                        <!-- Revealed Answer overlay -->
+                        <div x-show="showAnswer && isCorrect === false"
+                             class="absolute top-0 left-0 w-full h-full bg-white/95 backdrop-blur p-6 z-10 flex flex-col justify-center items-center">
+                            <p class="text-sm text-gray-400 mb-2">Correct Answer:</p>
+                            <p class="text-xl font-bold text-gray-800 text-center" x-text="currentSentence.title"></p>
+                            <button @click="showAnswer = false; inputText = currentSentence.title; checkAnswer()"
+                                    class="mt-5 px-6 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded-lg text-sm font-bold transition">Got it</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="w-full mt-6 flex flex-col gap-3">
+                        <button x-show="isCorrect !== true" @click="checkAnswer()"
+                                class="w-full bg-blue-500 text-white font-bold py-4 rounded-2xl hover:bg-blue-600 transition shadow-md flex items-center justify-center gap-2">
+                            <i class="fa fa-check"></i> Check
+                        </button>
+                        <button x-show="isCorrect === true" @click="nextSentence()"
+                                class="w-full bg-green-500 text-white font-bold py-4 rounded-2xl hover:bg-green-600 transition shadow-md flex items-center justify-center gap-2">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </button>
+                        <button x-show="isCorrect !== true" @click="nextSentence()"
+                                class="w-full bg-gray-100 text-gray-500 font-bold py-4 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center gap-2">
+                            Skip <i class="fa fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Full Transcript -->
+                <div x-show="activeTab === 'transcript'" class="max-w-4xl w-full mx-auto" x-cloak>
+                    <div class="divide-y divide-gray-100">
+                        <div class="py-8 text-center text-gray-400" x-show="total === 0">No sentences found.</div>
+                        <template x-for="(s, index) in sentences" :key="index">
+                            <div class="py-4 flex items-center gap-5 hover:bg-gray-50 rounded-xl px-3 transition">
+                                <span class="font-black text-blue-200 text-lg w-8 text-right shrink-0" x-text="index + 1"></span>
+                                <p class="flex-1 text-gray-800 font-medium text-base leading-relaxed" x-text="s.title"></p>
+                                <button @click="playSpecificAudio(s, false)"
+                                        class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-500 hover:text-white transition flex items-center justify-center shrink-0">
+                                    <i class="fa fa-volume-up"></i>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Finish Overlay -->
+            <div x-show="isFinished" class="fixed inset-0 z-50 bg-white/90 backdrop-blur flex flex-col items-center justify-center" x-cloak>
+                <div class="w-28 h-28 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-5xl mb-6 shadow-sm">
+                    <i class="fa fa-trophy"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-gray-800 mb-2">Excellent!</h2>
+                <p class="text-gray-500 mb-8 max-w-xs text-center">You have completed all dictation sentences in this topic.</p>
+                <a th:href="@{/dictation/category/{id}(id=${topic.category.id})}"
+                   class="bg-blue-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-600 transition shadow-md">
+                    Back to Topics
+                </a>
+            </div>
+
+            <style>[x-cloak] { display: none !important; }</style>
+
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                const rawSentences = /*[[${sentences}]]*/ [];
+                /*]]>*/
+            </script>
+
+            <script>
+                function dictationApp() {
+                    return {
+                        sentences: rawSentences,
+                        total: rawSentences.length,
+                        activeTab: 'practice',
+                        currentIndex: 0,
+                        inputText: '',
+                        isCorrect: null,
+                        isSlow: false,
+                        showAnswer: false,
+                        isFinished: false,
+                        currentAudio: null,
+
+                        get currentSentence() {
+                            return this.sentences[this.currentIndex] || { title: '', audioUrl: '' };
+                        },
+
+                        init() {
+                            if (this.total > 0) {
+                                setTimeout(() => this.playAudio(false), 800);
+                            }
+                        },
+
+                        playSpecificAudio(sentenceObj, slow) {
+                            if (this.currentAudio) {
+                                this.currentAudio.pause();
+                                this.currentAudio = null;
+                            }
+                            window.speechSynthesis.cancel();
+                            if (sentenceObj.audioUrl && sentenceObj.audioUrl.length > 5) {
+                                this.currentAudio = new Audio(sentenceObj.audioUrl);
+                                if (slow) this.currentAudio.playbackRate = 0.6;
+                                this.currentAudio.play();
+                            } else if (sentenceObj.title) {
+                                const u = new SpeechSynthesisUtterance(sentenceObj.title);
+                                u.lang = 'en-US';
+                                if (slow) u.rate = 0.6;
+                                window.speechSynthesis.speak(u);
+                            }
+                        },
+
+                        playAudio(forceSlow) {
+                            if (this.isFinished || this.total === 0) return;
+                            this.playSpecificAudio(this.currentSentence, forceSlow || this.isSlow);
+                        },
+
+                        cleanText(str) {
+                            if (!str) return '';
+                            return str.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()?'"]/g, '').replace(/\s{2,}/g, ' ').trim();
+                        },
+
+                        checkAnswer() {
+                            if (this.inputText.trim() === '') return;
+                            this.isCorrect = (this.cleanText(this.currentSentence.title) === this.cleanText(this.inputText));
+                            if (this.isCorrect) this.showAnswer = false;
+                        },
+
+                        nextSentence() {
+                            if (this.currentIndex < this.total - 1) {
+                                this.currentIndex++;
+                                this.inputText = '';
+                                this.isCorrect = null;
+                                this.showAnswer = false;
+                                setTimeout(() => this.playAudio(false), 500);
+                            } else {
+                                this.isFinished = true;
+                            }
+                        }
+                    }
+                }
+            </script>
+        </div>

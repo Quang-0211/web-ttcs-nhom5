@@ -1,11 +1,11 @@
         <div th:fragment="content" class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6 items-center">
             
             <div class="w-full max-w-4xl" th:if="${grammar != null}">
-                <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-400 hover:text-blue-500 font-bold text-sm mb-6 transition">
-                    <i class="fa fa-arrow-left"></i> Back
-                </a>
-
                 <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-12">
+
+                    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-400 hover:text-blue-500 font-bold text-sm mb-6 transition">
+                        <i class="fa fa-arrow-left"></i> Back
+                    </a>
                     
                     <!-- Header -->
                     <div class="mb-10 text-center">
