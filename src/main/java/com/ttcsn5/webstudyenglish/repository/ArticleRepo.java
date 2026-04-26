@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ttcsn5.webstudyenglish.dto.ArticleDetailResponseDto;
-import com.ttcsn5.webstudyenglish.dto.ArticlesUserHomeDto;
+import com.ttcsn5.webstudyenglish.dto.response.ArticleDetailResponse;
+import com.ttcsn5.webstudyenglish.dto.response.ArticlesUserHomeResponse;
 import com.ttcsn5.webstudyenglish.entity.Article;
 
 @Repository
@@ -22,22 +22,25 @@ public interface ArticleRepo extends JpaRepository<Article, Integer> {
                         Pageable pageable);
 
         @Query("""
-                                select new com.ttcsn5.webstudyenglish.dto.ArticlesUserHomeDto(a.id, a.title, a.image, c.name, a.createdAt)
+                                select new com.ttcsn5.webstudyenglish.dto.response.ArticlesUserHomeResponse(a.id, a.title, a.image, c.name, a.createdAt)
                                 from Article a
                                 join a.category c
                                 where (:title = '' or lower(a.title) like lower(concat('%', :title, '%')))
                                 and (:categorySearch=0 or c.id = :categorySearch)
 
                         """)
-        Page<ArticlesUserHomeDto> findArticleUserHome(Pageable pageable,
+        Page<ArticlesUserHomeResponse> findArticleUserHome(Pageable pageable,
                         @Param("title") String title,
                         @Param("categorySearch") Integer categorySearch);
 
         @Query("""
-                                select new com.ttcsn5.webstudyenglish.dto.ArticleDetailResponseDto(a.id, a.title, a.content, a.image, c.name, a.createdAt)
+                                select new com.ttcsn5.webstudyenglish.dto.response.ArticleDetailResponse(a.id, a.title, a.content, a.image, c.name, a.createdAt)
                                 from Article a
                                 join a.category c
                                 where a.id=:id
                         """)
-        ArticleDetailResponseDto findArticleDetail(Integer id);
+        ArticleDetailResponse findArticleDetail(Integer id);
+
+        @Query("select count(a.id) from Article a")
+        int countArticle();
 }

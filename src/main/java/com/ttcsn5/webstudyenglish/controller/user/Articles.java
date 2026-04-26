@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.ttcsn5.webstudyenglish.dto.ArticleDetailResponseDto;
-import com.ttcsn5.webstudyenglish.dto.ArticlesUserHomeDto;
+import com.ttcsn5.webstudyenglish.dto.response.ArticleDetailResponse;
+import com.ttcsn5.webstudyenglish.dto.response.ArticlesUserHomeResponse;
 import com.ttcsn5.webstudyenglish.entity.Category;
 import com.ttcsn5.webstudyenglish.repository.ArticleRepo;
 import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
@@ -44,15 +44,18 @@ public class Articles {
         model.addAttribute("keyword", keyword);
         model.addAttribute("categorySearch", categorySearch);
         model.addAttribute("cnt", cnt);
-        return "user/articles";
+        model.addAttribute("activeMenu", "articles");
+        model.addAttribute("userPath", "user/articles");
+
+        return "user/index";
     }
 
     @GetMapping("/user/article/{id}")
     public String articleDetail(@PathVariable("id") Integer id,
             Model model) {
-        ArticleDetailResponseDto article = articleRepo.findArticleDetail(id);
+        ArticleDetailResponse article = articleRepo.findArticleDetail(id);
         Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
-        Page<ArticlesUserHomeDto> page = articleRepo.findArticleUserHome(pageable, "",
+        Page<ArticlesUserHomeResponse> page = articleRepo.findArticleUserHome(pageable, "",
                 cateRepo.findByName(article.getCateName()).getId());
         model.addAttribute("article", article);
         model.addAttribute("articlesRelated", page);

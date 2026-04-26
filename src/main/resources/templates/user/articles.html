@@ -34,9 +34,9 @@
 
 <body class="text-[#1e293b] flex h-screen overflow-hidden">
 
-    <aside th:replace="~{user/menuUser :: menu}" class="h-full border-r border-slate-100"></aside>
+    <!-- <aside th:replace="~{user/fragments/sidebar :: sidebar(${activeMenu != null ? activeMenu : 'home'})}" class="h-full border-r border-slate-100"></aside> -->
 
-    <main class="flex-1 overflow-y-auto custom-scrollbar relative px-6 lg:px-10">
+    <main th:fragment="content" class="flex-1 overflow-y-auto custom-scrollbar relative px-6 lg:px-10">
 
         <form method="get" th:action="@{/user/articles}" class="max-w-7xl mx-auto py-8">
 

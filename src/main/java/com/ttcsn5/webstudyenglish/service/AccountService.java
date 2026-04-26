@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.ttcsn5.webstudyenglish.dto.request.UserRequest;
 import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.repository.AccountRepo;
 import com.ttcsn5.webstudyenglish.totalenum.LoginResponse;
@@ -28,11 +29,11 @@ public class AccountService {
         return are.findAll(PageRequest.of(cnt, 10, Sort.by("id").ascending())).getContent();
     }
 
-    public LoginResponse checkLogin(String email, String password) {
-        User user = this.findByEmail(email);
+    public LoginResponse checkLogin(UserRequest userRequest) {
+        User user = this.findByEmail(userRequest.getEmail());
         if (user == null) {
             return new LoginResponse(LoginStatus.INVALID_EMAIL, null);
-        } else if (hashPassword.checkPassword(password, user.getPassword()) == false) {
+        } else if (hashPassword.checkPassword(userRequest.getPassword(), user.getPassword()) == false) {
             return new LoginResponse(LoginStatus.INVALID_PASSWORD, null);
         }
         return new LoginResponse(LoginStatus.SUCCESS, user);

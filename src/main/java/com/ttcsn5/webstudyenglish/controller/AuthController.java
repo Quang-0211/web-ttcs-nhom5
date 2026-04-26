@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.ttcsn5.webstudyenglish.dto.request.UserRequest;
 import com.ttcsn5.webstudyenglish.entity.Role;
 import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.service.AccountService;
@@ -73,7 +74,8 @@ public class AuthController {
             @RequestParam("password") String password,
             Model model,
             HttpSession session) {
-        LoginResponse loginStatus = ase.checkLogin(email, password);
+        UserRequest userRequest = new UserRequest(email, password);
+        LoginResponse loginStatus = ase.checkLogin(userRequest);
         switch (loginStatus.getStatus()) {
             case INVALID_EMAIL:
                 model.addAttribute("errorLogin", "1");
@@ -89,11 +91,12 @@ public class AuthController {
                 break;
         }
         User user = loginStatus.getUser();
+        session.setAttribute("userId", user.getId());
+        session.setAttribute("roleId", user.getRoleId().getId());
+        session.setAttribute("username", user.getUsername());
+        session.setAttribute("email", user.getEmail());
         if (user.getRoleId().getCode().equals("ADMIN")) {
-            session.setAttribute("userId", user.getId());
-            session.setAttribute("roleId", user.getRoleId().getId());
-            session.setAttribute("username", user.getUsername());
-            session.setAttribute("email", user.getEmail());
+
             return "redirect:/admin/dashboard";
         }
         return "redirect:/home";
@@ -111,7 +114,7 @@ public class AuthController {
         if (roleIdObj != null) {
             model.addAttribute("roleId", (int) roleIdObj);
         }
-        
+
         model.addAttribute("activeMenu", "home");
         model.addAttribute("userPath", "user/home");
         return "user/index";

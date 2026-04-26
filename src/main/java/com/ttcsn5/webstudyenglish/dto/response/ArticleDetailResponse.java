@@ -1,8 +1,8 @@
-package com.ttcsn5.webstudyenglish.dto;
+package com.ttcsn5.webstudyenglish.dto.response;
 
 import java.time.LocalDateTime;
 
-public class ArticleDetailResponseDto {
+public class ArticleDetailResponse {
     private Integer id;
     private String title;
     private String content;
@@ -10,7 +10,7 @@ public class ArticleDetailResponseDto {
     private String cateName;
     private LocalDateTime createdAt;
 
-    public ArticleDetailResponseDto(Integer id, String title, String content, String image, String cateName,
+    public ArticleDetailResponse(Integer id, String title, String content, String image, String cateName,
             LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
