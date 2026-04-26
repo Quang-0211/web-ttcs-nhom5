@@ -7,8 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -17,35 +15,32 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "video")
+@Table(name = "course")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Video {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String title;
-    private String url;
-    private String thumbnail;
-    private Integer duration;
-
-    @Column(columnDefinition = "TEXT")
-    private String subtitle;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private Boolean status;
+    private String thumbnail;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
+    private String level;
+
+    private Integer durationHours;
+
+    private Boolean status;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
     @PrePersist

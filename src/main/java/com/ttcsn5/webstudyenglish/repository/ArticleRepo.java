@@ -1,5 +1,7 @@
 package com.ttcsn5.webstudyenglish.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -20,6 +22,10 @@ public interface ArticleRepo extends JpaRepository<Article, Integer> {
 
         Slice<Article> findByTitleContainingAndStatus(String title, boolean status,
                         Pageable pageable);
+
+        List<Article> findByCourse_IdAndStatusTrueOrderByCreatedAtDesc(Integer courseId);
+
+        List<Article> findByCourse_IdOrderByCreatedAtDesc(Integer courseId);
 
         @Query("""
                                 select new com.ttcsn5.webstudyenglish.dto.ArticlesUserHomeDto(a.id, a.title, a.image, c.name, a.createdAt)

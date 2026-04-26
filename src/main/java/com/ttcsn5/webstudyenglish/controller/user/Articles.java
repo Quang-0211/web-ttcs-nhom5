@@ -44,6 +44,7 @@ public class Articles {
         model.addAttribute("keyword", keyword);
         model.addAttribute("categorySearch", categorySearch);
         model.addAttribute("cnt", cnt);
+        model.addAttribute("activeMenu", "article");
         return "user/articles";
     }
 
@@ -56,6 +57,7 @@ public class Articles {
                 cateRepo.findByName(article.getCateName()).getId());
         model.addAttribute("article", article);
         model.addAttribute("articlesRelated", page);
+        model.addAttribute("activeMenu", "article");
         return "user/article-detail";
     }
 }
