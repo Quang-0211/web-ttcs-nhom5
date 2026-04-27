@@ -13,8 +13,18 @@ public class CategoryService {
     @Autowired
     private CategoryRepo cateRepo;
 
-    public List<Category> findAll() {
+    public List<Category> findAllArticle() {
         Category cate = cateRepo.findAllById(1);
+        return cateRepo.findByParent(cate);
+    }
+
+    public List<Category> findAllVideo() {
+        Category cate = cateRepo.findAllById(2);
+        return cateRepo.findByParent(cate);
+    }
+
+    public List<Category> findAllQuiz() {
+        Category cate = cateRepo.findAllById(3);
         return cateRepo.findByParent(cate);
     }
 

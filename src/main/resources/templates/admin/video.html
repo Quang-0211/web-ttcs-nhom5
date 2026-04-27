@@ -35,7 +35,7 @@
                                 <th class="p-4 font-semibold border-b">ID</th>
                                 <th class="p-4 font-semibold border-b">Thumbnail</th>
                                 <th class="p-4 font-semibold border-b">Title</th>
-                                <th class="p-4 font-semibold border-b">Course</th>
+                                <th class="p-4 font-semibold border-b">Category</th>
                                 <th class="p-4 font-semibold border-b">Duration</th>
                                 <th class="p-4 font-semibold border-b text-center">Status</th>
                                 <th class="p-4 font-semibold border-b text-center">Action</th>
@@ -111,7 +111,7 @@
                             <select id="videoCourseId" name="courseId"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none bg-white focus:ring-blue-500 focus:border-blue-500">
                                 <option value="0">No course</option>
-                                <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.title}"></option>
+                                <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.name}"></option>
                             </select>
                         </div>
                         <div>

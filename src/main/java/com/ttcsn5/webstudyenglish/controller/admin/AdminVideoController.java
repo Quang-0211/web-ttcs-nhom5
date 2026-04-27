@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ttcsn5.webstudyenglish.entity.Video;
+import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.service.CourseService;
 import com.ttcsn5.webstudyenglish.service.UploadImageAudio;
 import com.ttcsn5.webstudyenglish.service.VideoService;
@@ -28,6 +29,8 @@ public class AdminVideoController {
 
     @Autowired
     private UploadImageAudio uploadService;
+    @Autowired
+    private CategoryService cateService;
 
     @GetMapping("/admin/videos")
     public String videos(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
@@ -37,9 +40,10 @@ public class AdminVideoController {
             return "redirect:/login";
         }
         List<Video> videos = videoService.search(keyword);
+        model.addAttribute("categories", cateService.findAllVideo());
         model.addAttribute("keyword", keyword);
         model.addAttribute("videos", videos);
-        model.addAttribute("courses", courseService.findPublished());
+        //model.addAttribute("courses", courseService.findPublished());
         model.addAttribute("path", "admin/video");
         return "admin/adminhome";
     }
