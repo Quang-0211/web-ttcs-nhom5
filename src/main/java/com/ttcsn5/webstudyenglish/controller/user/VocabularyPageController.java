@@ -82,18 +82,18 @@ public class VocabularyPageController {
             @RequestParam(value = "categoryId", required = false) Integer categoryId,
             Model model,
             HttpSession session) {
-        
-        List<Vocabulary> flashcards;
+        Category category = null;
         if (categoryId != null) {
-            flashcards = vocabularyService.getFlashcards(categoryId);
-            Category category = categoryService.findById(categoryId);
+            category = categoryService.findById(categoryId);
             model.addAttribute("category", category);
-        } else {
-            // Default empty or handle appropriately if no category is given
-            flashcards = java.util.Collections.emptyList();
         }
-        
+
+        List<Vocabulary> flashcards = categoryId != null
+                ? vocabularyService.getFlashcards(categoryId)
+                : java.util.Collections.emptyList();
+
         model.addAttribute("flashcards", flashcards);
+        model.addAttribute("pageTitle", category != null ? category.getName() + " Flashcards" : "Vocabulary Flashcards");
         
         Object roleIdObj = session.getAttribute("roleId");
         if (roleIdObj != null) {
@@ -102,6 +102,35 @@ public class VocabularyPageController {
         
         model.addAttribute("activeMenu", "vocabulary");
         model.addAttribute("userPath", "user/vocabulary/flashcard");
+        return "user/index";
+    }
+
+    @GetMapping("/review/quiz")
+    public String getVocabularyQuiz(
+            @RequestParam(value = "categoryId", required = false) Integer categoryId,
+            Model model,
+            HttpSession session) {
+
+        Category category = null;
+        if (categoryId != null) {
+            category = categoryService.findById(categoryId);
+            model.addAttribute("category", category);
+        }
+
+        List<Vocabulary> quizCards = categoryId != null
+                ? vocabularyService.getFlashcards(categoryId)
+                : java.util.Collections.emptyList();
+
+        model.addAttribute("flashcards", quizCards);
+        model.addAttribute("pageTitle", category != null ? category.getName() + " Quiz" : "Vocabulary Quiz");
+
+        Object roleIdObj = session.getAttribute("roleId");
+        if (roleIdObj != null) {
+            model.addAttribute("roleId", (int) roleIdObj);
+        }
+
+        model.addAttribute("activeMenu", "vocabulary");
+        model.addAttribute("userPath", "user/vocabulary/quiz");
         return "user/index";
     }
 }
