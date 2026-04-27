@@ -1,0 +1,317 @@
+        <div th:fragment="content" class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
+            <style>
+                .quiz-option { transform: translateY(0); }
+                .quiz-option:hover:not(:disabled) { transform: translateY(-1px); }
+                .quiz-option:disabled { cursor: default; }
+            </style>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col items-center">
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    const rawCards = /*[[${flashcards}]]*/ [];
+                    /*]]>*/
+                </script>
+
+                <div x-data="vocabQuizApp()" class="w-full h-full flex flex-col items-center max-w-4xl pt-4">
+
+                    <!-- Top Bar -->
+                    <div class="w-full flex justify-between items-center mb-8 gap-4">
+                        <a href="javascript:history.back()" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition shrink-0">
+                            <i class="fa fa-arrow-left"></i> Back
+                        </a>
+
+                        <div class="flex flex-col items-center text-center min-w-0">
+                            <h2 class="text-xl font-extrabold text-gray-700 tracking-wide uppercase">Vocabulary Quiz</h2>
+                            <p class="text-xs font-bold text-gray-400 tracking-widest uppercase truncate" th:text="${category != null ? category.name : 'All vocabulary'}">Animals</p>
+                        </div>
+
+                        <div class="flex items-center gap-3 shrink-0">
+                            <a th:if="${category != null}" th:href="@{/review/flashcards(categoryId=${category.id})}" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition">
+                                <i class="fa fa-window-restore"></i> Flashcards
+                            </a>
+                            <button @click="restartQuiz(true)" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition">
+                                <i class="fa fa-random"></i> Shuffle
+                            </button>
+                        </div>
+                    </div>
+
+                    <template x-if="questions.length > 0 && !finished">
+                        <div class="w-full max-w-[680px]">
+                            <div class="w-full bg-gray-100 h-2.5 rounded-full mb-4 relative overflow-hidden shadow-inner">
+                                <div class="bg-blue-500 h-full transition-all duration-300" :style="`width: ${progressPercentage}%`"></div>
+                            </div>
+                            <div class="flex justify-between items-center mb-8 text-sm font-extrabold text-gray-400 tracking-widest uppercase">
+                                <span x-text="`${currentIndex + 1}/${questions.length}`"></span>
+                                <span x-text="`${score} correct`"></span>
+                            </div>
+
+                            <div class="rounded-[2rem] border border-gray-100 bg-white shadow-lg p-8 md:p-10">
+                                <div class="flex flex-col gap-6">
+                                    <div>
+                                        <p class="text-[11px] font-extrabold text-blue-500 uppercase tracking-[0.28em] mb-3">Question</p>
+                                        <h3 class="text-3xl md:text-4xl font-extrabold text-gray-800 leading-tight">
+                                            Pick the English word for this clue
+                                        </h3>
+                                    </div>
+
+                                    <div class="rounded-3xl bg-blue-50 border border-blue-100 p-6">
+                                        <p class="text-[11px] font-extrabold text-blue-500 uppercase tracking-[0.28em] mb-2">Clue</p>
+                                        <p class="text-2xl md:text-[2rem] font-extrabold text-gray-800 leading-snug" x-text="currentQuestion.prompt"></p>
+                                    </div>
+
+                                    <div class="flex items-center gap-3 text-sm font-bold text-gray-400 uppercase tracking-widest">
+                                        <button @click="playAudio()" class="w-11 h-11 rounded-full border-2 border-blue-100 text-blue-500 flex items-center justify-center hover:bg-blue-50 shadow-sm transition">
+                                            <i class="fa fa-volume-up"></i>
+                                        </button>
+                                        <span>Listen to the word</span>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <template x-for="choice in currentQuestion.choices" :key="choice">
+                                            <button type="button"
+                                                class="quiz-option rounded-2xl border px-5 py-4 text-left font-bold transition-all duration-200 shadow-sm"
+                                                :class="choiceClasses(choice)"
+                                                :disabled="answered"
+                                                @click="selectAnswer(choice)">
+                                                <span class="block text-base md:text-lg" x-text="choice"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+
+                                    <div x-show="answered" x-transition class="rounded-3xl border p-5" :class="isCorrect ? 'border-emerald-200 bg-emerald-50' : 'border-rose-200 bg-rose-50'">
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" :class="isCorrect ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'">
+                                                <i class="fa" :class="isCorrect ? 'fa-check' : 'fa-times'"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="font-extrabold text-lg" :class="isCorrect ? 'text-emerald-700' : 'text-rose-700'" x-text="isCorrect ? 'Correct' : 'Not quite'">
+                                                </p>
+                                                <p class="text-sm font-bold text-gray-600 mt-1" x-show="!isCorrect">
+                                                    Correct answer: <span class="text-gray-800" x-text="currentQuestion.answer"></span>
+                                                </p>
+                                                <p class="text-sm font-medium text-gray-600 mt-3">
+                                                    <span class="font-extrabold text-gray-800">Meaning:</span>
+                                                    <span x-text="currentQuestion.meaningVi || 'N/A'"></span>
+                                                </p>
+                                                <p class="text-sm font-medium text-gray-600 mt-1">
+                                                    <span class="font-extrabold text-gray-800">Definition:</span>
+                                                    <span x-text="currentQuestion.definitionEn || 'N/A'"></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-end">
+                                        <button @click="nextQuestion()" :disabled="!answered" class="px-8 py-3 rounded-xl font-bold transition shadow-sm" :class="answered ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-100 text-gray-400 cursor-not-allowed'">
+                                            <span x-text="currentIndex === questions.length - 1 ? 'Finish' : 'Next question'"></span>
+                                            <i class="fa fa-arrow-right ml-2 text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template x-if="finished && questions.length > 0">
+                        <div class="w-full max-w-[680px]">
+                            <div class="rounded-[2rem] border border-gray-100 bg-white shadow-lg p-8 md:p-10 text-center">
+                                <div class="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center bg-blue-50 text-blue-500">
+                                    <i class="fa fa-clipboard-check text-3xl"></i>
+                                </div>
+                                <p class="text-[11px] font-extrabold text-blue-500 uppercase tracking-[0.28em] mb-3">Quiz completed</p>
+                                <h3 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-3">
+                                    You scored <span x-text="score"></span>/<span x-text="questions.length"></span>
+                                </h3>
+                                <p class="text-gray-500 font-medium mb-8">
+                                    Restart to try a new shuffle or practice the same set again.
+                                </p>
+                                <div class="flex flex-col sm:flex-row justify-center gap-3">
+                                    <button @click="restartQuiz(false)" class="px-6 py-3 rounded-xl border border-gray-200 bg-white text-gray-700 font-bold hover:border-gray-300 hover:bg-gray-50 transition">
+                                        Retry same set
+                                    </button>
+                                    <button @click="restartQuiz(true)" class="px-6 py-3 rounded-xl bg-blue-500 text-white font-bold hover:bg-blue-600 transition shadow-sm">
+                                        Shuffle and retry
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template x-if="questions.length === 0">
+                        <div class="flex flex-col items-center justify-center h-64 text-center">
+                            <i class="fa fa-folder-open text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-[15px] font-bold text-gray-400 uppercase tracking-wide">No quiz questions available</p>
+                        </div>
+                    </template>
+
+                </div>
+
+                <script>
+                    function vocabQuizApp() {
+                        return {
+                            cards: [...rawCards].filter((card) => card && card.word),
+                            questions: [],
+                            currentIndex: 0,
+                            selectedAnswer: null,
+                            answered: false,
+                            score: 0,
+                            finished: false,
+                            audio: null,
+
+                            init() {
+                                this.restartQuiz(true);
+                            },
+
+                            restartQuiz(reshuffle = true) {
+                                this.questions = this.buildQuestions(reshuffle);
+                                this.currentIndex = 0;
+                                this.selectedAnswer = null;
+                                this.answered = false;
+                                this.score = 0;
+                                this.finished = this.questions.length === 0;
+
+                                if (this.audio) {
+                                    this.audio.pause();
+                                    this.audio.currentTime = 0;
+                                }
+                                if (window.speechSynthesis) {
+                                    window.speechSynthesis.cancel();
+                                }
+                            },
+
+                            buildQuestions(reshuffle) {
+                                const source = [...this.cards];
+                                if (source.length === 0) {
+                                    return [];
+                                }
+
+                                const ordered = reshuffle ? this.shuffleArray(source) : source;
+                                const limit = Math.min(ordered.length, 12);
+                                return ordered.slice(0, limit).map((card, index) => this.makeQuestion(card, source, index));
+                            },
+
+                            makeQuestion(card, source, index) {
+                                const distractors = this.shuffleArray(
+                                    source
+                                        .filter((item) => item.id !== card.id && item.word)
+                                        .map((item) => item.word)
+                                        .filter((word, position, array) => array.indexOf(word) === position)
+                                ).slice(0, 3);
+
+                                const choices = this.shuffleArray([card.word, ...distractors].filter(Boolean));
+
+                                return {
+                                    id: card.id ?? index,
+                                    word: card.word,
+                                    meaningVi: card.meaningVi || '',
+                                    definitionEn: card.definitionEn || '',
+                                    prompt: card.definitionEn || card.meaningVi || card.word,
+                                    audio: card.audio || '',
+                                    answer: card.word,
+                                    choices,
+                                };
+                            },
+
+                            shuffleArray(items) {
+                                const result = [...items];
+                                for (let i = result.length - 1; i > 0; i--) {
+                                    const j = Math.floor(Math.random() * (i + 1));
+                                    [result[i], result[j]] = [result[j], result[i]];
+                                }
+                                return result;
+                            },
+
+                            get currentQuestion() {
+                                return this.questions[this.currentIndex] || null;
+                            },
+
+                            get progressPercentage() {
+                                if (this.questions.length === 0) {
+                                    return 0;
+                                }
+                                return ((this.currentIndex + 1) / this.questions.length) * 100;
+                            },
+
+                            get isCorrect() {
+                                return this.selectedAnswer === (this.currentQuestion ? this.currentQuestion.answer : null);
+                            },
+
+                            selectAnswer(choice) {
+                                if (this.answered || !this.currentQuestion) {
+                                    return;
+                                }
+
+                                this.selectedAnswer = choice;
+                                this.answered = true;
+
+                                if (choice === this.currentQuestion.answer) {
+                                    this.score++;
+                                }
+                            },
+
+                            choiceClasses(choice) {
+                                const base = 'quiz-option rounded-2xl border px-5 py-4 text-left font-bold transition-all duration-200 shadow-sm';
+
+                                if (!this.answered) {
+                                    return `${base} border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50 text-gray-700`;
+                                }
+
+                                if (choice === this.currentQuestion.answer) {
+                                    return `${base} border-emerald-300 bg-emerald-50 text-emerald-700`;
+                                }
+
+                                if (choice === this.selectedAnswer) {
+                                    return `${base} border-rose-300 bg-rose-50 text-rose-700`;
+                                }
+
+                                return `${base} border-gray-200 bg-gray-50 text-gray-400`;
+                            },
+
+                            nextQuestion() {
+                                if (!this.answered) {
+                                    return;
+                                }
+
+                                if (this.currentIndex < this.questions.length - 1) {
+                                    this.currentIndex++;
+                                    this.selectedAnswer = null;
+                                    this.answered = false;
+                                    this.finished = false;
+                                    return;
+                                }
+
+                                this.finished = true;
+                            },
+
+                            playAudio() {
+                                const card = this.currentQuestion;
+                                if (!card) {
+                                    return;
+                                }
+
+                                if (this.audio) {
+                                    this.audio.pause();
+                                    this.audio.currentTime = 0;
+                                }
+                                if (window.speechSynthesis) {
+                                    window.speechSynthesis.cancel();
+                                }
+
+                                if (card.audio && card.audio !== 'null' && card.audio.trim() !== '') {
+                                    this.audio = new window.Audio(card.audio);
+                                    this.audio.play().catch((error) => console.error(error));
+                                } else if (card.word && window.speechSynthesis) {
+                                    const utterance = new SpeechSynthesisUtterance(card.word);
+                                    utterance.lang = 'en-US';
+                                    utterance.rate = 0.9;
+                                    window.speechSynthesis.speak(utterance);
+                                } else {
+                                    alert('No audio available');
+                                }
+                            },
+                        }
+                    }
+                </script>
+
+            </div>
+        </div>
