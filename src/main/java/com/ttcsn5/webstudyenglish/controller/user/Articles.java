@@ -59,6 +59,7 @@ public class Articles {
                 cateRepo.findByName(article.getCateName()).getId());
         model.addAttribute("article", article);
         model.addAttribute("articlesRelated", page);
+        model.addAttribute("activeMenu", "article");
         return "user/article-detail";
     }
 }

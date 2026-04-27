@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="content" class="flex-1 overflow-y-auto bg-[#f8fafc]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10">
+            <div class="grid grid-cols-1 xl:grid-cols-[1.6fr_0.9fr] gap-8">
+                <section class="space-y-6">
+                    <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+                        <div class="h-72 overflow-hidden">
+                            <img th:src="${course.thumbnail != null ? course.thumbnail : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80'}"
+                                class="w-full h-full object-cover" alt="course">
+                        </div>
+                        <div class="p-8 space-y-5">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <span class="px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-[0.3em]"
+                                    th:text="${course.level}">Beginner</span>
+                                <span class="text-sm text-slate-400" th:text="${course.durationHours + ' hours'}">10 hours</span>
+                                <span class="text-sm text-slate-400" th:text="${course.status ? 'Published' : 'Disabled'}">Published</span>
+                            </div>
+                            <h1 class="text-4xl font-black text-slate-900" th:text="${course.title}">Course title</h1>
+                            <p class="text-slate-600 leading-7" th:text="${course.description}">Description</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-[1.75rem] border border-slate-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-xl font-bold text-slate-900">Video bài học</h2>
+                                <span class="text-sm font-semibold text-slate-400" th:text="${videos.size() + ' videos'}">0 videos</span>
+                            </div>
+                            <div class="space-y-3">
+                                <a th:each="video : ${videos}" th:href="@{'/videos/' + ${video.id}}"
+                                    class="block p-4 rounded-2xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all">
+                                    <div class="flex gap-4">
+                                        <img th:src="${video.thumbnail != null ? video.thumbnail : 'https://via.placeholder.com/160x90'}"
+                                            class="w-28 h-20 rounded-xl object-cover flex-shrink-0" alt="video">
+                                        <div>
+                                            <h3 class="font-bold text-slate-900 line-clamp-2" th:text="${video.title}">Video title</h3>
+                                            <p class="text-xs text-slate-400 mt-2" th:text="${video.duration + ' min'}">30 min</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-[1.75rem] border border-slate-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-xl font-bold text-slate-900">Bài viết liên quan</h2>
+                                <span class="text-sm font-semibold text-slate-400" th:text="${articles.size() + ' articles'}">0 articles</span>
+                            </div>
+                            <div class="space-y-3">
+                                <a th:each="article : ${articles}" th:href="@{'/user/article/' + ${article.id}}"
+                                    class="block p-4 rounded-2xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all">
+                                    <div class="flex gap-4">
+                                        <img th:src="${article.image}"
+                                            class="w-28 h-20 rounded-xl object-cover flex-shrink-0" alt="article">
+                                        <div>
+                                            <h3 class="font-bold text-slate-900 line-clamp-2" th:text="${article.title}">Article title</h3>
+                                            <p class="text-xs text-slate-400 mt-2" th:text="${#temporals.format(article.createdAt, 'dd/MM/yyyy')}">01/01/2026</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="space-y-6">
+                    <div class="bg-white rounded-[1.75rem] border border-slate-100 shadow-sm p-6 sticky top-6">
+                        <h2 class="text-xl font-bold text-slate-900 mb-4">Lộ trình đề xuất</h2>
+                        <div class="space-y-4">
+                            <a th:each="video : ${videos}" th:href="@{'/videos/' + ${video.id}}"
+                                class="flex gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-all">
+                                <img th:src="${video.thumbnail != null ? video.thumbnail : 'https://via.placeholder.com/100x70'}"
+                                    class="w-20 h-14 rounded-xl object-cover" alt="video">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900 line-clamp-2" th:text="${video.title}">Title</p>
+                                    <p class="text-xs text-slate-400 mt-1" th:text="${video.course != null ? video.course.title : 'General'}">General</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

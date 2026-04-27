@@ -37,4 +37,8 @@ public class ArticleService {
         art.setStatus(status);
         articleRepo.save(art);
     }
+
+    public void delete(int id) {
+        articleRepo.deleteById(id);
+    }
 }
