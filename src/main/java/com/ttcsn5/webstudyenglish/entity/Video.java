@@ -41,8 +41,8 @@ public class Video {
     private Boolean status;
 
     @ManyToOne
-    @JoinColumn(name = "cate_id")
-    private Category category;
+    @JoinColumn(name = "course_id")
+    private Course course;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
