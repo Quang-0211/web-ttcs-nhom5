@@ -34,12 +34,14 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                <a th:href="@{/videos}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
                     <i class="fa fa-video"></i> Video
                 </a>
             </li>
             <li>
-                <a th:href="@{/dictation}" th:class="${activeMenu == 'dictation'} ? 'bg-blue-100 text-blue-600 font-semibold flex items-center gap-3 px-3 py-2 rounded-lg' : 'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500'">
+                <a th:href="@{/dictation}"
+                    th:class="${activeMenu == 'dictation'} ? 'bg-blue-100 text-blue-600 font-semibold flex items-center gap-3 px-3 py-2 rounded-lg' : 'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500'">
                     <i class="fa fa-headphones"></i> Dictation
                 </a>
             </li>
