@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +44,24 @@ public class AdminQuizApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Quiz> createOrUpdateQuiz(@RequestBody Quiz quiz) {
+    public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz) {
+        if (quiz.getCategory() != null && quiz.getCategory().getId() != null) {
+            Category category = categoryService.findById(quiz.getCategory().getId());
+            if (category != null) {
+                quiz.setCategory(category);
+            }
+        }
+        Quiz savedQuiz = quizService.save(quiz);
+        return ResponseEntity.ok(savedQuiz);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Quiz> updateQuiz(@PathVariable Integer id, @RequestBody Quiz quiz) {
+        Optional<Quiz> existingQuiz = quizService.findById(id);
+        if (!existingQuiz.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        quiz.setId(id);
         if (quiz.getCategory() != null && quiz.getCategory().getId() != null) {
             Category category = categoryService.findById(quiz.getCategory().getId());
             if (category != null) {

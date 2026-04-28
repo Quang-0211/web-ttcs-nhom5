@@ -108,10 +108,7 @@ public class UserQuizController {
             userAnswer.setAttempt(attempt);
 
             // Find the question and check correctness
-            Optional<Question> questionOpt = quizService.findById(userAnswer.getQuestion().getId())
-                .flatMap(q -> quizService.findQuestionsByQuiz(q).stream()
-                    .filter(qst -> qst.getId().equals(userAnswer.getQuestion().getId()))
-                    .findFirst());
+            Optional<Question> questionOpt = quizService.findQuestionById(userAnswer.getQuestion().getId());
 
             if (questionOpt.isPresent()) {
                 Question question = questionOpt.get();

@@ -8,9 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ttcsn5.webstudyenglish.entity.User;
+import com.ttcsn5.webstudyenglish.entity.Answer;
+import com.ttcsn5.webstudyenglish.entity.Category;
+import com.ttcsn5.webstudyenglish.entity.Question;
+import com.ttcsn5.webstudyenglish.entity.Quiz;
 import com.ttcsn5.webstudyenglish.entity.UserAnswer;
 import com.ttcsn5.webstudyenglish.entity.UserQuizAttempt;
+import com.ttcsn5.webstudyenglish.repository.AnswerRepo;
+import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
+import com.ttcsn5.webstudyenglish.repository.QuestionRepo;
+import com.ttcsn5.webstudyenglish.repository.QuizRepo;
 import com.ttcsn5.webstudyenglish.repository.UserAnswerRepo;
 import com.ttcsn5.webstudyenglish.repository.UserQuizAttemptRepo;
 
@@ -31,6 +38,9 @@ public class QuizService {
 
     @Autowired
     private UserAnswerRepo userAnswerRepo;
+
+    @Autowired
+    private QuestionRepo questionRepo;
 
     public List<Quiz> findAll() {
         return quizRepo.findAll();
@@ -72,8 +82,17 @@ public class QuizService {
         questionRepo.deleteById(id);
     }
 
+    @Transactional
+    public void deleteAnswerById(Integer id) {
+        answerRepo.deleteById(id);
+    }
+
     public List<Question> findQuestionsByQuiz(Quiz quiz) {
         return questionRepo.findByQuizOrderByQuestionOrder(quiz);
+    }
+
+    public Optional<Question> findQuestionById(Integer id) {
+        return questionRepo.findById(id);
     }
 
     @Transactional
@@ -98,3 +117,4 @@ public class QuizService {
     public UserAnswer saveUserAnswer(UserAnswer userAnswer) {
         return userAnswerRepo.save(userAnswer);
     }
+}
