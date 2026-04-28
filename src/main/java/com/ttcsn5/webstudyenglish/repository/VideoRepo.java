@@ -14,7 +14,5 @@ public interface VideoRepo extends JpaRepository<Video, Integer> {
 
     List<Video> findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(String title);
 
-    List<Video> findByCourse_IdAndStatusTrueOrderByCreatedAtDesc(Integer courseId);
-
-    List<Video> findByCourse_IdOrderByCreatedAtDesc(Integer courseId);
+    List<Video> findByCategory_IdAndStatusTrueOrderByCreatedAtDesc(Integer cateId);
 }

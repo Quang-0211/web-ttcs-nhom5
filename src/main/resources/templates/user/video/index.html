@@ -26,7 +26,7 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent"></div>
                         <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
                             <span class="text-[11px] font-black uppercase tracking-[0.3em] bg-white/15 px-3 py-1 rounded-full"
-                                th:text="${video.course != null ? video.course.title : 'General'}">General</span>
+                                th:text="${video.cstegory != null ? video.category.name : 'General'}">General</span>
                             <span class="text-xs font-semibold" th:text="${video.duration + ' min'}">30 min</span>
                         </div>
                     </div>

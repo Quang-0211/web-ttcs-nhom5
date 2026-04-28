@@ -14,17 +14,17 @@ public class CategoryService {
     private CategoryRepo cateRepo;
 
     public List<Category> findAllArticle() {
-        Category cate = cateRepo.findAllById(1);
+        Category cate = cateRepo.findByName("Article");
         return cateRepo.findByParent(cate);
     }
 
     public List<Category> findAllVideo() {
-        Category cate = cateRepo.findAllById(2);
+        Category cate = cateRepo.findByName("Video");
         return cateRepo.findByParent(cate);
     }
 
     public List<Category> findAllQuiz() {
-        Category cate = cateRepo.findAllById(3);
+        Category cate = cateRepo.findByName("Quiz");
         return cateRepo.findByParent(cate);
     }
 
