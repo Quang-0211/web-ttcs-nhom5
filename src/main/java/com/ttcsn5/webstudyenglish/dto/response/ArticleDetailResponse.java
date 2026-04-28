@@ -8,6 +8,7 @@ public class ArticleDetailResponse {
     private String content;
     private String image;
     private String cateName;
+    private int cateId;
     private LocalDateTime createdAt;
 
     public ArticleDetailResponse(Integer id, String title, String content, String image, String cateName,
@@ -20,8 +21,27 @@ public class ArticleDetailResponse {
         this.createdAt = createdAt;
     }
 
+    public ArticleDetailResponse(Integer id, String title, String content, String image, String cateName, int cateId,
+            LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.image = image;
+        this.cateName = cateName;
+        this.cateId = cateId;
+        this.createdAt = createdAt;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public int getCateId() {
+        return cateId;
+    }
+
+    public void setCateId(int cateId) {
+        this.cateId = cateId;
     }
 
     public void setTitle(String title) {

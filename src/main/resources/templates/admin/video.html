@@ -50,9 +50,11 @@
                                 </td>
                                 <td class="p-4">
                                     <div class="font-semibold text-gray-800" th:text="${video.title}">Video title</div>
-                                    <p class="text-xs text-gray-500 line-clamp-2" th:text="${video.description}">Description</p>
+                                    <p class="text-xs text-gray-500 line-clamp-2" th:text="${video.description}">
+                                        Description</p>
                                 </td>
-                                <td class="p-4" th:text="${video.Category != null ? video.category.name : 'No course'}">Category</td>
+                                <td class="p-4" th:text="${video.Category != null ? video.category.name : 'No course'}">
+                                    Category</td>
                                 <td class="p-4" th:text="${video.duration + ' min'}">30 min</td>
                                 <td class="p-4 text-center">
                                     <span class="px-2 py-1 rounded-full text-xs font-medium"
@@ -62,7 +64,7 @@
                                 <td class="p-4 text-center">
                                     <div class="flex justify-center gap-2">
                                         <button type="button"
-                                            th:attr="data-id=${video.id},data-title=${video.title},data-url=${video.url},data-thumbnail=${video.thumbnail},data-duration=${video.duration},data-subtitle=${video.subtitle},data-description=${video.description},data-courseid=${video.course != null ? video.course.id : 0},data-status=${video.status}"
+                                            th:attr="data-id=${video.id},data-title=${video.title},data-url=${video.url},data-thumbnail=${video.thumbnail},data-duration=${video.duration},data-subtitle=${video.subtitle},data-description=${video.description},data-courseid=${video.category != null ? video.category.id : 0},data-status=${video.status}"
                                             onclick="openVideoModal('update', this.dataset.id, this.dataset.title, this.dataset.url, this.dataset.thumbnail, this.dataset.duration, this.dataset.subtitle, this.dataset.description, this.dataset.courseid, this.dataset.status)"
                                             class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
                                             <i class="fa fa-edit text-lg"></i>
@@ -110,7 +112,8 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
                             <select id="videoCateId" name="cateId"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none bg-white focus:ring-blue-500 focus:border-blue-500">
-                                <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.name}"></option>
+                                <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.name}">
+                                </option>
                             </select>
                         </div>
                         <div>
@@ -156,7 +159,7 @@
         <script>
             let videoModal = null;
             let videoModalDialog = null;
-            function openVideoModal(type, id = '', title = '', url = '', thumbnail = '', duration = 0, subtitle = '', description = '', courseId = 0, status = true) {
+            function openVideoModal(type, id = '', title = '', url = '', thumbnail = '', duration = 0, subtitle = '', description = '', CateId = 0, status = true) {
                 videoModal = document.getElementById('videoModal');
                 videoModalDialog = videoModal.querySelector('.transform');
                 videoModal.classList.remove('hidden', 'pointer-events-none');
@@ -214,4 +217,5 @@
         </script>
     </div>
 </body>
+
 </html>

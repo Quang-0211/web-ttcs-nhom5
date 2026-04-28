@@ -12,7 +12,7 @@ function initializeModal() {
     }
 }
 
-window.openArticleModal = function (type = 'create', articleId = null, title = null, img = null, audio = null, content = null, categoryId = null, courseId = null) {
+window.openArticleModal = function (type = 'create', articleId = null, title = null, img = null, audio = null, content = null, categoryId = nullz) {
     initializeModal();
 
     if (!modal || !modalDialog || !modalTitle) {
@@ -28,7 +28,6 @@ window.openArticleModal = function (type = 'create', articleId = null, title = n
         modalDialog.classList.add('scale-100');
     }, 10);
 
-    const courseSelect = document.getElementById('course-id');
     const categorySelect = document.getElementById('category-id');
 
     if (type === 'create') {
@@ -41,9 +40,6 @@ window.openArticleModal = function (type = 'create', articleId = null, title = n
         if (categorySelect) {
             categorySelect.value = categorySelect.options.length ? categorySelect.options[0].value : '0';
         }
-        if (courseSelect) {
-            courseSelect.value = '0';
-        }
     } else {
         modalTitle.innerText = 'Update Article';
         document.getElementById('articleId').value = articleId + '';
@@ -51,9 +47,6 @@ window.openArticleModal = function (type = 'create', articleId = null, title = n
         document.getElementById('previewImg').src = img || 'https://i.ibb.co/Xz9K5Yn/demo-thumbnail.png';
         if (categorySelect) {
             categorySelect.value = categoryId + '';
-        }
-        if (courseSelect) {
-            courseSelect.value = courseId ? courseId + '' : '0';
         }
         const audioPreview = document.getElementById('audioPreview');
         if (audioPreview) {

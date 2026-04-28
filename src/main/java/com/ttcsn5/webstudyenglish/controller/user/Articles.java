@@ -1,6 +1,7 @@
 package com.ttcsn5.webstudyenglish.controller.user;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,8 +56,10 @@ public class Articles {
             Model model) {
         ArticleDetailResponse article = articleRepo.findArticleDetail(id);
         Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
+        System.out.println("cate id : " + article.getCateId());
+        Category cate = cateRepo.findById(article.getCateId()).get();
         Page<ArticlesUserHomeResponse> page = articleRepo.findArticleUserHome(pageable, "",
-                cateRepo.findByName(article.getCateName()).getId());
+                cate != null ? cate.getId() : 0);
         model.addAttribute("article", article);
         model.addAttribute("articlesRelated", page);
         model.addAttribute("activeMenu", "article");

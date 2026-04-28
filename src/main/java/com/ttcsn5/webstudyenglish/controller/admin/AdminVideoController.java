@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ttcsn5.webstudyenglish.entity.Video;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
-import com.ttcsn5.webstudyenglish.service.CourseService;
 import com.ttcsn5.webstudyenglish.service.UploadImageAudio;
 import com.ttcsn5.webstudyenglish.service.VideoService;
 
@@ -24,8 +23,6 @@ public class AdminVideoController {
     @Autowired
     private VideoService videoService;
 
-    @Autowired
-    private CourseService courseService;
 
     @Autowired
     private UploadImageAudio uploadService;

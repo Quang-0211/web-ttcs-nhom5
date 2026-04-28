@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ttcsn5.webstudyenglish.entity.Article;
 import com.ttcsn5.webstudyenglish.service.ArticleService;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
-import com.ttcsn5.webstudyenglish.service.CourseService;
 import com.ttcsn5.webstudyenglish.service.UploadImageAudio;
 
 import jakarta.servlet.http.HttpSession;
@@ -28,8 +27,6 @@ public class ArticleController {
     private ArticleService artService;
     @Autowired
     private UploadImageAudio uploadService;
-    @Autowired
-    private CourseService courseService;
 
     @GetMapping("/admin/articles")
     public String articles(@RequestParam(value = "cnt", required = false, defaultValue = "0") Integer cntString,
@@ -47,7 +44,6 @@ public class ArticleController {
         model.addAttribute("statusSelected", status);
         model.addAttribute("cnt", cntString);
         model.addAttribute("categories", cateService.findAllArticle());
-        model.addAttribute("courses", courseService.findPublished());
         model.addAttribute("articles", articles);
         model.addAttribute("path", "admin/article");
         return "admin/adminhome";
@@ -61,8 +57,7 @@ public class ArticleController {
             @RequestParam(name = "audio", required = false) MultipartFile audio,
             @RequestParam(name = "articleId", required = false, defaultValue = "") String articleId,
             @RequestParam(name = "status", required = false, defaultValue = "true") boolean status,
-            @RequestParam("category") Integer categoryId,
-            @RequestParam(name = "courseId", required = false, defaultValue = "0") Integer courseId) throws IOException {
+            @RequestParam("category") Integer categoryId) throws IOException {
 
         System.out.println(articleId + " " + title + " " + content);
         String imgPathStr = uploadService.upload(image, "images");
@@ -70,14 +65,13 @@ public class ArticleController {
 
         Article article = null;
         System.out.println(articleId + " " + title + " " + content);
-        var course = courseId != null && courseId > 0 ? courseService.findById(courseId) : null;
         if (articleId.equals("")) {
 
             article = new Article(title, content, imgPathStr, audPathStr, status,
-                cateService.findById(categoryId), course);
+                    cateService.findById(categoryId));
         } else {
             article = new Article(Integer.parseInt(articleId), title, content, imgPathStr, audPathStr, status,
-                cateService.findById(categoryId), course);
+                    cateService.findById(categoryId));
         }
         artService.save(article);
 

@@ -7,8 +7,19 @@ public class ArticlesUserHomeResponse {
     private String title;
     private String image;
     private String cateName;
+    private int cateId;
+
+    public ArticlesUserHomeResponse(Integer id, String title, String image, String cateName, int cateId,
+            LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.image = image;
+        this.cateName = cateName;
+        this.cateId = cateId;
+        this.createdAt = createdAt;
+    }
+
     private LocalDateTime createdAt;
-    
 
     public ArticlesUserHomeResponse(Integer id, String title, String image, String cateName, LocalDateTime createdAt) {
         this.id = id;
@@ -17,7 +28,6 @@ public class ArticlesUserHomeResponse {
         this.cateName = cateName;
         this.createdAt = createdAt;
     }
-
 
     public String getTitle() {
         return title;
@@ -51,14 +61,20 @@ public class ArticlesUserHomeResponse {
         this.createdAt = createdAt;
     }
 
-
     public Integer getId() {
         return id;
     }
 
-
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public int getCateId() {
+        return cateId;
+    }
+
+    public void setCateId(int cateId) {
+        this.cateId = cateId;
     }
 
 }
