@@ -106,7 +106,8 @@ public class UserQuizController {
 
         // Calculate score
         int correctCount = 0;
-        int totalQuestions = userAnswers.size();
+        List<Question> questions = quizService.findQuestionsByQuiz(quiz);
+        int totalQuestions = questions.size();
 
         for (UserAnswer userAnswer : userAnswers) {
             userAnswer.setAttempt(attempt);
@@ -139,7 +140,7 @@ public class UserQuizController {
         // Save attempt
         quizService.saveAttempt(attempt);
 
-        return "success";
+        return String.valueOf(correctCount);
     }
 
     private User getCurrentUser(HttpSession session) {

@@ -92,7 +92,7 @@
                     questions: questionsData,
                     currentIndex: 0,
                     selectedAnswer: null,
-                    userAnswers: [],
+                    userAnswers: new Array(questionsData.length).fill(null),
                     submitted: false,
                     score: 0,
 
@@ -125,18 +125,19 @@
                     },
 
                     submitQuiz() {
+                        const answersToSubmit = this.userAnswers.filter(answer => answer !== null);
                         fetch(`/quiz/${quizData.id}/submit`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(this.userAnswers)
+                            body: JSON.stringify(answersToSubmit)
                         })
                         .then(res => res.text())
                         .then(result => {
-                            if (result === 'success') {
-                                this.calculateScore();
-                                this.submitted = true;
-                            } else {
+                            if (result === 'error' || result === 'not_logged_in') {
                                 alert('Error submitting quiz');
+                            } else {
+                                this.score = parseInt(result);
+                                this.submitted = true;
                             }
                         })
                         .catch(err => {
@@ -146,8 +147,7 @@
                     },
 
                     calculateScore() {
-                        // Simple calculation - in real implementation, this would come from server
-                        this.score = Math.floor(Math.random() * this.questions.length);
+                        // Score is now received from server
                     }
                 }
             }
