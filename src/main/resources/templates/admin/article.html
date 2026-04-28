@@ -74,7 +74,6 @@
                                 <th class="p-4 font-semibold border-b">Thumbnail</th>
                                 <th class="p-4 font-semibold border-b">Article Title</th>
                                 <th class="p-4 font-semibold border-b">Category</th>
-                                <th class="p-4 font-semibold border-b">Course</th>
                                 <th class="p-4 font-semibold border-b text-center">Status</th>
                                 <th class="p-4 font-semibold border-b">Created At</th>
                                 <th class="p-4 font-semibold border-b text-center">Action</th>
@@ -97,11 +96,7 @@
                                         class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded border border-purple-200 font-medium"
                                         th:text="${art.category?.name}">TECHNOLOGY</span>
                                 </td>
-                                <td class="p-4">
-                                    <span
-                                        class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded border border-blue-200 font-medium"
-                                        th:text="${art.course != null ? art.course.title : 'No course'}">COURSE</span>
-                                </td>
+
                                 <td class="p-4 text-center">
                                     <div class="relative inline-block w-10 align-middle select-none">
                                         <input type="checkbox" th:checked="${art.status}"
@@ -121,8 +116,7 @@
                                             data-audio=${art.audio},
                                             data-content=${art.content},
                                             data-categoryid=${art.category.id},
-                                            data-courseid=${art.course != null ? art.course.id : 0}
-                                        " onclick="openArticleModal('update',this.dataset.id, this.dataset.title, this.dataset.img, this.dataset.audio, this.dataset.content, this.dataset.categoryid, this.dataset.courseid)"
+                                        " onclick="openArticleModal('update',this.dataset.id, this.dataset.title, this.dataset.img, this.dataset.audio, this.dataset.content, this.dataset.categoryid)"
                                             class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
                                             <i class="fa fa-edit text-lg"></i>
                                         </button>
@@ -239,11 +233,6 @@
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm">
                         <!-- <option value="0">All Categories</option> -->
                         <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.name}"></option>
-                    </select>
-                    <select name="courseId" id="course-id"
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm">
-                        <option value="0">No course</option>
-                        <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.title}"></option>
                     </select>
                     <div>
                         <label for="articleTitle" class="block text-sm font-medium text-gray-700 mb-1.5">

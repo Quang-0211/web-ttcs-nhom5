@@ -24,12 +24,6 @@ public class Article {
     private String image;
     private String audio;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private Course course;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -48,16 +42,6 @@ public class Article {
         this.category = category;
     }
 
-    public Article(String title, String content, String image, String audio, Boolean status, Category category, Course course) {
-        this.title = title;
-        this.content = content;
-        this.image = image;
-        this.audio = audio;
-        this.status = status;
-        this.category = category;
-        this.course = course;
-    }
-
     public Article(int id, String title, String content, String image, String audio, Boolean status, Category category) {
         this.id = id;
         this.title = title;
@@ -66,17 +50,6 @@ public class Article {
         this.audio = audio;
         this.status = status;
         this.category = category;
-    }
-
-    public Article(int id, String title, String content, String image, String audio, Boolean status, Category category, Course course) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.image = image;
-        this.audio = audio;
-        this.status = status;
-        this.category = category;
-        this.course = course;
     }
 
     @PrePersist

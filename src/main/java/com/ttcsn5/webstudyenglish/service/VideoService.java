@@ -29,8 +29,8 @@ public class VideoService {
         return videoRepo.findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(keyword.trim());
     }
 
-    public List<Video> findByCourse(Integer courseId) {
-        return videoRepo.findByCourse_IdAndStatusTrueOrderByCreatedAtDesc(courseId);
+    public List<Video> findByCategory(Integer cateId) {
+        return videoRepo.findByCategory_IdAndStatusTrueOrderByCreatedAtDesc(cateId);
     }
 
     public Video findById(Integer id) {

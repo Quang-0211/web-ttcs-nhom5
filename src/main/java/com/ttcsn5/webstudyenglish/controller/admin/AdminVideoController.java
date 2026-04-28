@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ttcsn5.webstudyenglish.entity.Video;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
-import com.ttcsn5.webstudyenglish.service.CourseService;
 import com.ttcsn5.webstudyenglish.service.UploadImageAudio;
 import com.ttcsn5.webstudyenglish.service.VideoService;
 
@@ -24,8 +23,6 @@ public class AdminVideoController {
     @Autowired
     private VideoService videoService;
 
-    @Autowired
-    private CourseService courseService;
 
     @Autowired
     private UploadImageAudio uploadService;
@@ -57,7 +54,7 @@ public class AdminVideoController {
             @RequestParam(name = "subtitle", required = false, defaultValue = "") String subtitle,
             @RequestParam(name = "description", required = false, defaultValue = "") String description,
             @RequestParam(name = "status", required = false, defaultValue = "true") Boolean status,
-            @RequestParam(name = "courseId", required = false, defaultValue = "0") Integer courseId) throws Exception {
+            @RequestParam(name = "cateId", required = false, defaultValue = "0") Integer cateId) throws Exception {
 
         String thumbnailPath = uploadService.upload(thumbnail, "images");
         Video video = videoId.isBlank() ? new Video() : videoService.findById(Integer.parseInt(videoId));
@@ -71,7 +68,7 @@ public class AdminVideoController {
         video.setSubtitle(subtitle);
         video.setDescription(description);
         video.setStatus(status);
-        video.setCourse(courseId != null && courseId > 0 ? courseService.findById(courseId) : null);
+        video.setCategory(cateId != null && cateId > 0 ? cateService.findById(cateId) : null);
         if (thumbnailPath != null) {
             video.setThumbnail(thumbnailPath);
         }

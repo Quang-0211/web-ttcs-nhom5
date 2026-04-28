@@ -92,7 +92,7 @@
                         </h3>
 
                         <div class="space-y-6">
-                            <a th:href="@{${art.id}}" th:each="art:${articlesRelated}"
+                            <a th:href="@{'/user/article/'+${art.id}}" th:each="art:${articlesRelated}"
                                 class="group flex items-start gap-4 hover:bg-gray-50 p-2 rounded-2xl transition">
                                 <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
                                     <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=200"

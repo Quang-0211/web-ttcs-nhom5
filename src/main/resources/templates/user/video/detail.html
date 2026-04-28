@@ -18,7 +18,7 @@
                         <div class="p-8 space-y-4">
                             <div class="flex flex-wrap items-center gap-3">
                                 <span class="px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-[0.3em]"
-                                    th:text="${video.course != null ? video.course.title : 'General'}">General</span>
+                                    th:text="${video.category != null ? video.category.name : 'General'}">General</span>
                                 <span class="text-sm text-slate-400" th:text="${video.duration + ' min'}">30 min</span>
                                 <span class="text-sm text-slate-400" th:text="${video.status ? 'Published' : 'Disabled'}">Published</span>
                             </div>
@@ -43,7 +43,7 @@
                                     class="w-20 h-14 rounded-xl object-cover" alt="video">
                                 <div>
                                     <p class="text-sm font-bold text-slate-900 line-clamp-2" th:text="${item.title}">Title</p>
-                                    <p class="text-xs text-slate-400 mt-1" th:text="${item.course != null ? item.course.title : 'General'}">General</p>
+                                    <p class="text-xs text-slate-400 mt-1" th:text="${item.category != null ? item.category.name : 'General'}">General</p>
                                 </div>
                             </a>
                         </div>

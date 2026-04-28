@@ -23,12 +23,8 @@ public interface ArticleRepo extends JpaRepository<Article, Integer> {
         Slice<Article> findByTitleContainingAndStatus(String title, boolean status,
                         Pageable pageable);
 
-        List<Article> findByCourse_IdAndStatusTrueOrderByCreatedAtDesc(Integer courseId);
-
-        List<Article> findByCourse_IdOrderByCreatedAtDesc(Integer courseId);
-
         @Query("""
-                                select new com.ttcsn5.webstudyenglish.dto.response.ArticlesUserHomeResponse(a.id, a.title, a.image, c.name, a.createdAt)
+                                select new com.ttcsn5.webstudyenglish.dto.response.ArticlesUserHomeResponse(a.id, a.title, a.image, c.name, c.id, a.createdAt)
                                 from Article a
                                 join a.category c
                                 where (:title = '' or lower(a.title) like lower(concat('%', :title, '%')))
@@ -39,8 +35,10 @@ public interface ArticleRepo extends JpaRepository<Article, Integer> {
                         @Param("title") String title,
                         @Param("categorySearch") Integer categorySearch);
 
+
+
         @Query("""
-                                select new com.ttcsn5.webstudyenglish.dto.response.ArticleDetailResponse(a.id, a.title, a.content, a.image, c.name, a.createdAt)
+                                select new com.ttcsn5.webstudyenglish.dto.response.ArticleDetailResponse(a.id, a.title, a.content, a.image, c.name, c.id, a.createdAt)
                                 from Article a
                                 join a.category c
                                 where a.id=:id
