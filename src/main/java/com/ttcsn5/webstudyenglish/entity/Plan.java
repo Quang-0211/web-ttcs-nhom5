@@ -1,5 +1,6 @@
 package com.ttcsn5.webstudyenglish.entity;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,6 +17,18 @@ public class Plan {
     private String name;
     private Double price;
     private Integer durationDays;
+    @ManyToMany
+    private Set<Article> articles;
+    @ManyToMany
+    private Set<Quiz> quizzes;
+    @ManyToMany
+    private Set<Video> videos;
+    @ManyToMany
+    private Set<DictationTopics> dictationTopics;
+    @ManyToMany
+    private Set<Grammar> grammar;
+    @ManyToMany
+    private Set<Vocabulary> vocabulary;
 
     @Column(columnDefinition = "TEXT")
     private String description;

@@ -28,6 +28,24 @@ public class CategoryService {
         return cateRepo.findByParent(cate);
     }
 
+    public List<Category> findAllGrammar() {
+        Category cate = cateRepo.findByName("Grammar");
+        System.out.println("gramar :" + cate.getName() + " " + cate.getId());
+        return cateRepo.findByParent(cate);
+    }
+
+    public List<Category> findAllVocabulary() {
+        Category cate = cateRepo.findByName("Vocab");
+        System.out.println("vocab :" + cate.getName() + " " + cate.getId());
+        return cateRepo.findByParent(cate);
+    }
+
+    public List<Category> findAllDictation() {
+        Category cate = cateRepo.findByName("Dictation");
+        System.out.println("dictation :" + cate.getName() + " " + cate.getId());
+        return cateRepo.findByParent(cate);
+    }
+
     public Category findById(int id) {
         return cateRepo.findById(id).orElse(null);
     }

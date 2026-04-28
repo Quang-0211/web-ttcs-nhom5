@@ -36,7 +36,7 @@
                 </li>
 
                 <li>
-                    <a th:href="@{/admin/plan}"
+                    <a th:href="@{/admin/plans}"
                         th:classappend="${path.startsWith('admin/plan')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
                         <i class="fa fa-box"></i> Plan
@@ -124,6 +124,7 @@
     </div>
 
     <script th:src="@{/js/adminarticle.js}"></script>
+    <script th:src="@{/js/admin-plan.js}"></script>
 </body>
 
 </html>

@@ -1,7 +1,6 @@
 package com.ttcsn5.webstudyenglish.entity;
 
 import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +21,8 @@ public class Subscription {
     @ManyToOne
     @JoinColumn(name="plan_id")
     private Plan plan;
+
+    
 
     private String transactionId;
     private String paymentStatus;
