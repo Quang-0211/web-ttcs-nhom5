@@ -100,6 +100,14 @@
                 </li>
 
                 <li>
+                    <a th:href="@{/admin/quiz}"
+                        th:classappend="${path.startsWith('admin/quiz')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-question-circle"></i> Quiz
+                    </a>
+                </li>
+
+                <li>
                     <a th:href="@{/admin/dictation}"
                         th:classappend="${path.startsWith('admin/dictation')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">

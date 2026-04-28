@@ -42,7 +42,7 @@ public class AdminController {
         response.setDateHeader("Expires", 0);
 
         List<String> allowedPaths = Arrays.asList("dashboard", "user", "categories",
-                "lessons", "article", "vocabulary", "grammar", "dictation");
+                "lessons", "article", "vocabulary", "grammar", "dictation", "quiz");
         if (!allowedPaths.contains(path)) {
             return "error/404";
         }
@@ -62,7 +62,11 @@ public class AdminController {
             model.addAttribute("dictationTopics", dictationTopicRepo.findAll());
         }
 
-        if (Arrays.asList("dictation", "grammar", "vocabulary").contains(path)) {
+        if ("quiz".equals(path)) {
+            model.addAttribute("categories", categoryRepo.findAll());
+        }
+
+        if (Arrays.asList("dictation", "grammar", "vocabulary", "quiz").contains(path)) {
             model.addAttribute("path", "admin/" + path + "/index");
         } else {
             model.addAttribute("path", "admin/" + path);

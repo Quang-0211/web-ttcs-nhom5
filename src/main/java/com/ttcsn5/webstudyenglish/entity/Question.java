@@ -1,5 +1,6 @@
 package com.ttcsn5.webstudyenglish.entity;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,4 +30,8 @@ public class Question {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderIndex ASC")
+    private List<Answer> answers;
 }
