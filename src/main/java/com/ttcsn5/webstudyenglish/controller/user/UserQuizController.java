@@ -20,6 +20,7 @@ import com.ttcsn5.webstudyenglish.entity.Quiz;
 import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.entity.UserAnswer;
 import com.ttcsn5.webstudyenglish.entity.UserQuizAttempt;
+import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
 import com.ttcsn5.webstudyenglish.service.QuizService;
 import com.ttcsn5.webstudyenglish.service.UserService;
 
@@ -33,6 +34,9 @@ public class UserQuizController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CategoryRepo categoryRepo;
 
     @GetMapping("/quizzes")
     public String getQuizzes(Model model, HttpSession session) {
@@ -145,5 +149,46 @@ public class UserQuizController {
             return userService.findById(userId).orElse(null);
         }
         return null;
+    }
+
+    @GetMapping("/quiz/create")
+    public String createQuiz(Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("categories", categoryRepo.findAll());
+        model.addAttribute("activeMenu", "quiz");
+        model.addAttribute("userPath", "user/quiz/create");
+
+        Object roleIdObj = session.getAttribute("roleId");
+        if (roleIdObj != null) {
+            model.addAttribute("roleId", (int) roleIdObj);
+        }
+
+        return "user/index";
+    }
+
+    @GetMapping("/quiz/edit/{id}")
+    public String editQuiz(@PathVariable Integer id, Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/login";
+        }
+
+        Optional<Quiz> quizOpt = quizService.findById(id);
+        if (!quizOpt.isPresent()) {
+            return "redirect:/quizzes";
+        }
+
+        model.addAttribute("categories", categoryRepo.findAll());
+        model.addAttribute("activeMenu", "quiz");
+        model.addAttribute("userPath", "user/quiz/edit");
+
+        Object roleIdObj = session.getAttribute("roleId");
+        if (roleIdObj != null) {
+            model.addAttribute("roleId", (int) roleIdObj);
+        }
+
+        return "user/index";
     }
 }

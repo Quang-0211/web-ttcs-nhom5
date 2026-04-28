@@ -4,9 +4,9 @@
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-extrabold text-gray-800">Quiz Management</h1>
-            <button @click="showCreateModal = true" class="px-6 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition">
+            <a href="/admin/quiz/create" class="px-6 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition">
                 <i class="fa fa-plus mr-2"></i>Create Quiz
-            </button>
+            </a>
         </div>
 
         <div class="flex-1 overflow-y-auto">
@@ -16,7 +16,7 @@
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="text-lg font-extrabold text-gray-800" x-text="quiz.title"></h3>
                             <div class="flex gap-2">
-                                <button @click="editQuiz(quiz)" class="text-blue-500 hover:text-blue-700">
+                                <button @click="editQuiz(quiz.id)" class="text-blue-500 hover:text-blue-700">
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button @click="deleteQuiz(quiz.id)" class="text-red-500 hover:text-red-700">
@@ -36,57 +36,14 @@
     </div>
 </div>
 
-<!-- Create/Edit Modal -->
-<div x-show="showCreateModal || showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-     x-cloak @keydown.escape.window="showCreateModal = false; showEditModal = false">
-    <div class="bg-white rounded-3xl p-8 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-extrabold text-gray-800" x-text="showEditModal ? 'Edit Quiz' : 'Create Quiz'"></h2>
-            <button @click="showCreateModal = false; showEditModal = false" class="text-gray-400 hover:text-gray-600">
-                <i class="fa fa-times"></i>
-            </button>
-        </div>
-
-        <form @submit.prevent="saveQuiz()">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Title</label>
-                    <input x-model="currentQuiz.title" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Description</label>
-                    <textarea x-model="currentQuiz.description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Category</label>
-                    <select x-model="currentQuiz.category.id" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                        <option value="">Select Category</option>
-                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-3 mt-6">
-                <button type="button" @click="showCreateModal = false; showEditModal = false" class="px-6 py-3 border border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50">
-                    Cancel
-                </button>
-                <button type="submit" class="px-6 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600">
-                    <span x-text="showEditModal ? 'Update' : 'Create'"></span>
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
 function quizList() {
     return {
         quizzes: [],
-        showCreateModal: false,
-        showEditModal: false,
-        currentQuiz: { title: '', description: '', category: { id: '' } },
+
+        init() {
+            this.loadQuizzes();
+        },
 
         loadQuizzes() {
             fetch('/admin/api/quiz')
@@ -95,32 +52,8 @@ function quizList() {
                 .catch(err => console.error(err));
         },
 
-        saveQuiz() {
-            const method = this.currentQuiz.id ? 'PUT' : 'POST';
-            const url = this.currentQuiz.id ? `/admin/api/quiz/${this.currentQuiz.id}` : '/admin/api/quiz';
-            const payload = { ...this.currentQuiz };
-            if (!payload.category || !payload.category.id) {
-                payload.category = null;
-            }
-
-            fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(() => {
-                this.loadQuizzes();
-                this.showCreateModal = false;
-                this.showEditModal = false;
-                this.resetForm();
-            })
-            .catch(err => console.error(err));
-        },
-
-        editQuiz(quiz) {
-            this.currentQuiz = { ...quiz };
-            this.showEditModal = true;
+        editQuiz(id) {
+            window.location.href = `/admin/quiz/edit/${id}`;
         },
 
         deleteQuiz(id) {
@@ -129,10 +62,6 @@ function quizList() {
                     .then(() => this.loadQuizzes())
                     .catch(err => console.error(err));
             }
-        },
-
-        resetForm() {
-            this.currentQuiz = { title: '', description: '', category: { id: '' } };
         },
 
         formatDate(dateStr) {

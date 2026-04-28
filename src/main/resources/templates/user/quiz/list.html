@@ -4,6 +4,9 @@
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-extrabold text-gray-800">Available Quizzes</h1>
+            <a href="/quiz/create" class="px-6 py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition">
+                <i class="fa fa-plus mr-2"></i>Create Quiz
+            </a>
         </div>
 
         <div class="flex-1 overflow-y-auto">
@@ -15,15 +18,23 @@
                         <span th:text="${quiz.category != null ? quiz.category.name : 'General'}"></span>
                         <span th:text="${#temporals.format(quiz.created_at, 'MMM dd, yyyy')}"></span>
                     </div>
-                    <a th:href="@{/quiz/{id}(id=${quiz.id})}" class="w-full px-4 py-2 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition text-center block">
-                        Take Quiz
-                    </a>
+                    <div class="flex gap-2">
+                        <a th:href="@{/quiz/{id}(id=${quiz.id})}" class="flex-1 px-4 py-2 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition text-center block">
+                            Take
+                        </a>
+                        <a th:href="@{/quiz/edit/{id}(id=${quiz.id})}" class="px-4 py-2 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition" title="Edit">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
             <div th:if="${#lists.isEmpty(quizzes)}" class="text-center py-12">
                 <i class="fa fa-clipboard-list text-4xl text-gray-300 mb-4"></i>
                 <p class="text-gray-500 font-bold">No quizzes available yet.</p>
+                <a href="/quiz/create" class="mt-4 inline-block px-6 py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition">
+                    Create your first quiz
+                </a>
             </div>
         </div>
     </div>

@@ -1,11 +1,10 @@
-package com.ttcsn5.webstudyenglish.controller.admin;
+package com.ttcsn5.webstudyenglish.controller.user;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +20,11 @@ import com.ttcsn5.webstudyenglish.entity.Quiz;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.service.QuizService;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
-@RequestMapping("/admin/api/quiz")
-public class AdminQuizApiController {
+@RequestMapping("/api/quiz")
+public class UserQuizApiController {
 
     @Autowired
     private QuizService quizService;
@@ -44,7 +45,11 @@ public class AdminQuizApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz) {
+    public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
         if (quiz.getCategory() != null && quiz.getCategory().getId() != null) {
             Category category = categoryService.findById(quiz.getCategory().getId());
             if (category != null) {
@@ -56,7 +61,11 @@ public class AdminQuizApiController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Quiz> updateQuiz(@PathVariable Integer id, @RequestBody Quiz quiz) {
+    public ResponseEntity<Quiz> updateQuiz(@PathVariable Integer id, @RequestBody Quiz quiz, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
         Optional<Quiz> existingQuiz = quizService.findById(id);
         if (!existingQuiz.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -72,12 +81,6 @@ public class AdminQuizApiController {
         return ResponseEntity.ok(savedQuiz);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteQuiz(@PathVariable Integer id) {
-        quizService.deleteById(id);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/{quizId}/questions")
     public ResponseEntity<List<Question>> getQuestions(@PathVariable Integer quizId) {
         Optional<Quiz> quiz = quizService.findById(quizId);
@@ -89,7 +92,11 @@ public class AdminQuizApiController {
     }
 
     @PostMapping("/questions")
-    public ResponseEntity<Question> createOrUpdateQuestion(@RequestBody Question question) {
+    public ResponseEntity<Question> createQuestion(@RequestBody Question question, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
         if (question.getQuiz() != null && question.getQuiz().getId() != null) {
             Optional<Quiz> quiz = quizService.findById(question.getQuiz().getId());
             if (quiz.isPresent()) {
@@ -101,7 +108,11 @@ public class AdminQuizApiController {
     }
 
     @PutMapping("/questions/{id}")
-    public ResponseEntity<Question> updateQuestion(@PathVariable Integer id, @RequestBody Question question) {
+    public ResponseEntity<Question> updateQuestion(@PathVariable Integer id, @RequestBody Question question, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
         Optional<Question> existingQuestion = quizService.findQuestionById(id);
         if (!existingQuestion.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -117,12 +128,6 @@ public class AdminQuizApiController {
         return ResponseEntity.ok(savedQuestion);
     }
 
-    @DeleteMapping("/questions/{id}")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable Integer id) {
-        quizService.deleteQuestionById(id);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/questions/{questionId}/answers")
     public ResponseEntity<List<Answer>> getAnswers(@PathVariable Integer questionId) {
         Optional<Question> question = quizService.findQuestionById(questionId);
@@ -134,7 +139,11 @@ public class AdminQuizApiController {
     }
 
     @PostMapping("/answers")
-    public ResponseEntity<Answer> createOrUpdateAnswer(@RequestBody Answer answer) {
+    public ResponseEntity<Answer> createAnswer(@RequestBody Answer answer, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
         if (answer.getQuestion() != null && answer.getQuestion().getId() != null) {
             Optional<Question> question = quizService.findQuestionById(answer.getQuestion().getId());
             if (question.isPresent()) {
@@ -146,8 +155,11 @@ public class AdminQuizApiController {
     }
 
     @PutMapping("/answers/{id}")
-    public ResponseEntity<Answer> updateAnswer(@PathVariable Integer id, @RequestBody Answer answer) {
-        // First get the existing answer to preserve question relationship if not provided
+    public ResponseEntity<Answer> updateAnswer(@PathVariable Integer id, @RequestBody Answer answer, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
         answer.setId(id);
         if (answer.getQuestion() != null && answer.getQuestion().getId() != null) {
             Optional<Question> question = quizService.findQuestionById(answer.getQuestion().getId());
@@ -157,11 +169,5 @@ public class AdminQuizApiController {
         }
         Answer savedAnswer = quizService.saveAnswer(answer);
         return ResponseEntity.ok(savedAnswer);
-    }
-
-    @DeleteMapping("/answers/{id}")
-    public ResponseEntity<Void> deleteAnswer(@PathVariable Integer id) {
-        quizService.deleteAnswerById(id);
-        return ResponseEntity.ok().build();
     }
 }
