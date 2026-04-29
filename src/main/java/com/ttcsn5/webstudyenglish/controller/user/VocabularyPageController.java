@@ -25,6 +25,9 @@ public class VocabularyPageController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private com.ttcsn5.webstudyenglish.service.UserVocabularyService userVocabularyService;
+
     @GetMapping("/vocabularies")
     public String getTopics(Model model, HttpSession session) {
         List<Category> topics = vocabularyService.getVocabularyTopics();
@@ -66,6 +69,15 @@ public class VocabularyPageController {
     public String getVocabularyDetail(@PathVariable("id") Integer id, Model model, HttpSession session) {
         Vocabulary vocabulary = vocabularyService.getVocabularyById(id);
         model.addAttribute("vocab", vocabulary);
+        
+        boolean isSaved = false;
+        Object userIdObj = session.getAttribute("userId");
+        if (userIdObj != null) {
+            Long userId = Long.valueOf(userIdObj.toString());
+            isSaved = userVocabularyService.isSaved(userId, id);
+        }
+        model.addAttribute("isSaved", isSaved);
+
         model.addAttribute("activeMenu", "vocabulary");
         model.addAttribute("userPath", "user/vocabulary/detail");
         

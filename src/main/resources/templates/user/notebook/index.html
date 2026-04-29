@@ -1,0 +1,237 @@
+<div th:fragment="content" class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex gap-6">
+
+    <!-- Left Panel: List of saved vocabularies -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 w-full md:w-[450px] flex flex-col">
+        <h2 class="text-xl font-extrabold text-gray-700 tracking-wide mb-10 text-center uppercase">YOUR NOTEBOOK</h2>
+
+        <div class="flex-1 overflow-y-auto pr-2 space-y-3" id="vocab-list">
+            <div th:if="${#lists.isEmpty(savedVocabularies)}" class="text-center text-gray-400 py-10 font-medium">
+                Your notebook is empty.
+            </div>
+
+            <div th:each="vocab, stat : ${savedVocabularies}"
+                class="vocab-item p-4 rounded-xl border border-gray-100 cursor-pointer transition flex items-center justify-between"
+                th:classappend="${stat.index == 0} ? 'bg-gray-100 border-gray-200' : 'bg-gray-50 hover:bg-gray-100'"
+                onclick="selectVocab(this)" th:data-vocab-id="${vocab.id}" th:data-word="${vocab.word}"
+                th:data-pronunciation="${vocab.pronunciation}" th:data-pos="${vocab.partOfSpeech}"
+                th:data-audio="${vocab.audio}" th:data-image="${vocab.image}" th:data-meaning-vi="${vocab.meaningVi}"
+                th:data-definition-en="${vocab.definitionEn}" th:data-example-en="${vocab.exampleEn}"
+                th:data-example-vi="${vocab.exampleVi}"
+                th:data-category="${vocab.category != null ? vocab.category.name : ''}">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <h3 class="font-extrabold text-gray-800" th:text="${vocab.word}">Lion</h3>
+                        <span
+                            class="text-[10px] bg-blue-50 text-blue-500 border border-blue-100 px-1.5 py-0.5 rounded uppercase font-bold"
+                            th:text="${vocab.partOfSpeech}">noun</span>
+                    </div>
+                    <p class="text-xs text-gray-500 font-medium"><span th:text="${vocab.pronunciation}"></span> - <span
+                            th:text="${vocab.meaningVi}"></span></p>
+                </div>
+                <button
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-100 transition"
+                    th:data-audio="${vocab.audio}" th:data-word="${vocab.word}"
+                    onclick="playAudio(event, this.getAttribute('data-audio'), this.getAttribute('data-word'))">
+                    <i class="fa fa-volume-up"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel: Vocabulary Details -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col overflow-y-auto"
+        id="vocab-detail-panel">
+        <div th:if="${#lists.isEmpty(savedVocabularies)}"
+            class="flex-1 flex items-center justify-center text-gray-400 font-medium">
+            Select a vocabulary to view details.
+        </div>
+
+        <div th:unless="${#lists.isEmpty(savedVocabularies)}" class="h-full flex flex-col">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <h1 class="text-3xl font-extrabold text-gray-800" id="detail-word"
+                            th:text="${savedVocabularies[0].word}">Lion</h1>
+                        <span id="detail-pos"
+                            class="inline-block px-2.5 py-1 bg-blue-50 text-blue-500 border border-blue-100 rounded text-[11px] uppercase font-bold tracking-wide"
+                            th:text="${savedVocabularies[0].partOfSpeech}">noun</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <p class="text-gray-400 font-bold tracking-wide" id="detail-pronunciation"
+                            th:text="${savedVocabularies[0].pronunciation}">/ˈlaɪ.ən/</p>
+                        <button id="detail-audio-btn" th:data-audio="${savedVocabularies[0].audio}"
+                            th:data-word="${savedVocabularies[0].word}"
+                            onclick="playAudio(event, this.getAttribute('data-audio'), this.getAttribute('data-word'))"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-50 transition border border-blue-100 shadow-sm">
+                            <i class="fa fa-volume-up"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="removeVocabBtn" th:data-vocab-id="${savedVocabularies[0].id}" onclick="removeVocab(this)"
+                    class="text-red-400 hover:text-red-600 transition" title="Remove from notebook">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+
+            <div
+                class="mb-6 rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50 aspect-[21/9] flex items-center justify-center">
+                <img id="detail-image" th:if="${savedVocabularies[0].image != null}"
+                    th:src="${savedVocabularies[0].image}" class="w-full h-full object-cover" />
+                <div id="detail-no-image" th:unless="${savedVocabularies[0].image != null}"
+                    class="text-gray-400 font-medium text-sm">No Image</div>
+                <img id="detail-image-template" class="w-full h-full object-cover hidden" />
+            </div>
+
+            <div class="space-y-4 flex-1">
+                <div>
+                    <h3 class="font-extrabold text-gray-700 text-[13px] uppercase tracking-wider">Vietnamese Meaning:
+                        <span class="font-bold text-[15px] text-gray-800 normal-case" id="detail-meaning"
+                            th:text="${savedVocabularies[0].meaningVi}">Sư tử</span>
+                    </h3>
+                </div>
+
+                <div>
+                    <h3 class="font-extrabold text-gray-700 text-[13px] uppercase tracking-wider">English Definition:
+                        <span class="font-bold text-[15px] text-gray-700 normal-case" id="detail-definition"
+                            th:text="${savedVocabularies[0].definitionEn}">A large wild cat.</span>
+                    </h3>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="font-extrabold text-gray-700 mb-2 text-[13px] uppercase tracking-wider">Example Sentences
+                    </h3>
+                    <p class="text-gray-800 font-bold mb-1" id="detail-example-en"
+                        th:text="${savedVocabularies[0].exampleEn}">The lion is strong.</p>
+                    <p class="text-gray-500 font-medium italic text-sm mb-4" id="detail-example-vi"
+                        th:text="${savedVocabularies[0].exampleVi}">Sư tử rất mạnh.</p>
+                </div>
+
+                <div class="mt-4">
+                    <span id="detail-category"
+                        class="inline-block px-3 py-1 bg-[#1e1b4b] text-white rounded text-[11px] font-bold shadow-sm"
+                        th:text="${savedVocabularies[0].category != null ? savedVocabularies[0].category.name : ''}">Animals</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        let currentAudio = null;
+        function playAudio(event, url, wordText) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            if (url && url !== 'null' && url.trim() !== '') {
+                currentAudio = new Audio(url);
+                currentAudio.play().catch(e => console.error(e));
+            } else if (wordText && window.speechSynthesis) {
+                const utterance = new SpeechSynthesisUtterance(wordText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("No audio available");
+            }
+        }
+
+        function selectVocab(item) {
+            // Update selected visual state
+            document.querySelectorAll('.vocab-item').forEach(el => {
+                el.classList.remove('bg-gray-100', 'border-gray-200');
+                el.classList.add('bg-gray-50', 'hover:bg-gray-100');
+            });
+            item.classList.remove('bg-gray-50', 'hover:bg-gray-100');
+            item.classList.add('bg-gray-100', 'border-gray-200');
+
+            // Get data from selected item
+            const vocabId = item.getAttribute('data-vocab-id');
+            const word = item.getAttribute('data-word');
+            const pron = item.getAttribute('data-pronunciation');
+            const pos = item.getAttribute('data-pos');
+            const audio = item.getAttribute('data-audio');
+            const image = item.getAttribute('data-image');
+            const meaningVi = item.getAttribute('data-meaning-vi');
+            const defEn = item.getAttribute('data-definition-en');
+            const exEn = item.getAttribute('data-example-en');
+            const exVi = item.getAttribute('data-example-vi');
+            const category = item.getAttribute('data-category');
+
+            // Update Right Panel
+            document.getElementById('detail-word').textContent = word;
+            document.getElementById('detail-pos').textContent = pos;
+            document.getElementById('detail-pronunciation').textContent = pron;
+
+            const audioBtn = document.getElementById('detail-audio-btn');
+            audioBtn.setAttribute('data-audio', audio);
+            audioBtn.setAttribute('data-word', word);
+
+            document.getElementById('removeVocabBtn').setAttribute('data-vocab-id', vocabId);
+
+            const imgEl = document.getElementById('detail-image');
+            const noImgEl = document.getElementById('detail-no-image');
+            const imgTemplate = document.getElementById('detail-image-template');
+
+            if (image && image !== 'null') {
+                if (imgEl) {
+                    imgEl.src = image;
+                    imgEl.classList.remove('hidden');
+                } else {
+                    imgTemplate.src = image;
+                    imgTemplate.classList.remove('hidden');
+                    if (noImgEl) noImgEl.classList.add('hidden');
+                }
+                if (noImgEl) noImgEl.classList.add('hidden');
+            } else {
+                if (imgEl) imgEl.classList.add('hidden');
+                if (imgTemplate) imgTemplate.classList.add('hidden');
+                if (noImgEl) noImgEl.classList.remove('hidden');
+            }
+
+            document.getElementById('detail-meaning').textContent = meaningVi;
+            document.getElementById('detail-definition').textContent = defEn;
+            document.getElementById('detail-example-en').textContent = exEn;
+            document.getElementById('detail-example-vi').textContent = exVi;
+
+            const catEl = document.getElementById('detail-category');
+            if (category && category !== 'null' && category !== '') {
+                catEl.textContent = category;
+                catEl.classList.remove('hidden');
+            } else {
+                catEl.classList.add('hidden');
+            }
+        }
+
+        async function removeVocab(btn) {
+            if (!confirm("Are you sure you want to remove this vocabulary from your notebook?")) {
+                return;
+            }
+
+            const vocabId = btn.getAttribute('data-vocab-id');
+            try {
+                const response = await fetch(`/api/notebook/unsave/${vocabId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin'
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // Just reload the page to refresh the list
+                    window.location.reload();
+                } else {
+                    alert(data.message || "Failed to remove vocabulary");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while removing the vocabulary.");
+            }
+        }
+    </script>
+</div>

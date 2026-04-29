@@ -22,11 +22,22 @@
                         </div>
 
                         <!-- Right: Details -->
-                        <div class="flex-1 flex flex-col justify-center py-2">
-                            <div class="mb-4">
+                        <div class="flex-1 flex flex-col justify-center py-2 relative">
+                            <div class="mb-4 flex justify-between items-center w-full">
                                 <span
                                     class="inline-block px-2.5 py-1 bg-blue-50 text-blue-500 border border-blue-100 rounded text-[11px] uppercase font-bold tracking-wide"
                                     th:text="${vocab.partOfSpeech}">noun</span>
+                                    
+                                <button th:if="${session.userId != null}" 
+                                        id="saveVocabBtn"
+                                        th:data-vocab-id="${vocab.id}"
+                                        th:data-is-saved="${isSaved}"
+                                        onclick="toggleSaveVocab(this)"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition shadow-sm border"
+                                        th:classappend="${isSaved ? 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200' : 'bg-green-500 text-white border-green-600 hover:bg-green-600'}">
+                                    <i class="fa" th:classappend="${isSaved ? 'fa-check' : 'fa-plus'}"></i>
+                                    <span class="btn-text" th:text="${isSaved ? 'Saved' : 'Save'}">Save</span>
+                                </button>
                             </div>
 
                             <div class="flex items-center gap-4 mb-2">
@@ -81,32 +92,74 @@
                 <div th:unless="${vocab != null}" class="flex-1 w-full flex items-center justify-center">
                     <p class="text-gray-400 font-bold">Vocabulary not found.</p>
                 </div>
-            </div>
+            
+        <script th:inline="javascript">
+            let currentAudio = null;
+            function playAudio(event, url, wordText) {
+                event.preventDefault();
+                event.stopPropagation();
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                }
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+                if (url && url !== 'null' && url.trim() !== '') {
+                    currentAudio = new Audio(url);
+                    currentAudio.play().catch(e => console.error(e));
+                } else if (wordText && window.speechSynthesis) {
+                    const utterance = new SpeechSynthesisUtterance(wordText);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.9;
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    alert("No audio available");
+                }
+            }
+
+            async function toggleSaveVocab(btn) {
+                const vocabId = btn.getAttribute('data-vocab-id');
+                const isSaved = btn.getAttribute('data-is-saved') === 'true';
+                
+                try {
+                    const url = isSaved ? `/api/notebook/unsave/${vocabId}` : `/api/notebook/save/${vocabId}`;
+                    const method = isSaved ? 'DELETE' : 'POST';
+                    
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const newSavedState = !isSaved;
+                        btn.setAttribute('data-is-saved', newSavedState);
+                        
+                        const icon = btn.querySelector('i.fa');
+                        const text = btn.querySelector('.btn-text');
+                        
+                        if (newSavedState) {
+                            btn.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition shadow-sm border bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200";
+                            icon.className = "fa fa-check";
+                            text.textContent = "Saved";
+                        } else {
+                            btn.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition shadow-sm border bg-green-500 text-white border-green-600 hover:bg-green-600";
+                            icon.className = "fa fa-plus";
+                            text.textContent = "Save";
+                        }
+                    } else {
+                        alert(data.message || "Failed to update vocabulary state.");
+                    }
+                } catch (error) {
+                    console.error('Error toggling save state:', error);
+                    alert('An error occurred while saving the vocabulary.');
+                }
+            }
+        </script>
+    </div>
         </div>
-
-    <script th:inline="javascript">
-        let currentAudio = null;
-        function playAudio(event, url, wordText) {
-            event.preventDefault();
-            event.stopPropagation();
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-            }
-            if (window.speechSynthesis) {
-                window.speechSynthesis.cancel();
-            }
-            if (url && url !== 'null' && url.trim() !== '') {
-                currentAudio = new Audio(url);
-                currentAudio.play().catch(e => console.error(e));
-            } else if (wordText && window.speechSynthesis) {
-                const utterance = new SpeechSynthesisUtterance(wordText);
-                utterance.lang = 'en-US';
-                utterance.rate = 0.9;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert("No audio available");
-            }
-        }
-    </script>
-
