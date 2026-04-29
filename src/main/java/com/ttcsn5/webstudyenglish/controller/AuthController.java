@@ -1,5 +1,7 @@
 package com.ttcsn5.webstudyenglish.controller;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,11 +11,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ttcsn5.webstudyenglish.dto.request.UserRequest;
+import com.ttcsn5.webstudyenglish.entity.Plan;
 import com.ttcsn5.webstudyenglish.entity.Role;
+import com.ttcsn5.webstudyenglish.entity.Subscription;
 import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.service.AccountService;
 import com.ttcsn5.webstudyenglish.service.HashPassword;
+import com.ttcsn5.webstudyenglish.service.PlanService;
 import com.ttcsn5.webstudyenglish.service.RoleService;
+import com.ttcsn5.webstudyenglish.service.SubscriptionService;
 import com.ttcsn5.webstudyenglish.totalenum.LoginResponse;
 import com.ttcsn5.webstudyenglish.totalenum.RegisterStatus;
 
@@ -27,6 +33,12 @@ public class AuthController {
     private RoleService rse;
     @Autowired
     private HashPassword hashPassword;
+    @Autowired
+    private SubscriptionService subscriptionService;
+    @Autowired
+    private SubscriptionService subService;
+    @Autowired
+    private PlanService planService;
 
     @GetMapping(path = { "/", "/login" })
     public String login(Model model) {
@@ -61,9 +73,20 @@ public class AuthController {
             case SUCCESS:
                 break;
         }
+        Role role = rse.findByCode("USER");
+        User user = new User(username, hashPassword.hashPassword(password), email, role);
 
-        Role role = rse.findByCode("ADMIN");
-        ase.saveUser(new User(username, hashPassword.hashPassword(password), email, role));
+        Plan plan = planService.getByName("user-base");
+        ase.saveUser(user);
+
+        subscriptionService.saveSubscription(Subscription.builder()
+                .user(user)
+                .plan(plan)
+                .transactionId("Base-" + System.currentTimeMillis())
+                .startDate(java.time.LocalDateTime.now())
+                .endDate(java.time.LocalDateTime.now().plusYears(100))
+                .active(true)
+                .build());
         redirectAttribute.addFlashAttribute("success", "Tao tai khoan thanh cong");
         return "redirect:/login";
     }
@@ -91,14 +114,13 @@ public class AuthController {
                 break;
         }
         User user = loginStatus.getUser();
-        session.setAttribute("userId", user.getId());
-        session.setAttribute("roleId", user.getRoleId().getId());
-        session.setAttribute("username", user.getUsername());
-        session.setAttribute("email", user.getEmail());
+        session.setAttribute("user", user);
         if (user.getRoleId().getCode().equals("ADMIN")) {
 
             return "redirect:/admin/dashboard";
         }
+        Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
+        session.setAttribute("subscriptions", subscriptions);
         return "redirect:/home";
 
     }
@@ -110,9 +132,9 @@ public class AuthController {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
 
-        Object roleIdObj = session.getAttribute("roleId");
-        if (roleIdObj != null) {
-            model.addAttribute("roleId", (int) roleIdObj);
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("user", user);
         }
 
         model.addAttribute("activeMenu", "home");

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Subscription Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden">
+
+    <!-- <div th:replace="~{fragments/admin-sidebar :: sidebar('subscription')}"></div> -->
+
+    <div th:fragment="content" class="flex-1 flex flex-col min-w-0">
+
+        <header
+            class="bg-white border-b border-gray-100 px-8 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
+            <div>
+                <h1 class="text-2xl font-black text-gray-800 tracking-tight">Subscription Management</h1>
+                <p class="text-sm text-gray-500 font-medium">Theo dõi giao dịch và thời hạn gói cước người dùng</p>
+            </div>
+
+            <form th:action="@{/admin/subscriptions}" method="get" class="flex items-center gap-3">
+                <div class="relative">
+                    <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <input type="text" name="planName" th:value="${planName}" placeholder="Tên gói..."
+                        class="pl-9 pr-4 py-2.5 w-48 md:w-64 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:bg-white focus:border-blue-500 text-xs font-bold transition-all">
+                </div>
+
+                <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-1">
+                    <input type="date" name="startDate" th:value="${startDate}"
+                        class="bg-transparent border-none py-1.5 text-[11px] font-black text-blue-600 outline-none">
+                    <span class="text-gray-300 font-bold">→</span>
+                    <input type="date" name="endDate" th:value="${endDate}"
+                        class="bg-transparent border-none py-1.5 text-[11px] font-black text-red-500 outline-none">
+                </div>
+
+                <button type="submit"
+                    class="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all active:scale-95">
+                    <i class="fa fa-filter text-xs"></i>
+                </button>
+            </form>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8 no-scrollbar">
+            <div class="max-w-7xl mx-auto">
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-5 border-b flex justify-between items-center bg-gray-50/50">
+                        <span class="text-gray-700 font-black text-sm uppercase tracking-wide">Lịch sử đăng ký</span>
+                        <span
+                            class="text-[10px] bg-blue-50 text-blue-600 px-3 py-1 rounded-lg font-black uppercase"></span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 text-[10px] uppercase font-black tracking-widest">
+                                    <th class="px-6 py-4 border-b">ID</th>
+                                    <th class="px-6 py-4 border-b">Khách hàng</th>
+                                    <th class="px-6 py-4 border-b">Gói cước</th>
+                                    <th class="px-6 py-4 border-b text-center">Thanh toán</th>
+                                    <th class="px-6 py-4 border-b">Mã giao dịch</th>
+                                    <th class="px-6 py-4 border-b">Bắt đầu</th>
+                                    <th class="px-6 py-4 border-b">Hết hạn</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-50">
+                                <tr th:each="sub : ${subscriptions}"
+                                    class="hover:bg-blue-50/20 transition-colors group">
+                                    <td class="px-6 py-5 text-xs font-black text-gray-300" th:text="${sub.id}">01</td>
+                                    <td class="px-6 py-5">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-black text-gray-800"
+                                                th:text="${sub.user.email}">quang.tran@ptit.edu.vn</span>
+                                            <span
+                                                class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter mt-0.5">Verified
+                                                Student</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <span class="text-xs font-black text-blue-700" th:text="${sub.plan.name}">Gói
+                                            Premium 6 Tháng</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span
+                                            class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[9px] font-black uppercase tracking-widest border border-green-200">
+                                            PAID
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <span class="text-xs font-mono font-bold text-gray-400"
+                                            th:text="${sub.transactionId}">VNP12345678</span>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <span class="text-xs font-black text-green-500"
+                                            th:text="${#temporals.format(sub.startDate, 'HH:mm dd/MM/yyyy')}">08:00
+                                            29/04/2026</span>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <span
+                                            class="px-3 py-1 bg-red-50 text-red-500 text-xs font-black italic rounded-lg"
+                                            th:text="${#temporals.format(sub.endDate, 'HH:mm dd/MM/yyyy')}">08:00
+                                            29/10/2026</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-4 flex justify-end items-center gap-4 text-sm text-gray-600">
+                        <span>1-10 of 11 items</span>
+                        <div class="flex items-center gap-2">
+                            <input type="submit" th:name="cnt" th:if="${cnt>1}"
+                                class="p-1 px-3 border rounded hover:bg-gray-100" th:value="${cnt - 2}"></input>
+                            <input type="submit" th:name="cnt" th:if="${cnt>0}"
+                                class="p-1 px-3 border rounded hover:bg-gray-100" th:value="${cnt - 1}"></input>
+                            <input type="submit" th:name="cnt" class="p-1 px-3 border rounded bg-blue-600 text-white"
+                                th:value="${cnt}"></input>
+                            <input type="submit" th:name="cnt" class="p-1 px-3 border rounded hover:bg-gray-100"
+                                th:value="${cnt + 1}"></input>
+                            <input type="submit" th:name="cnt" class="p-1 px-3 border rounded hover:bg-gray-100"
+                                th:value="${cnt + 2}"></input>
+                            <input type="submit" th:name="cnt" th:if="${1 >= cnt}"
+                                class="p-1 px-3 border rounded hover:bg-gray-100" th:value="${cnt + 3}"></input>
+                            <input type="submit" th:name="cnt" th:if="${0 >= cnt}"
+                                class="p-1 px-3 border rounded hover:bg-gray-100" th:value="${cnt + 4}"></input>
+                        </div>
+                        <select class="border rounded px-2 py-1 outline-none">
+                            <option>10 / page</option>
+                            <option>20 / page</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

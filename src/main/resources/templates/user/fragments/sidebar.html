@@ -36,7 +36,7 @@
             </li>
             <li>
                 <a th:href="@{/videos}"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                    th:class="${activeMenu == 'videos'} ? 'bg-blue-100 text-blue-600 font-semibold flex items-center gap-3 px-3 py-2 rounded-lg' : 'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500'">
                     <i class="fa fa-video"></i> Video
                 </a>
             </li>
@@ -47,12 +47,14 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                <a th:href="@{/user/store}"
+                    th:class="${activeMenu == 'store'} ? 'bg-blue-100 text-blue-600 font-semibold flex items-center gap-3 px-3 py-2 rounded-lg' : 'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500'">
                     <i class="fa fa-store"></i> Store
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                <a th:href="@{/user/profile}"
+                    th:class="${activeMenu == 'profile'} ? 'bg-blue-100 text-blue-600 font-semibold flex items-center gap-3 px-3 py-2 rounded-lg' : 'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500'">
                     <i class="fa fa-user"></i> Profile
                 </a>
             </li>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="planItem(title, list, colorClass, hoverBg, textColor, align)"
+        class="relative group/item flex items-center justify-between p-3 -mx-3 rounded-2xl transition-all cursor-default"
+        th:classappend="${hoverBg}">
+
+        <div class="flex items-center gap-3 text-xs font-bold text-gray-700">
+            <i class="fa fa-check-circle text-green-500 text-sm"></i>
+            <span th:text="${list.size()} + ' ' + ${title}"></span>
+        </div>
+
+        <i class="fa fa-chevron-right text-[10px] text-gray-300 transition-colors"
+            th:classappend="'group-hover/item:' + ${textColor}"></i>
+
+        <div class="absolute top-0 w-72 bg-white border border-gray-200 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl p-5 invisible group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all z-50 pointer-events-none"
+            th:classappend="${align == 'right' ? 'right-full mr-6' : 'left-full ml-6'}">
+
+            <p class="text-[10px] font-black uppercase mb-3 tracking-widest" th:classappend="${textColor}"
+                th:text="${title} + ' Categories'"></p>
+
+            <div class="space-y-2 max-h-60 overflow-y-auto no-scrollbar">
+                <div th:each="item : ${list}"
+                    class="text-[11px] text-gray-600 flex items-center gap-2 pb-1 border-b border-gray-50 last:border-0">
+                    <div class="w-1.5 h-1.5 rounded-full shrink-0" th:classappend="'bg-' + ${colorClass} + '-500'">
+                    </div>
+                    <span th:text="${item.name ?: item.title}"></span>
+                </div>
+                <div th:if="${list == null || list.empty}"
+                    class="text-[10px] text-gray-400 italic text-center py-4 bg-gray-50 rounded-lg">
+                    Chưa có nội dung
+                </div>
+            </div>
+
+            <div class="absolute top-5 w-4 h-4 bg-white border-gray-200 rotate-45"
+                th:classappend="${align == 'right' ? '-right-2 border-r border-t' : '-left-2 border-l border-b'}">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

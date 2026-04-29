@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.repository.AccountRepo;
 import com.ttcsn5.webstudyenglish.repository.ArticleRepo;
 
@@ -21,15 +22,11 @@ public class DashboardController {
 
     @GetMapping("/admin/dashboard")
     public String dashboard(Model model, HttpSession session) {
-        Object roleIdObj = session.getAttribute("roleId");
-        if (roleIdObj == null) {
-            return "redirect:/login";
-        }
-        int roleId = (int) roleIdObj;
-        if (roleId != 1) {
-            return "redirect:/login";
-        }
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("user");
+    if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
+        return "redirect:/login";
+    }
+        String username = user.getUsername();
 
         model.addAttribute("totalUser", accountRepo.countUser());
         model.addAttribute("totalArticle", articleRepo.countArticle());

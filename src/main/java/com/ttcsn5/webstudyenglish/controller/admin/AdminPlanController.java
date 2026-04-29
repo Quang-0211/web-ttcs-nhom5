@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ttcsn5.webstudyenglish.entity.Plan;
+import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.repository.PlanRepository;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.service.PlanService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin/plans")
@@ -31,7 +34,11 @@ public class AdminPlanController {
             @RequestParam(name = "name", required = false, defaultValue = "") String name,
             @RequestParam(name = "active", required = false) Boolean status,
             @RequestParam(name = "maxPrice", required = false, defaultValue = "0") Double price,
-            Model model) {
+            Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
+            return "redirect:/login";
+        }
 
         model.addAttribute("cnt", cnt);
         model.addAttribute("plans", planService.searchPlans(name, status, price, cnt));
@@ -44,7 +51,7 @@ public class AdminPlanController {
         model.addAttribute("allVocabularies", cateService.findAllNameCate("Vocab"));
         model.addAttribute("allDictations", cateService.findAllNameCate("Dictation"));
 
-        System.out.println("set : "+planService.searchPlans(name, status, price, cnt).get(0).getDictationTopics());
+        System.out.println("set : " + planService.searchPlans(name, status, price, cnt).get(0).getDictationTopics());
 
         model.addAttribute("name", name);
         model.addAttribute("active", status);
@@ -67,7 +74,12 @@ public class AdminPlanController {
             @RequestParam(name = "videos", required = false) Set<Integer> videoIds,
             @RequestParam(name = "grammars", required = false) Set<Integer> grammarIds,
             @RequestParam(name = "vocabularies", required = false) Set<Integer> vocabularyIds,
-            @RequestParam(name = "dictationTopics", required = false) Set<Integer> dictationIds) {
+            @RequestParam(name = "dictationTopics", required = false) Set<Integer> dictationIds,
+            HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
+            return "redirect:/login";
+        }
 
         Plan plan;
         System.out.println("gia tri grammarIds: " + grammarIds);
@@ -87,8 +99,7 @@ public class AdminPlanController {
                     cateService.findPlansByIds(dictationIds, "Dictation"),
                     cateService.findPlansByIds(grammarIds, "Grammar"),
                     cateService.findPlansByIds(vocabularyIds, "Vocab"),
-                    description, true, LocalDateTime.now()
-            );
+                    description, true, LocalDateTime.now());
         } else {
             // UPDATE ĐÚNG CÁCH
             plan = planRepo.findById(id).orElseThrow();
@@ -106,7 +117,6 @@ public class AdminPlanController {
             plan.setActive(active);
             plan.setUpdated_at(LocalDateTime.now());
 
-            // ❗ KHÔNG đụng vào created_at
         }
 
         planRepo.save(plan);

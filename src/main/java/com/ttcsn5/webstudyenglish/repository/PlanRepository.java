@@ -1,6 +1,8 @@
 package com.ttcsn5.webstudyenglish.repository;
 
 
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +23,7 @@ public interface PlanRepository extends JpaRepository<Plan, Integer> {
                 AND (:maxPrice IS NULL OR p.price <= :maxPrice)
             """)
     Page<Plan> searchPlans(String name, Boolean active, Double maxPrice, Pageable pageable);
+
+    Plan findByName(String name);
+
 }

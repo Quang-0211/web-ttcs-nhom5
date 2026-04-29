@@ -6,7 +6,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "subscription")
-@Data
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Subscription {
 
@@ -15,14 +18,12 @@ public class Subscription {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name="plan_id")
+    @JoinColumn(name = "plan_id")
     private Plan plan;
-
-    
 
     private String transactionId;
     private String paymentStatus;

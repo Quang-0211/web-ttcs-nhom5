@@ -17,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ttcsn5.webstudyenglish.dto.response.ArticleDetailResponse;
 import com.ttcsn5.webstudyenglish.dto.response.ArticlesUserHomeResponse;
 import com.ttcsn5.webstudyenglish.entity.Category;
+import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.repository.ArticleRepo;
 import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class Articles {
@@ -35,7 +38,11 @@ public class Articles {
             @RequestParam(name = "cnt", required = false, defaultValue = "0") Integer cnt,
             @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,
             @RequestParam(name = "categorySearch", required = false, defaultValue = "0") Integer categorySearch,
-            Model model) {
+            Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("USER")) {
+            return "redirect:/login";
+        }
         List<Category> categorys = cateSer.findAllNameCate("Article");
 
         Pageable pageable = PageRequest.of(cnt, 12, Sort.by("createdAt").descending());
@@ -53,7 +60,12 @@ public class Articles {
 
     @GetMapping("/user/article/{id}")
     public String articleDetail(@PathVariable("id") Integer id,
-            Model model) {
+            Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("USER")) {
+            return "redirect:/login";
+        }
+
         ArticleDetailResponse article = articleRepo.findArticleDetail(id);
         Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
         System.out.println("cate id : " + article.getCateId());

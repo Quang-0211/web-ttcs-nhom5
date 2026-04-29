@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ttcsn5.webstudyenglish.entity.Article;
+import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.service.ArticleService;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.service.UploadImageAudio;
@@ -34,8 +35,8 @@ public class ArticleController {
             @RequestParam(name = "category", required = false, defaultValue = "0") Integer category,
             @RequestParam(name = "status", required = false, defaultValue = "true") Boolean status,
             Model model, HttpSession session) {
-        Integer roleId = (Integer) session.getAttribute("roleId");
-        if (roleId == null || roleId != 1) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
             return "redirect:/login";
         }
         List<Article> articles = artService.searchArticle(title, category, status, cntString);
@@ -57,7 +58,12 @@ public class ArticleController {
             @RequestParam(name = "audio", required = false) MultipartFile audio,
             @RequestParam(name = "articleId", required = false, defaultValue = "") String articleId,
             @RequestParam(name = "status", required = false, defaultValue = "true") boolean status,
-            @RequestParam("category") Integer categoryId) throws IOException {
+            @RequestParam("category") Integer categoryId,
+            HttpSession session) throws IOException {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
+            return "redirect:/login";
+        }
 
         System.out.println(articleId + " " + title + " " + content);
         String imgPathStr = uploadService.upload(image, "images");
@@ -81,7 +87,11 @@ public class ArticleController {
     @PostMapping("/admin/articles/publish")
     @ResponseBody
     public java.util.Map<String, Object> updateStatus(@RequestParam("articleId") String articleId,
-            @RequestParam("status") String status) {
+            @RequestParam("status") String status, HttpSession session) {
+                User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
+            return java.util.Map.of("success", false, "message", "Unauthorized");
+        }
         try {
             artService.updateStatus(Integer.parseInt(articleId), Boolean.parseBoolean(status));
             return java.util.Map.of("success", true, "message", "Article status updated successfully");
@@ -92,7 +102,11 @@ public class ArticleController {
 
     @PostMapping("/admin/articles/delete")
     @ResponseBody
-    public java.util.Map<String, Object> delete(@RequestParam("articleId") Integer articleId) {
+    public java.util.Map<String, Object> delete(@RequestParam("articleId") Integer articleId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
+            return java.util.Map.of("success", false, "message", "Unauthorized");
+        }
         try {
             artService.delete(articleId);
             return java.util.Map.of("success", true, "message", "Article deleted successfully");

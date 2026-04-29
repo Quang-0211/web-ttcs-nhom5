@@ -30,8 +30,8 @@ public class UserController {
             Model model, HttpSession session) {
         try {
 
-            int roleId = (int) session.getAttribute("roleId");
-            if (roleId != 1) {
+            User user = (User) session.getAttribute("user");
+            if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
                 return "redirect:/login";
             }
             int cnt = Integer.parseInt(cntString);

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Store - English Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden">
+
+    <!-- <div th:replace="~{fragments/sidebar :: sidebar('store')}"></div> -->
+
+    <div th:fragment="content" class="flex-1 flex flex-col min-w-0">
+        <header
+            class="bg-white border-b border-gray-100 px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
+            <div>
+                <h1 class="text-xl font-black text-gray-900 tracking-tight">English <span
+                        class="text-blue-600">Pro</span> Plans</h1>
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Nâng cấp học tập</p>
+            </div>
+
+            <form th:action="@{/user/store}" method="get" class="flex items-center gap-2">
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="Tên gói..."
+                    class="pl-4 pr-3 py-2 w-40 md:w-56 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:bg-white focus:border-blue-500 text-xs">
+                <input type="number" name="maxPrice" th:value="${maxPrice}" placeholder="Giá..."
+                    class="pl-4 pr-3 py-2 w-28 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:bg-white focus:border-blue-500 text-xs font-bold text-blue-600">
+                <button type="submit" class="bg-gray-900 text-white p-2.5 rounded-xl hover:bg-blue-600"><i
+                        class="fa fa-filter text-xs"></i></button>
+            </form>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8 no-scrollbar">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+                    <div th:each="plan, planStat : ${plans}"
+                        class="relative bg-white rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col p-10 transition-all duration-300 hover:shadow-2xl group/card">
+
+                        <div class="mb-6">
+                            <h3 class="text-2xl font-black text-gray-800" th:text="${plan.name}"></h3>
+                            <p class="text-gray-400 text-xs italic mb-4" th:text="${plan.description}"></p>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-4xl font-black text-gray-900"
+                                    th:text="${#numbers.formatDecimal(plan.price, 0, 'COMMA', 0, 'POINT') + '₫'}"></span>
+                                <span class="text-gray-400 text-sm font-bold"
+                                    th:text="'/ ' + ${plan.durationDays} + ' NGÀY'"></span>
+                            </div>
+                        </div>
+
+                        <ul class="space-y-1 mb-8 flex-1 border-t border-gray-50 pt-6">
+                            <div
+                                th:replace="~{user/store/plan-items :: planItem('Articles', ${plan.articles}, 'blue', 'hover:bg-blue-50/50', 'text-blue-600', ${planStat.index % 2 == 0 ? 'left' : 'right'})}">
+                            </div>
+                            <div
+                                th:replace="~{user/store/plan-items :: planItem('Quizzes', ${plan.quizzes}, 'orange', 'hover:bg-orange-50/50', 'text-orange-600', ${planStat.index % 2 == 0 ? 'left' : 'right'})}">
+                            </div>
+                            <div
+                                th:replace="~{user/store/plan-items :: planItem('Videos', ${plan.videos}, 'red', 'hover:bg-red-50/50', 'text-red-600', ${planStat.index % 2 == 0 ? 'left' : 'right'})}">
+                            </div>
+                            <div
+                                th:replace="~{user/store/plan-items :: planItem('Grammar', ${plan.grammar}, 'purple', 'hover:bg-purple-50/50', 'text-purple-600', ${planStat.index % 2 == 0 ? 'left' : 'right'})}">
+                            </div>
+                            <div
+                                th:replace="~{user/store/plan-items :: planItem('Vocabulary', ${plan.vocabulary}, 'teal', 'hover:bg-teal-50/50', 'text-teal-600', ${planStat.index % 2 == 0 ? 'left' : 'right'})}">
+                            </div>
+                            <div
+                                th:replace="~{user/store/plan-items :: planItem('Dictation', ${plan.dictationTopics}, 'yellow', 'hover:bg-yellow-50/50', 'text-yellow-600', ${planStat.index % 2 == 0 ? 'left' : 'right'})}">
+                            </div>
+                        </ul>
+
+                        <form th:action="@{/user/store/purchase}" method="post">
+                            <input type="hidden" name="planId" th:value="${plan.id}">
+                            <button type="submit"
+                                class="w-full bg-gray-900 text-white py-4 rounded-2xl font-black text-sm hover:bg-blue-600 shadow-xl transition-all active:scale-95">BUY
+                                NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div id="toastNotification"
+            class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] translate-y-20 opacity-0 transition-all duration-500 pointer-events-none">
+
+            <div id="toastBg"
+                class="bg-gray-900 text-white px-6 py-4 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-4 border border-white/10">
+
+                <div id="toastIconBox"
+                    class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg transition-colors">
+                    <i id="toastIcon" class="fa text-white text-sm"></i>
+                </div>
+
+                <div>
+                    <h4 id="toastTitle" class="font-black text-xs uppercase tracking-widest mb-0.5 italic"></h4>
+                    <p id="toastBody" class="text-[11px] text-gray-400 font-medium whitespace-nowrap"
+                        th:text="${message}"></p>
+                </div>
+            </div>
+        </div>
+        <script th:inline="javascript">
+            /* Lấy dữ liệu từ Model (Thymeleaf) */
+            const message = [[${ message }]];
+            const isError = [[${ error }]]; // true nếu là lỗi, false/null nếu thành công
+
+            if (message) {
+                const toast = document.getElementById('toastNotification');
+                const iconBox = document.getElementById('toastIconBox');
+                const icon = document.getElementById('toastIcon');
+                const title = document.getElementById('toastTitle');
+
+                // Cấu hình giao diện dựa trên loại message
+                if (isError) {
+                    iconBox.classList.add('bg-red-500', 'shadow-red-500/20');
+                    icon.classList.add('fa-exclamation-triangle');
+                    title.innerText = 'Thông báo lỗi';
+                } else {
+                    iconBox.classList.add('bg-green-500', 'shadow-green-500/20');
+                    icon.classList.add('fa-check');
+                    title.innerText = 'Thành công';
+                }
+
+                // Hiển thị Toast
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-20', 'opacity-0');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                }, 100);
+
+                // Tự ẩn sau 4 giây
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 4000);
+            }
+        </script>
+    </div>
+</body>
+
+</html>

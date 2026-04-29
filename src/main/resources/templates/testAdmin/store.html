@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upgrade Your Plan - English Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden">
+
+    <div th:replace="~{fragments/sidebar :: sidebar('store')}"></div>
+
+    <div class="flex-1 overflow-y-auto p-8">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Choose Your Learning Path</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Mở khóa toàn bộ nội dung cao cấp từ bài báo, video đến các bộ từ vựng độc quyền. Chọn gói phù hợp để bắt
+                đầu hành trình chinh phục tiếng Anh ngay hôm nay!
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-4">
+
+            <div th:each="plan : ${plans}"
+                class="relative bg-white rounded-3xl shadow-xl border border-gray-100 flex flex-col p-8 transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl">
+
+                <div th:if="${plan.price > 100000}"
+                    class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide">
+                    MOST POPULAR
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2" th:text="${plan.name}">Premium Yearly</h3>
+                    <p class="text-gray-500 text-sm h-12 overflow-hidden" th:text="${plan.description}">Truy cập không
+                        giới hạn mọi tài nguyên.</p>
+                </div>
+
+                <div class="mb-8">
+                    <span class="text-5xl font-black text-blue-600"
+                        th:text="${#numbers.formatDecimal(plan.price, 0, 'COMMA', 0, 'POINT') + '₫'}">500.000₫</span>
+                    <span class="text-gray-400 text-lg" th:text="' / ' + ${plan.durationDays} + ' days'">/ 365
+                        days</span>
+                </div>
+
+                <div class="space-y-4 mb-10 flex-1">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Included Features:</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-sm text-gray-700">
+                            <i class="fa fa-check-circle text-green-500"></i>
+                            <span th:text="${plan.articles.size()} + ' Article Categories'"></span>
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-gray-700">
+                            <i class="fa fa-check-circle text-green-500"></i>
+                            <span th:text="${plan.quizzes.size()} + ' Quiz Packs'"></span>
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-gray-700">
+                            <i class="fa fa-check-circle text-green-500"></i>
+                            <span th:text="${plan.videos.size()} + ' Video Channels'"></span>
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-gray-700">
+                            <i class="fa fa-check-circle text-green-500"></i>
+                            <span th:text="${plan.grammar.size()} + ' Grammar Modules'"></span>
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-gray-700">
+                            <i class="fa fa-check-circle text-green-500"></i>
+                            <span th:text="${plan.vocabulary.size()} + ' Vocabulary Lists'"></span>
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-gray-700">
+                            <i class="fa fa-check-circle text-green-500"></i>
+                            <span th:text="${plan.dictationTopics.size()} + ' Dictation Topics'"></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <form th:action="@{/user/purchase}" method="post">
+                    <input type="hidden" name="planId" th:value="${plan.id}">
+                    <button type="submit"
+                        class="w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all shadow-lg active:scale-95">
+                        Get Started Now
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="mt-20 text-center border-t pt-10">
+            <p class="text-gray-500 italic">Cần hỗ trợ thanh toán? Liên hệ hotline: <span
+                    class="text-blue-500 font-bold">1900-8888</span></p>
+        </div>
+    </div>
+
+</body>
+
+</html>

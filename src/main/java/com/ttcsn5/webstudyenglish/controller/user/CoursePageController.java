@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ttcsn5.webstudyenglish.entity.Article;
 import com.ttcsn5.webstudyenglish.entity.Course;
+import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.entity.Video;
 import com.ttcsn5.webstudyenglish.repository.ArticleRepo;
 import com.ttcsn5.webstudyenglish.service.CourseService;
@@ -64,6 +65,10 @@ public class CoursePageController {
     @GetMapping("/videos")
     public String videos(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
             Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("USER")) {
+            return "redirect:/login";
+        }
         model.addAttribute("videos", keyword.isBlank() ? videoService.findPublished()
                 : videoService.search(keyword).stream().filter(video -> Boolean.TRUE.equals(video.getStatus()))
                         .toList());
@@ -76,6 +81,10 @@ public class CoursePageController {
 
     @GetMapping("/videos/{id}")
     public String videoDetail(@PathVariable("id") Integer id, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("USER")) {
+            return "redirect:/login";
+        }
         Video video = videoService.findById(id);
         List<Video> relatedVideos = video != null && video.getCategory() != null
                 ? videoService.findByCategory(video.getCategory().getId())

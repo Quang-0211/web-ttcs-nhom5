@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.entity.Video;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.service.UploadImageAudio;
@@ -23,7 +24,6 @@ public class AdminVideoController {
     @Autowired
     private VideoService videoService;
 
-
     @Autowired
     private UploadImageAudio uploadService;
     @Autowired
@@ -32,15 +32,15 @@ public class AdminVideoController {
     @GetMapping("/admin/videos")
     public String videos(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
             Model model, HttpSession session) {
-        Integer roleId = (Integer) session.getAttribute("roleId");
-        if (roleId == null || roleId != 1) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
             return "redirect:/login";
         }
         List<Video> videos = videoService.search(keyword);
         model.addAttribute("categories", cateService.findAllNameCate("Video"));
         model.addAttribute("keyword", keyword);
         model.addAttribute("videos", videos);
-        //model.addAttribute("courses", courseService.findPublished());
+        // model.addAttribute("courses", courseService.findPublished());
         model.addAttribute("path", "admin/video");
         return "admin/adminhome";
     }
@@ -54,7 +54,12 @@ public class AdminVideoController {
             @RequestParam(name = "subtitle", required = false, defaultValue = "") String subtitle,
             @RequestParam(name = "description", required = false, defaultValue = "") String description,
             @RequestParam(name = "status", required = false, defaultValue = "true") Boolean status,
-            @RequestParam(name = "cateId", required = false, defaultValue = "0") Integer cateId) throws Exception {
+            @RequestParam(name = "cateId", required = false, defaultValue = "0") Integer cateId,
+            HttpSession session) throws Exception {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {
+            return "redirect:/login";
+        }
 
         String thumbnailPath = uploadService.upload(thumbnail, "images");
         Video video = videoId.isBlank() ? new Video() : videoService.findById(Integer.parseInt(videoId));
