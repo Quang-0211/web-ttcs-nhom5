@@ -2,7 +2,7 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <body>
-    <div th:fragment="content" class="flex-1 overflow-y-auto bg-[#f8fafc]">
+    <form th:action="@{/videos}" method="get" th:fragment="content" class="flex-1 overflow-y-auto bg-[#f8fafc]">
         <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10">
             <div class="flex flex-col lg:flex-row justify-between gap-6 lg:items-end mb-8">
                 <div>
@@ -10,37 +10,84 @@
                     <h1 class="text-3xl font-black text-slate-900">Video bài học</h1>
                     <p class="text-slate-500 mt-2 max-w-2xl">Xem các video bài giảng theo chủ đề và khóa học.</p>
                 </div>
-                <form th:action="@{/videos}" method="get" class="flex gap-3">
-                    <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm video..."
-                        class="px-4 py-3 rounded-2xl border border-slate-200 bg-white outline-none focus:ring-2 focus:ring-blue-500 min-w-[240px]">
-                    <button type="submit" class="px-6 py-3 rounded-2xl bg-blue-600 text-white font-bold">Tìm</button>
-                </form>
-            </div>
+                <div class="flex flex-wrap lg:flex-nowrap gap-3">
+                    <div class="relative flex-1 min-w-[200px]">
+                        <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm video..."
+                            class="w-full px-5 py-3 rounded-2xl border border-slate-200 bg-white outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium transition-all">
+                    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                <a th:each="video : ${videos}" th:href="@{'/videos/' + ${video.id}}"
-                    class="group bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-900/10 transition-all overflow-hidden">
-                    <div class="relative h-52 overflow-hidden">
-                        <img th:src="${video.thumbnail != null ? video.thumbnail : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80'}"
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                            alt="video">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent"></div>
-                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
-                            <span
-                                class="text-[11px] font-black uppercase tracking-[0.3em] bg-white/15 px-3 py-1 rounded-full"
-                                th:text="${video.category != null ? video.category.name : 'General'}">General</span>
-                            <span class="text-xs font-semibold" th:text="${video.duration + ' min'}">30 min</span>
+                    <div class="relative min-w-[180px]">
+                        <select name="categoryId"
+                            class="w-full px-5 py-3 rounded-2xl border border-slate-200 bg-white outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-700 appearance-none cursor-pointer">
+                            <option value="">Tất cả chủ đề</option>
+                            <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"
+                                th:selected="${cat.id == categoryId}">Chủ đề</option>
+                        </select>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                            <i class="fa fa-chevron-down text-xs"></i>
                         </div>
                     </div>
-                    <div class="p-6 space-y-3">
-                        <h3 class="text-xl font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors"
-                            th:text="${video.title}">Video title</h3>
-                        <p class="text-sm text-slate-500 line-clamp-3" th:text="${video.description}">Description</p>
-                    </div>
-                </a>
+
+                    <button type="submit"
+                        class="px-8 py-3 rounded-2xl bg-blue-600 text-white font-black hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-95 uppercase text-xs tracking-widest">
+                        Tìm kiếm
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <a th:each="video : ${videos}" th:href="@{'/videos/' + ${video.id}}"
+                class="group bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-900/10 transition-all overflow-hidden">
+                <div class="relative h-52 overflow-hidden">
+                    <img th:src="${video.thumbnail != null ? video.thumbnail : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80'}"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        alt="video">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
+                        <span
+                            class="text-[11px] font-black uppercase tracking-[0.3em] bg-white/15 px-3 py-1 rounded-full"
+                            th:text="${video.category != null ? video.category.name : 'General'}">General</span>
+                        <span class="text-xs font-semibold" th:text="${video.duration + ' min'}">30 min</span>
+                    </div>
+                </div>
+                <div class="p-6 space-y-3">
+                    <h3 class="text-xl font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors"
+                        th:text="${video.title}">Video title</h3>
+                    <p class="text-sm text-slate-500 line-clamp-3" th:text="${video.description}">Description</p>
+                </div>
+            </a>
+        </div>
+        <div class="p-4 flex justify-end items-center gap-4 text-sm text-gray-600">
+            <div class="flex items-center gap-2">
+                <input type="submit" th:name="cnt" th:if="${cnt>1}"
+                    class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                    th:value="${cnt - 2}"></input>
+                <input type="submit" th:name="cnt" th:if="${cnt>0}"
+                    class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                    th:value="${cnt - 1}"></input>
+                <input type="submit" th:name="cnt"
+                    class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-bold shadow-xl shadow-blue-200 cursor-pointer"
+                    th:value="${cnt}"></input>
+                <input type="submit" th:name="cnt"
+                    class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                    th:value="${cnt + 1}"></input>
+                <input type="submit" th:name="cnt"
+                    class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                    th:value="${cnt + 2}"></input>
+                <input type="submit" th:name="cnt" th:if="${1 >= cnt}"
+                    class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                    th:value="${cnt + 3}"></input>
+                <input type="submit" th:name="cnt" th:if="${0 >= cnt}"
+                    class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                    th:value="${cnt + 4}"></input>
+            </div>
+            <select class="border rounded px-2 py-1 outline-none">
+                <option>10 / page</option>
+                <option>20 / page</option>
+            </select>
+        </div>
+    </form>
 </body>
 
 </html>

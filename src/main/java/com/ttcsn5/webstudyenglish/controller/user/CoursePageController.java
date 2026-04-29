@@ -1,8 +1,13 @@
 package com.ttcsn5.webstudyenglish.controller.user;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +15,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ttcsn5.webstudyenglish.entity.Article;
+import com.ttcsn5.webstudyenglish.entity.Category;
 import com.ttcsn5.webstudyenglish.entity.Course;
+import com.ttcsn5.webstudyenglish.entity.Subscription;
 import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.entity.Video;
 import com.ttcsn5.webstudyenglish.repository.ArticleRepo;
+import com.ttcsn5.webstudyenglish.repository.VideoRepo;
 import com.ttcsn5.webstudyenglish.service.CourseService;
+import com.ttcsn5.webstudyenglish.service.SubscriptionService;
 import com.ttcsn5.webstudyenglish.service.VideoService;
 
 import jakarta.servlet.http.HttpSession;
@@ -30,6 +39,12 @@ public class CoursePageController {
 
     @Autowired
     private ArticleRepo articleRepo;
+
+    @Autowired
+    private VideoRepo videoRepo;
+
+    @Autowired
+    private SubscriptionService subscriptionService;
 
     // @GetMapping("/courses")
     // public String courses(@RequestParam(value = "keyword", required = false,
@@ -63,18 +78,33 @@ public class CoursePageController {
     // }
 
     @GetMapping("/videos")
-    public String videos(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+    public String videos(
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+            @RequestParam(name = "categorySearch", required = false, defaultValue = "0") Integer categorySearch,
+            @RequestParam(name = "cnt", required = false, defaultValue = "0") Integer cnt,
+
             Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null || !user.getRoleId().getCode().equals("USER")) {
             return "redirect:/login";
         }
-        model.addAttribute("videos", keyword.isBlank() ? videoService.findPublished()
-                : videoService.search(keyword).stream().filter(video -> Boolean.TRUE.equals(video.getStatus()))
-                        .toList());
+
+        Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
+
+        Set<Category> categories = subscriptions.stream().map(subscription -> subscription.getPlan().getVideos())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
+
+        Pageable pageable = PageRequest.of(cnt, 12, Sort.by("createdAt").descending());
+
+        model.addAttribute("videos",
+                videoRepo.findVideoUserHomeAndCategoryPlan(pageable, keyword, categorySearch, categories));
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "video");
         model.addAttribute("userPath", "user/video/index");
+        model.addAttribute("categories", categories);
+        model.addAttribute("categorySearch", categorySearch);
+        model.addAttribute("cnt", cnt);
         addRole(session, model);
         return "user/index";
     }

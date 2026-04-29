@@ -119,8 +119,8 @@ public class AuthController {
 
             return "redirect:/admin/dashboard";
         }
-        Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
-        session.setAttribute("subscriptions", subscriptions);
+        // Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
+        // session.setAttribute("subscriptions", subscriptions);
         return "redirect:/home";
 
     }

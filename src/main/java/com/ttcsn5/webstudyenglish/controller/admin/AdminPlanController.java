@@ -69,12 +69,12 @@ public class AdminPlanController {
             @RequestParam("description") String description,
             @RequestParam("durationDays") Integer duration,
 
-            @RequestParam(name = "articles", required = false) Set<Integer> articleIds,
-            @RequestParam(name = "quizzes", required = false) Set<Integer> quizIds,
-            @RequestParam(name = "videos", required = false) Set<Integer> videoIds,
-            @RequestParam(name = "grammars", required = false) Set<Integer> grammarIds,
-            @RequestParam(name = "vocabularies", required = false) Set<Integer> vocabularyIds,
-            @RequestParam(name = "dictationTopics", required = false) Set<Integer> dictationIds,
+            @RequestParam(name = "articles", required = false, defaultValue = "") Set<Integer> articleIds,
+            @RequestParam(name = "quizzes", required = false, defaultValue = "") Set<Integer> quizIds,
+            @RequestParam(name = "videos", required = false, defaultValue = "") Set<Integer> videoIds,
+            @RequestParam(name = "grammars", required = false, defaultValue = "") Set<Integer> grammarIds,
+            @RequestParam(name = "vocabularies", required = false, defaultValue = "") Set<Integer> vocabularyIds,
+            @RequestParam(name = "dictationTopics", required = false, defaultValue = "") Set<Integer> dictationIds,
             HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null || !user.getRoleId().getCode().equals("ADMIN")) {

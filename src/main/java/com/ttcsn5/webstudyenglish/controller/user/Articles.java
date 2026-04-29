@@ -2,6 +2,8 @@ package com.ttcsn5.webstudyenglish.controller.user;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,12 +19,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ttcsn5.webstudyenglish.dto.response.ArticleDetailResponse;
 import com.ttcsn5.webstudyenglish.dto.response.ArticlesUserHomeResponse;
 import com.ttcsn5.webstudyenglish.entity.Category;
+import com.ttcsn5.webstudyenglish.entity.Plan;
+import com.ttcsn5.webstudyenglish.entity.Subscription;
 import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.repository.ArticleRepo;
 import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
+import com.ttcsn5.webstudyenglish.service.SubscriptionService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 @Controller
 public class Articles {
@@ -32,7 +38,10 @@ public class Articles {
     private CategoryService cateSer;
     @Autowired
     private ArticleRepo articleRepo;
+    @Autowired
+    private SubscriptionService subscriptionService;
 
+    @Transactional
     @GetMapping("/user/articles")
     public String home(
             @RequestParam(name = "cnt", required = false, defaultValue = "0") Integer cnt,
@@ -43,12 +52,20 @@ public class Articles {
         if (user == null || !user.getRoleId().getCode().equals("USER")) {
             return "redirect:/login";
         }
-        List<Category> categorys = cateSer.findAllNameCate("Article");
+
+        Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
+
+        Set<Category> categories = subscriptions.stream().map(subscription -> subscription.getPlan().getArticles())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
+
+        // List<Category> categorys = cateSer.findAllNameCate("Article");
 
         Pageable pageable = PageRequest.of(cnt, 12, Sort.by("createdAt").descending());
 
-        model.addAttribute("articles", articleRepo.findArticleUserHome(pageable, keyword, categorySearch));
-        model.addAttribute("categorys", categorys);
+        model.addAttribute("articles",
+                articleRepo.findArticleUserHomeAndCategoryPlan(pageable, keyword, categorySearch, categories));
+        model.addAttribute("categorys", categories);
         model.addAttribute("keyword", keyword);
         model.addAttribute("categorySearch", categorySearch);
         model.addAttribute("cnt", cnt);

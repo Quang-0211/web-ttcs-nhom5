@@ -26,4 +26,6 @@ public interface CategoryRepo extends JpaRepository<Category, Integer> {
     // :ids")
     // Set<Category> findAllByIdInAndParentName(Set<Integer> ids, String name);
     Set<Category> findByIdInAndParent_Name(Set<Integer> ids, String name);
+
+    
 }

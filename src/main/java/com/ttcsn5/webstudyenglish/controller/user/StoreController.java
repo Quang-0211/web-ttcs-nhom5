@@ -59,7 +59,7 @@ public class StoreController {
             return "redirect:/login";
         }
 
-        Set<Subscription> subscriptions = (Set<Subscription>) session.getAttribute("subscription");
+        Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user1.getId());
         if (subscriptions != null) {
             boolean alreadySubscribed = subscriptions.stream()
                     .anyMatch(sub -> sub.getPlan().getId().equals(planId));
@@ -90,9 +90,6 @@ public class StoreController {
         subscriptionService.saveSubscription(subscription);
         ra.addFlashAttribute("message", "Chúc mừng! Bạn đã mua +" + plan.getName() + " thành công.");
         ra.addFlashAttribute("error", false); // Kích hoạt màu xanh
-
-        subscriptions.add(subscription);
-        session.setAttribute("subscription", subscriptions);
 
         return "redirect:/user/store";
     }

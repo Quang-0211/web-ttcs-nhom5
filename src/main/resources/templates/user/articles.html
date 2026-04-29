@@ -123,15 +123,34 @@
                     <i class="fas fa-chevron-left text-sm"></i>
                 </button>
 
-                <div class="flex gap-2">
-                    <input type="submit" th:name="cnt" th:value="${cnt}"
-                        class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-bold shadow-xl shadow-blue-200 cursor-pointer">
-
-                    <input type="submit" th:name="cnt" th:value="${cnt + 1}"
-                        class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors">
-
-                    <input type="submit" th:name="cnt" th:value="${cnt + 2}"
-                        class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors">
+                <div class="p-4 flex justify-end items-center gap-4 text-sm text-gray-600">
+                    <div class="flex items-center gap-2">
+                        <input type="submit" th:name="cnt" th:if="${cnt>1}"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt - 2}"></input>
+                        <input type="submit" th:name="cnt" th:if="${cnt>0}"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt - 1}"></input>
+                        <input type="submit" th:name="cnt"
+                            class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-bold shadow-xl shadow-blue-200 cursor-pointer"
+                            th:value="${cnt}"></input>
+                        <input type="submit" th:name="cnt"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt + 1}"></input>
+                        <input type="submit" th:name="cnt"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt + 2}"></input>
+                        <input type="submit" th:name="cnt" th:if="${1 >= cnt}"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt + 3}"></input>
+                        <input type="submit" th:name="cnt" th:if="${0 >= cnt}"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt + 4}"></input>
+                    </div>
+                    <select class="border rounded px-2 py-1 outline-none">
+                        <option>10 / page</option>
+                        <option>20 / page</option>
+                    </select>
                 </div>
 
                 <button type="submit" th:name="cnt" th:value="${cnt + 1}"
