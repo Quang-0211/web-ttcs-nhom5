@@ -23,6 +23,7 @@ public class Article {
 
     private String image;
     private String audio;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -40,8 +41,9 @@ public class Article {
         this.status = status;
         this.category = category;
     }
+
     public Article(int id, String title, String content, String image, String audio, Boolean status, Category category) {
-        this.id=id;
+        this.id = id;
         this.title = title;
         this.content = content;
         this.image = image;
@@ -50,9 +52,14 @@ public class Article {
         this.category = category;
     }
 
-    @PrePersist // khi chay save thi se ti va chay pre truoc khi save
+    @PrePersist
     public void createAt() {
         this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void updateAt() {
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

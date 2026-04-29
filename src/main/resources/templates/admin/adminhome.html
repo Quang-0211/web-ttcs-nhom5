@@ -5,30 +5,20 @@
     <meta charset="UTF-8">
     <title>Admin Page</title>
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="bg-gray-100">
 
-
     <div class="flex h-screen w-full overflow-hidden bg-gray-100">
 
         <div class="w-64 shrink-0 bg-white shadow-lg p-4 flex flex-col overflow-y-auto z-20">
 
-            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                ADMIN PAGE
-            </h2>
+            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">ADMIN PAGE</h2>
 
             <ul class="space-y-2 text-gray-700">
-
-                <!-- DASHBOARD -->
                 <li>
                     <a th:href="@{/admin/dashboard}"
                         th:classappend="${path == 'admin/dashboard'} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -37,25 +27,6 @@
                     </a>
                 </li>
 
-                <!-- MONITOR -->
-                <!-- <li>
-                    <a th:href="@{/admin/monitor}"
-                        th:classappend="${path.startsWith('admin/monitor')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
-                        <i class="fa fa-eye"></i> Monitor
-                    </a>
-                </li> -->
-
-                <!-- PERMISSION -->
-                <!-- <li>
-                    <a th:href="@{/admin/permission}"
-                        th:classappend="${path.startsWith('admin/permission')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
-                        <i class="fa fa-lock"></i> Permission
-                    </a>
-                </li> -->
-
-                <!-- USER -->
                 <li>
                     <a th:href="@{/admin/users}"
                         th:classappend="${path.startsWith('admin/user')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -64,16 +35,14 @@
                     </a>
                 </li>
 
-                <!-- PLAN -->
                 <li>
-                    <a th:href="@{/admin/plan}"
+                    <a th:href="@{/admin/plans}"
                         th:classappend="${path.startsWith('admin/plan')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
                         <i class="fa fa-box"></i> Plan
                     </a>
                 </li>
 
-                <!-- SUBSCRIPTION -->
                 <li>
                     <a th:href="@{/admin/subscription}"
                         th:classappend="${path.startsWith('admin/subscription')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -82,7 +51,6 @@
                     </a>
                 </li>
 
-                <!-- STATISTIC -->
                 <li>
                     <a th:href="@{/admin/statistic}"
                         th:classappend="${path.startsWith('admin/statistic')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -91,16 +59,6 @@
                     </a>
                 </li>
 
-                <!-- BADGE -->
-                <!-- <li>
-                    <a th:href="@{/admin/badge}"
-                        th:classappend="${path.startsWith('admin/badge')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
-                        <i class="fa fa-trophy"></i> Badge
-                    </a>
-                </li> -->
-
-                <!-- ARTICLE -->
                 <li>
                     <a th:href="@{/admin/articles}"
                         th:classappend="${path.startsWith('admin/article')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -109,16 +67,22 @@
                     </a>
                 </li>
 
-                <!-- VIDEO -->
                 <li>
-                    <a th:href="@{/admin/video}"
+                    <a th:href="@{/admin/courses}"
+                        th:classappend="${path.startsWith('admin/course')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-graduation-cap"></i> Course
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/admin/videos}"
                         th:classappend="${path.startsWith('admin/video')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
                         <i class="fa fa-video"></i> Video
                     </a>
                 </li>
 
-                <!-- GRAMMAR -->
                 <li>
                     <a th:href="@{/admin/grammar}"
                         th:classappend="${path.startsWith('admin/grammar')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -127,7 +91,6 @@
                     </a>
                 </li>
 
-                <!-- VOCABULARY -->
                 <li>
                     <a th:href="@{/admin/vocabulary}"
                         th:classappend="${path.startsWith('admin/vocabulary')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -136,7 +99,6 @@
                     </a>
                 </li>
 
-                <!-- DICTATION -->
                 <li>
                     <a th:href="@{/admin/dictation}"
                         th:classappend="${path.startsWith('admin/dictation')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -144,10 +106,8 @@
                         <i class="fa fa-microphone"></i> Dictation
                     </a>
                 </li>
-
             </ul>
 
-            <!-- Logout pinned to bottom -->
             <div class="mt-auto pt-4 border-t border-gray-200">
                 <form th:action="@{/logout}" method="get">
                     <button type="submit"
@@ -159,13 +119,12 @@
             </div>
 
         </div>
-        <!-- content -->
-        <div th:replace="~{${path} :: content}" class="flex-1 min-h-0 min-w-0 overflow-y-auto">
 
-        </div>
+        <div th:replace="~{${path} :: content}" class="flex-1 min-h-0 min-w-0 overflow-y-auto"></div>
     </div>
+
     <script th:src="@{/js/adminarticle.js}"></script>
-    <!-- SIDEBAR -->
+    <script th:src="@{/js/admin-plan.js}"></script>
 </body>
 
 </html>

@@ -43,7 +43,7 @@ public class ArticleController {
         model.addAttribute("categorySelected", category);
         model.addAttribute("statusSelected", status);
         model.addAttribute("cnt", cntString);
-        model.addAttribute("categories", cateService.findAll());
+        model.addAttribute("categories", cateService.findAllNameCate("Article"));
         model.addAttribute("articles", articles);
         model.addAttribute("path", "admin/article");
         return "admin/adminhome";
@@ -59,6 +59,7 @@ public class ArticleController {
             @RequestParam(name = "status", required = false, defaultValue = "true") boolean status,
             @RequestParam("category") Integer categoryId) throws IOException {
 
+        System.out.println(articleId + " " + title + " " + content);
         String imgPathStr = uploadService.upload(image, "images");
         String audPathStr = uploadService.upload(audio, "audios");
 
@@ -72,7 +73,6 @@ public class ArticleController {
             article = new Article(Integer.parseInt(articleId), title, content, imgPathStr, audPathStr, status,
                     cateService.findById(categoryId));
         }
-        System.out.println(article);
         artService.save(article);
 
         return "redirect:/admin/articles";
@@ -80,8 +80,24 @@ public class ArticleController {
 
     @PostMapping("/admin/articles/publish")
     @ResponseBody
-    public void updateStatus(@RequestParam("articleId") String articleId,
+    public java.util.Map<String, Object> updateStatus(@RequestParam("articleId") String articleId,
             @RequestParam("status") String status) {
-        artService.updateStatus(Integer.parseInt(articleId), Boolean.parseBoolean(status));
+        try {
+            artService.updateStatus(Integer.parseInt(articleId), Boolean.parseBoolean(status));
+            return java.util.Map.of("success", true, "message", "Article status updated successfully");
+        } catch (Exception e) {
+            return java.util.Map.of("success", false, "message", "Error updating article status");
+        }
+    }
+
+    @PostMapping("/admin/articles/delete")
+    @ResponseBody
+    public java.util.Map<String, Object> delete(@RequestParam("articleId") Integer articleId) {
+        try {
+            artService.delete(articleId);
+            return java.util.Map.of("success", true, "message", "Article deleted successfully");
+        } catch (Exception e) {
+            return java.util.Map.of("success", false, "message", "Error deleting article");
+        }
     }
 }

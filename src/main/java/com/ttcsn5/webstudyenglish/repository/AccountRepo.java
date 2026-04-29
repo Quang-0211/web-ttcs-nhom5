@@ -7,6 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ttcsn5.webstudyenglish.entity.User;
@@ -25,8 +27,11 @@ public interface AccountRepo extends JpaRepository<User, Long> {
 
     List<User> searchByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCase(String username, String email);
 
-
     Slice<User> findByUsernameContainingAndEmailContaining(String username, String email, Pageable pageable);
 
-    Slice<User> findByUsernameContainingAndEmailContainingAndRoleId_Id(String username, String email, int roleId, Pageable pageable);
+    Slice<User> findByUsernameContainingAndEmailContainingAndRoleId_Id(String username, String email, int roleId,
+            Pageable pageable);
+
+    @Query("SELECT COUNT(a) FROM User a")
+    long countUser();
 }

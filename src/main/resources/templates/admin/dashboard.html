@@ -23,7 +23,7 @@
 
             <div class="bg-white p-4 rounded-xl shadow">
                 <p class="text-gray-500">Total Users</p>
-                <h2 class="text-2xl font-bold">11</h2>
+                <h2 th:text="${totalUser}" class="text-2xl font-bold">11</h2>
             </div>
 
             <div class="bg-white p-4 rounded-xl shadow">
@@ -48,7 +48,7 @@
 
             <div class="bg-white p-4 rounded-xl shadow">Total Vocabularies: 10</div>
             <div class="bg-white p-4 rounded-xl shadow">Total Quizzes: 10</div>
-            <div class="bg-white p-4 rounded-xl shadow">Total Articles: 10</div>
+            <div class="bg-white p-4 rounded-xl shadow" th:text="'Total Vocabularies: '+${totalArticle}">Total Articles: 10</div>
             <div class="bg-white p-4 rounded-xl shadow">Total Posts: 10</div>
 
         </div>

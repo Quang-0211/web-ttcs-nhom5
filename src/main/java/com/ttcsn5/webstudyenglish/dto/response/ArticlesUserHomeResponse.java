@@ -1,0 +1,80 @@
+package com.ttcsn5.webstudyenglish.dto.response;
+
+import java.time.LocalDateTime;
+
+public class ArticlesUserHomeResponse {
+    private Integer id;
+    private String title;
+    private String image;
+    private String cateName;
+    private int cateId;
+
+    public ArticlesUserHomeResponse(Integer id, String title, String image, String cateName, int cateId,
+            LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.image = image;
+        this.cateName = cateName;
+        this.cateId = cateId;
+        this.createdAt = createdAt;
+    }
+
+    private LocalDateTime createdAt;
+
+    public ArticlesUserHomeResponse(Integer id, String title, String image, String cateName, LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.image = image;
+        this.cateName = cateName;
+        this.createdAt = createdAt;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getCateName() {
+        return cateName;
+    }
+
+    public void setCateName(String cateName) {
+        this.cateName = cateName;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public int getCateId() {
+        return cateId;
+    }
+
+    public void setCateId(int cateId) {
+        this.cateId = cateId;
+    }
+
+}

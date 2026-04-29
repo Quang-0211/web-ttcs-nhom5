@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="content" class="flex-1 overflow-y-auto bg-[#f8fafc]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10">
+            <div class="grid grid-cols-1 xl:grid-cols-[1.5fr_0.9fr] gap-8">
+                <section class="space-y-6">
+                    <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+                        <div class="aspect-video bg-slate-950">
+                            <iframe th:if="${video.url != null and !#strings.isEmpty(video.url)}"
+                                th:src="${video.url}" class="w-full h-full" allowfullscreen></iframe>
+                            <div th:if="${video.url == null or #strings.isEmpty(video.url)}"
+                                class="w-full h-full flex items-center justify-center text-white">
+                                <span>Video preview not available</span>
+                            </div>
+                        </div>
+                        <div class="p-8 space-y-4">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <span class="px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-[0.3em]"
+                                    th:text="${video.category != null ? video.category.name : 'General'}">General</span>
+                                <span class="text-sm text-slate-400" th:text="${video.duration + ' min'}">30 min</span>
+                                <span class="text-sm text-slate-400" th:text="${video.status ? 'Published' : 'Disabled'}">Published</span>
+                            </div>
+                            <h1 class="text-4xl font-black text-slate-900" th:text="${video.title}">Video title</h1>
+                            <p class="text-slate-600 leading-7" th:text="${video.description}">Description</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[1.75rem] border border-slate-100 shadow-sm p-6">
+                        <h2 class="text-xl font-bold text-slate-900 mb-4">Subtitle</h2>
+                        <div class="text-slate-600 leading-7 whitespace-pre-line" th:text="${video.subtitle}">Subtitle text</div>
+                    </div>
+                </section>
+
+                <aside class="space-y-6">
+                    <div class="bg-white rounded-[1.75rem] border border-slate-100 shadow-sm p-6 sticky top-6">
+                        <h2 class="text-xl font-bold text-slate-900 mb-4">Video liên quan</h2>
+                        <div class="space-y-3">
+                            <a th:each="item : ${relatedVideos}" th:href="@{'/videos/' + ${item.id}}"
+                                class="flex gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-all">
+                                <img th:src="${item.thumbnail != null ? item.thumbnail : 'https://via.placeholder.com/100x70'}"
+                                    class="w-20 h-14 rounded-xl object-cover" alt="video">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900 line-clamp-2" th:text="${item.title}">Title</p>
+                                    <p class="text-xs text-slate-400 mt-1" th:text="${item.category != null ? item.category.name : 'General'}">General</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

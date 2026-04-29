@@ -46,5 +46,14 @@ public class Category {
     @JoinColumn(name = "updated_by")
     private User updatedBy;
 
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", parent=" + parent +
+                '}';
+    }
 }
 

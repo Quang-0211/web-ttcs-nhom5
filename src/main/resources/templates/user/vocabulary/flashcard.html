@@ -22,10 +22,18 @@
                         <a href="javascript:history.back()" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
-                        <h2 class="text-xl font-extrabold text-gray-700 tracking-wide uppercase">Flashcards</h2>
-                        <button @click="shuffleCards()" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition">
-                            <i class="fa fa-random"></i> Shuffle
-                        </button>
+                        <div class="flex flex-col items-center text-center">
+                            <h2 class="text-xl font-extrabold text-gray-700 tracking-wide uppercase">Flashcards</h2>
+                            <p class="text-xs font-bold text-gray-400 tracking-widest uppercase" th:text="${category != null ? category.name : 'All vocabulary'}">Animals</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <a th:if="${category != null}" th:href="@{/review/quiz(categoryId=${category.id})}" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition">
+                                <i class="fa fa-question-circle"></i> Quiz
+                            </a>
+                            <button @click="shuffleCards()" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition">
+                                <i class="fa fa-random"></i> Shuffle
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Progress Bar -->
