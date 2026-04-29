@@ -110,14 +110,22 @@
                                 <td class="p-4 text-center">
                                     <div class="flex justify-center gap-2">
                                         <button type="button" th:attr="
-                                            data-id=${art.id},
-                                            data-title=${art.title},
-                                            data-img=${art.image},
-                                            data-audio=${art.audio},
-                                            data-content=${art.content},
-                                            data-categoryid=${art.category.id},
-                                        " onclick="openArticleModal('update',this.dataset.id, this.dataset.title, this.dataset.img, this.dataset.audio, this.dataset.content, this.dataset.categoryid)"
-                                            class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
+                                                    data-id=${art.id},
+                                                    data-title=|${art.title}|,
+                                                    data-img=|${art.image}|,
+                                                    data-audio=|${art.audio}|,
+                                                    data-content=|${art.content}|,
+                                                    data-categoryid=${art.category.id}
+                                                " onclick="openArticleModal(
+                                                    'update',
+                                                    this.dataset.id,
+                                                    this.dataset.title,
+                                                    this.dataset.img,
+                                                    this.dataset.audio,
+                                                    this.dataset.content,
+                                                    this.dataset.categoryid
+                                                )" class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
+
                                             <i class="fa fa-edit text-lg"></i>
                                         </button>
                                         <button th:attr="onclick=|deleteArticle(${art.id})|"

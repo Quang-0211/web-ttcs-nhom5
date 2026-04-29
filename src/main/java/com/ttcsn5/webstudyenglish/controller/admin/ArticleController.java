@@ -43,7 +43,7 @@ public class ArticleController {
         model.addAttribute("categorySelected", category);
         model.addAttribute("statusSelected", status);
         model.addAttribute("cnt", cntString);
-        model.addAttribute("categories", cateService.findAllArticle());
+        model.addAttribute("categories", cateService.findAllNameCate("Article"));
         model.addAttribute("articles", articles);
         model.addAttribute("path", "admin/article");
         return "admin/adminhome";

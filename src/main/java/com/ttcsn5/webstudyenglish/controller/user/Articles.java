@@ -36,7 +36,7 @@ public class Articles {
             @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,
             @RequestParam(name = "categorySearch", required = false, defaultValue = "0") Integer categorySearch,
             Model model) {
-        List<Category> categorys = cateSer.findAllArticle();
+        List<Category> categorys = cateSer.findAllNameCate("Article");
 
         Pageable pageable = PageRequest.of(cnt, 12, Sort.by("createdAt").descending());
 

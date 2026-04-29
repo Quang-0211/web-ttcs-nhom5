@@ -37,7 +37,7 @@ public class AdminVideoController {
             return "redirect:/login";
         }
         List<Video> videos = videoService.search(keyword);
-        model.addAttribute("categories", cateService.findAllVideo());
+        model.addAttribute("categories", cateService.findAllNameCate("Video"));
         model.addAttribute("keyword", keyword);
         model.addAttribute("videos", videos);
         //model.addAttribute("courses", courseService.findPublished());
