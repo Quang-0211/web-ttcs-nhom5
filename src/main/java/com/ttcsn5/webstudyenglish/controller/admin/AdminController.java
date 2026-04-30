@@ -42,7 +42,7 @@ public class AdminController {
         response.setDateHeader("Expires", 0);
 
         List<String> allowedPaths = Arrays.asList("dashboard", "user", "categories",
-                "lessons", "article", "vocabulary", "grammar", "dictation");
+                "lessons", "article", "vocabulary", "grammar", "dictation", "quiz");
         if (!allowedPaths.contains(path)) {
             return "error/404";
         }
@@ -62,13 +62,53 @@ public class AdminController {
             model.addAttribute("dictationTopics", dictationTopicRepo.findAll());
         }
 
-        if (Arrays.asList("dictation", "grammar", "vocabulary").contains(path)) {
+        if ("quiz".equals(path)) {
+            model.addAttribute("categories", categoryRepo.findAll());
+        }
+
+        if (Arrays.asList("dictation", "grammar", "vocabulary", "quiz").contains(path)) {
             model.addAttribute("path", "admin/" + path + "/index");
         } else {
             model.addAttribute("path", "admin/" + path);
         }
 
         model.addAttribute("current", path);
+        return "admin/adminhome";
+    }
+
+    @GetMapping("/admin/quiz/create")
+    public String createQuiz(Model model, jakarta.servlet.http.HttpSession session,
+            jakarta.servlet.http.HttpServletResponse response) {
+
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/login";
+        }
+
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        model.addAttribute("categories", categoryRepo.findAll());
+        model.addAttribute("path", "admin/quiz/create");
+        model.addAttribute("current", "quiz");
+        return "admin/adminhome";
+    }
+
+    @GetMapping("/admin/quiz/edit/{id}")
+    public String editQuiz(@PathVariable("id") Integer id, Model model, jakarta.servlet.http.HttpSession session,
+            jakarta.servlet.http.HttpServletResponse response) {
+
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/login";
+        }
+
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        model.addAttribute("categories", categoryRepo.findAll());
+        model.addAttribute("path", "admin/quiz/edit");
+        model.addAttribute("current", "quiz");
         return "admin/adminhome";
     }
 }

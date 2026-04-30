@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html th:fragment="content" xmlns:th="http://www.thymeleaf.org">
+<div class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col items-center">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            const quizData = /*[[${quiz}]]*/ {};
+            const questionsData = /*[[${questions}]]*/ [];
+            /*]]>*/
+        </script>
+
+        <div x-data="takeQuizApp()" class="w-full h-full flex flex-col items-center max-w-4xl pt-4">
+
+            <!-- Top Bar -->
+            <div class="w-full flex justify-between items-center mb-8 gap-4">
+                <a href="javascript:history.back()" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition shrink-0">
+                    <i class="fa fa-arrow-left"></i> Back
+                </a>
+
+                <div class="flex flex-col items-center text-center min-w-0">
+                    <h2 class="text-xl font-extrabold text-gray-700 tracking-wide uppercase" x-text="quizData.title"></h2>
+                    <p class="text-xs font-bold text-gray-400 tracking-widest uppercase" x-text="quizData.category ? quizData.category.name : 'General'"></p>
+                </div>
+
+                <div class="shrink-0">
+                    <span class="text-sm font-bold text-gray-400">Question <span x-text="currentIndex + 1"></span>/<span x-text="questions.length"></span></span>
+                </div>
+            </div>
+
+            <template x-if="questions.length > 0 && !submitted">
+                <div class="w-full max-w-[680px]">
+                    <div class="rounded-[2rem] border border-gray-100 bg-white shadow-lg p-8 md:p-10">
+                        <div class="flex flex-col gap-6">
+                            <div>
+                                <p class="text-[11px] font-extrabold text-blue-500 uppercase tracking-[0.28em] mb-3">Question <span x-text="currentIndex + 1"></span></p>
+                                <h3 class="text-3xl md:text-4xl font-extrabold text-gray-800 leading-tight" x-text="currentQuestion.content"></h3>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4">
+                                <template x-for="answer in currentQuestion.answers" :key="answer.id">
+                                    <label class="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-blue-300 cursor-pointer transition"
+                                           :class="selectedAnswers.includes(answer.id) ? 'border-blue-500 bg-blue-50' : ''">
+                                        <input type="radio" :name="'question-' + currentQuestion.id" :value="answer.id"
+                                               x-model="selectedAnswer" class="text-blue-500 focus:ring-blue-500">
+                                        <span class="font-bold text-gray-700" x-text="answer.content"></span>
+                                    </label>
+                                </template>
+                            </div>
+
+                            <div class="flex justify-between">
+                                <button @click="prevQuestion()" :disabled="currentIndex === 0"
+                                        class="px-6 py-3 border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition"
+                                        :class="currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''">
+                                    Previous
+                                </button>
+                                <button @click="nextQuestion()" :disabled="!selectedAnswer"
+                                        class="px-6 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition"
+                                        :class="!selectedAnswer ? 'opacity-50 cursor-not-allowed' : ''">
+                                    <span x-text="currentIndex === questions.length - 1 ? 'Submit Quiz' : 'Next'"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template x-if="submitted">
+                <div class="w-full max-w-[680px]">
+                    <div class="rounded-[2rem] border border-gray-100 bg-white shadow-lg p-8 md:p-10 text-center">
+                        <div class="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center bg-green-50 text-green-500">
+                            <i class="fa fa-check text-3xl"></i>
+                        </div>
+                        <p class="text-[11px] font-extrabold text-green-500 uppercase tracking-[0.28em] mb-3">Quiz completed</p>
+                        <h3 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-3">
+                            You scored <span x-text="score"></span>/<span x-text="questions.length"></span>
+                        </h3>
+                        <p class="text-gray-500 font-medium mb-8">
+                            Thank you for completing the quiz!
+                        </p>
+                        <a href="/quizzes" class="px-6 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition">
+                            Back to Quizzes
+                        </a>
+                    </div>
+                </div>
+            </template>
+
+        </div>
+
+        <script>
+            function takeQuizApp() {
+                return {
+                    questions: questionsData,
+                    currentIndex: 0,
+                    selectedAnswer: null,
+                    userAnswers: new Array(questionsData.length).fill(null),
+                    submitted: false,
+                    score: 0,
+
+                    get currentQuestion() {
+                        return this.questions[this.currentIndex] || null;
+                    },
+
+                    nextQuestion() {
+                        if (!this.selectedAnswer) return;
+
+                        // Save answer
+                        this.userAnswers[this.currentIndex] = {
+                            question: { id: this.currentQuestion.id },
+                            selectedChoiceId: this.selectedAnswer
+                        };
+
+                        if (this.currentIndex < this.questions.length - 1) {
+                            this.currentIndex++;
+                            this.selectedAnswer = null;
+                        } else {
+                            this.submitQuiz();
+                        }
+                    },
+
+                    prevQuestion() {
+                        if (this.currentIndex > 0) {
+                            this.currentIndex--;
+                            this.selectedAnswer = this.userAnswers[this.currentIndex]?.selectedChoiceId || null;
+                        }
+                    },
+
+                    submitQuiz() {
+                        const answersToSubmit = this.userAnswers.filter(answer => answer !== null);
+                        fetch(`/quiz/${quizData.id}/submit`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(answersToSubmit)
+                        })
+                        .then(res => res.text())
+                        .then(result => {
+                            if (result === 'error' || result === 'not_logged_in') {
+                                alert('Error submitting quiz');
+                            } else {
+                                this.score = parseInt(result);
+                                this.submitted = true;
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Error submitting quiz');
+                        });
+                    },
+
+                    calculateScore() {
+                        // Score is now received from server
+                    }
+                }
+            }
+        </script>
+    </div>
+</div>
+</html>
