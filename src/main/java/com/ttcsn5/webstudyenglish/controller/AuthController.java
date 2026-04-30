@@ -115,12 +115,11 @@ public class AuthController {
         }
         User user = loginStatus.getUser();
         session.setAttribute("user", user);
+        session.setAttribute("userId", user.getId());
         if (user.getRoleId().getCode().equals("ADMIN")) {
 
             return "redirect:/admin/dashboard";
         }
-        // Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
-        // session.setAttribute("subscriptions", subscriptions);
         return "redirect:/home";
 
     }

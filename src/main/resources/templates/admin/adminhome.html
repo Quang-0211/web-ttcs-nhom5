@@ -51,6 +51,13 @@
                         <i class="fa fa-credit-card"></i> Subscription
                     </a>
                 </li>
+                <li>
+                    <a th:href="@{/profile}"
+                        th:classappend="${current == 'profile'} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-user"></i> Profile
+                    </a>
+                </li>
 
                 <li>
                     <a th:href="@{/admin/statistic}"
