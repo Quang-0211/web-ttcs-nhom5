@@ -1,90 +1,100 @@
 <!DOCTYPE html>
 <html th:fragment="content" xmlns:th="http://www.thymeleaf.org">
-    <div class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
-            <div class="flex flex-col gap-4">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+<div class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.32em] text-gray-500">Profile</p>
+                    <h1 class="text-3xl font-extrabold text-gray-900">Thông tin cá nhân</h1>
+                </div>
+                <div class="rounded-3xl bg-blue-50 border border-blue-100 px-5 py-4 text-blue-700">
+                    <p class="text-sm font-semibold">Role</p>
+                    <p class="text-lg font-bold" th:text="${user.roleId != null ? user.roleId.code : 'USER'}"></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="rounded-3xl border border-gray-200 bg-gray-50 p-6">
+                    <p class="text-sm text-gray-500 mb-2">Username</p>
+                    <p class="text-xl font-bold text-gray-900" th:text="${user.username}"></p>
+                </div>
+                <div class="rounded-3xl border border-gray-200 bg-gray-50 p-6">
+                    <p class="text-sm text-gray-500 mb-2">Email</p>
+                    <p class="text-xl font-bold text-gray-900" th:text="${user.email}"></p>
+                </div>
+                <div class="rounded-3xl border border-gray-200 bg-gray-50 p-6">
+                    <p class="text-sm text-gray-500 mb-2">Joined</p>
+                    <p class="text-xl font-bold text-gray-900"
+                        th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd/MM/yyyy') : 'N/A'}">
+                    </p>
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-gray-200 bg-white p-6">
+                <div class="flex items-center justify-between mb-4">
                     <div>
-                        <p class="text-xs uppercase tracking-[0.32em] text-gray-500">Profile</p>
-                        <h1 class="text-3xl font-extrabold text-gray-900">Thông tin cá nhân</h1>
-                    </div>
-                    <div class="rounded-3xl bg-blue-50 border border-blue-100 px-5 py-4 text-blue-700">
-                        <p class="text-sm font-semibold">Role</p>
-                        <p class="text-lg font-bold" th:text="${user.roleId != null ? user.roleId.code : 'USER'}"></p>
+                        <h2 class="text-xl font-bold text-gray-900">Thông tin nâng cao</h2>
+                        <p class="text-sm text-gray-500">Điểm và chuỗi điểm hàng ngày</p>
                     </div>
                 </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="rounded-3xl border border-gray-200 bg-gray-50 p-6">
-                        <p class="text-sm text-gray-500 mb-2">Username</p>
-                        <p class="text-xl font-bold text-gray-900" th:text="${user.username}"></p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="rounded-3xl border border-gray-200 bg-gray-50 p-4">
+                        <p class="text-sm text-gray-500">Point</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${user.point}"></p>
                     </div>
-                    <div class="rounded-3xl border border-gray-200 bg-gray-50 p-6">
-                        <p class="text-sm text-gray-500 mb-2">Email</p>
-                        <p class="text-xl font-bold text-gray-900" th:text="${user.email}"></p>
-                    </div>
-                    <div class="rounded-3xl border border-gray-200 bg-gray-50 p-6">
-                        <p class="text-sm text-gray-500 mb-2">Joined</p>
-                        <p class="text-xl font-bold text-gray-900" th:text="${user.createdAt != null ? #dates.format(user.createdAt, 'dd/MM/yyyy') : 'N/A'}"></p>
+                    <div class="rounded-3xl border border-gray-200 bg-gray-50 p-4">
+                        <p class="text-sm text-gray-500">Streak</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${user.streakCnt}"></p>
                     </div>
                 </div>
+            </div>
 
-                <div class="rounded-3xl border border-gray-200 bg-white p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <h2 class="text-xl font-bold text-gray-900">Thông tin nâng cao</h2>
-                            <p class="text-sm text-gray-500">Điểm và chuỗi điểm hàng ngày</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="rounded-3xl border border-gray-200 bg-gray-50 p-4">
-                            <p class="text-sm text-gray-500">Point</p>
-                            <p class="text-2xl font-bold text-gray-900" th:text="${user.point}"></p>
-                        </div>
-                        <div class="rounded-3xl border border-gray-200 bg-gray-50 p-4">
-                            <p class="text-sm text-gray-500">Streak</p>
-                            <p class="text-2xl font-bold text-gray-900" th:text="${user.streakCnt}"></p>
-                        </div>
+            <div th:if="${subscriptions != null}">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Gói đăng ký</h2>
+                        <p class="text-sm text-gray-500">Danh sách các gói đăng ký hiện tại của bạn.</p>
                     </div>
                 </div>
-
-                <div th:if="${subscriptions != null}">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-xl font-bold text-gray-900">Gói đăng ký</h2>
-                            <p class="text-sm text-gray-500">Danh sách các gói đăng ký hiện tại của bạn.</p>
-                        </div>
-                    </div>
-                    <div th:if="${subscriptions.size() > 0}" class="overflow-x-auto rounded-3xl border border-gray-200 bg-gray-50 p-4">
-                        <table class="min-w-full text-left text-sm text-gray-600">
-                            <thead>
-                                <tr>
-                                    <th class="px-4 py-3">Plan</th>
-                                    <th class="px-4 py-3">Transaction</th>
-                                    <th class="px-4 py-3">Start</th>
-                                    <th class="px-4 py-3">End</th>
-                                    <th class="px-4 py-3">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="sub : ${subscriptions}">
-                                    <td class="border-t border-gray-200 px-4 py-3" th:text="${sub.plan != null ? sub.plan.name : 'Unknown'}"></td>
-                                    <td class="border-t border-gray-200 px-4 py-3" th:text="${sub.transactionId}"></td>
-                                    <td class="border-t border-gray-200 px-4 py-3" th:text="${sub.startDate != null ? #dates.format(sub.startDate, 'dd/MM/yyyy') : '-'}"></td>
-                                    <td class="border-t border-gray-200 px-4 py-3" th:text="${sub.endDate != null ? #dates.format(sub.endDate, 'dd/MM/yyyy') : '-'}"></td>
-                                    <td class="border-t border-gray-200 px-4 py-3">
-                                        <span th:text="${sub.active} ? 'Active' : 'Inactive'"
-                                            th:class="${sub.active} ? 'inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700' : 'inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700'}"></span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div th:if="${subscriptions.size() == 0}" class="rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-gray-500">
-                        <p>Hiện tại bạn chưa có gói đăng ký nào.</p>
-                    </div>
+                <div th:if="${subscriptions.size() > 0}"
+                    class="overflow-x-auto rounded-3xl border border-gray-200 bg-gray-50 p-4">
+                    <table class="min-w-full text-left text-sm text-gray-600">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3">Plan</th>
+                                <th class="px-4 py-3">Transaction</th>
+                                <th class="px-4 py-3">Start</th>
+                                <th class="px-4 py-3">End</th>
+                                <th class="px-4 py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="sub : ${subscriptions}">
+                                <td class="border-t border-gray-200 px-4 py-3"
+                                    th:text="${sub.plan != null ? sub.plan.name : 'Unknown'}"></td>
+                                <td class="border-t border-gray-200 px-4 py-3" th:text="${sub.transactionId}"></td>
+                                <td class="border-t border-gray-200 px-4 py-3"
+                                    th:text="${sub.startDate != null ? #temporals.format(sub.startDate, 'dd/MM/yyyy') : 'N/A'}">
+                                </td>
+                                <td class="border-t border-gray-200 px-4 py-3"
+                                    th:text="${sub.endDate != null ? #temporals.format(sub.endDate, 'dd/MM/yyyy') : 'N/A'}">
+                                </td>
+                                <td class="border-t border-gray-200 px-4 py-3">
+                                    <span th:text="${sub.active} ? 'Active' : 'Inactive'"
+                                        th:class="${sub.active ? 'inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700' : 'inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700'}"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:if="${subscriptions.size() == 0}"
+                    class="rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-gray-500">
+                    <p>Hiện tại bạn chưa có gói đăng ký nào.</p>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
 </html>
