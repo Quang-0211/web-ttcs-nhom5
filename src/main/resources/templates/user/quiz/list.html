@@ -1,42 +1,193 @@
 <!DOCTYPE html>
-<html th:fragment="content" xmlns:th="http://www.thymeleaf.org">
-<div class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-extrabold text-gray-800">Available Quizzes</h1>
-            <a href="/quiz/create" class="px-6 py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition">
-                <i class="fa fa-plus mr-2"></i>Create Quiz
-            </a>
-        </div>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
-        <div class="flex-1 overflow-y-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div th:each="quiz : ${quizzes}" class="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-blue-300 transition">
-                    <h3 class="text-lg font-extrabold text-gray-800 mb-2" th:text="${quiz.title}"></h3>
-                    <p class="text-gray-600 text-sm mb-4" th:text="${quiz.description}"></p>
-                    <div class="flex justify-between items-center text-xs text-gray-500 mb-4">
-                        <span th:text="${quiz.category != null ? quiz.category.name : 'General'}"></span>
-                        <span th:text="${#temporals.format(quiz.created_at, 'MMM dd, yyyy')}"></span>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4Stars - Quizzes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .quiz-card:hover .arrow-icon {
+            transform: translateX(4px);
+            opacity: 1;
+        }
+
+        /* Hiệu ứng gradient thay thế cho ảnh */
+        .quiz-icon-container {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+
+        .quiz-card:hover .quiz-icon-container {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .quiz-card:hover .quiz-icon-container i {
+            color: white;
+            transform: scale(1.1) rotate(-5deg);
+        }
+    </style>
+</head>
+
+<body class="text-[#1e293b] flex h-screen overflow-hidden">
+
+    <main th:fragment="content" class="flex-1 overflow-y-auto custom-scrollbar relative px-6 lg:px-10">
+
+        <form method="get" th:action="@{/user/quizzes}" class="max-w-7xl mx-auto py-8">
+
+            <!-- Breadcrumb -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <nav
+                    class="flex items-center space-x-2 text-sm text-slate-400 bg-white px-5 py-2.5 rounded-2xl shadow-sm border border-slate-100">
+                    <a href="/" class="hover:text-blue-600 transition-colors"><i class="fas fa-home"></i></a>
+                    <span class="text-slate-300">/</span>
+                    <span class="text-slate-800 font-semibold uppercase tracking-wider text-[11px]">Quiz Center</span>
+                </nav>
+            </div>
+
+            <!-- Search & Filter Sticky Bar -->
+            <div class="sticky top-0 z-30 bg-[#f8fafc]/80 backdrop-blur-xl pt-2 pb-10">
+                <div
+                    class="bg-white p-2.5 rounded-[1.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 flex flex-col md:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" placeholder="Tìm kiếm tên bộ câu hỏi..." name="keyword" th:value="${keyword}"
+                            class="w-full pl-12 pr-4 py-3 bg-transparent border-none rounded-2xl focus:ring-0 outline-none text-slate-700 font-medium">
                     </div>
-                    <div class="flex gap-2">
-                        <a th:href="@{/quiz/{id}(id=${quiz.id})}" class="flex-1 px-4 py-2 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition text-center block">
-                            Take
-                        </a>
-                        <a th:href="@{/quiz/edit/{id}(id=${quiz.id})}" class="px-4 py-2 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition" title="Edit">
-                            <i class="fa fa-edit"></i>
-                        </a>
+                    <div class="flex flex-wrap gap-2">
+                        <select name="categorySearch"
+                            class="bg-slate-50 border border-slate-100 text-slate-600 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer transition-all font-semibold text-sm">
+                            <option value="0">Tất cả danh mục</option>
+                            <option th:each="cat:${categorys}" th:value="${cat.id}" th:text="${cat.name}"
+                                th:selected="${cat.id == categorySearch}"></option>
+                        </select>
+                        <button type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-blue-200 active:scale-95">
+                            Tìm kiếm
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div th:if="${#lists.isEmpty(quizzes)}" class="text-center py-12">
-                <i class="fa fa-clipboard-list text-4xl text-gray-300 mb-4"></i>
-                <p class="text-gray-500 font-bold">No quizzes available yet.</p>
-                <a href="/quiz/create" class="mt-4 inline-block px-6 py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition">
-                    Create your first quiz
-                </a>
+            <!-- Quiz Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+
+                <!-- Loop Quiz Item -->
+                <div th:each="quiz:${quizzes}"
+                    class="quiz-card bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden group hover:shadow-2xl hover:shadow-blue-900/10 hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+
+                    <a th:href="@{'/user/quiz/take/'+${quiz.id}}" class="flex flex-col h-full p-8">
+
+                        <!-- Header: Icon & Category -->
+                        <div class="flex justify-between items-start mb-6">
+                            <div
+                                class="quiz-icon-container w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-inner">
+                                <i class="fas fa-lightbulb text-2xl text-blue-500 transition-all duration-500"></i>
+                            </div>
+                            <div th:text="${quiz.category.name}"
+                                class="bg-blue-50 px-4 py-1.5 rounded-full text-[10px] font-extrabold text-blue-600 uppercase tracking-widest">
+                                Grammar
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1 flex flex-col">
+                            <h3 th:text="${quiz.title}"
+                                class="font-bold text-xl text-slate-800 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+                                Basic English Tenses
+                            </h3>
+                            <p th:text="${quiz.description}" class="text-slate-500 text-sm line-clamp-2 mb-6">
+                                Test your knowledge about 12 basic English tenses with this comprehensive quiz.
+                            </p>
+
+                            <!-- Footer Info -->
+                            <div class="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-2 text-slate-400">
+                                        <i class="far fa-file-alt text-xs"></i>
+                                        <span class="text-[11px] font-semibold uppercase tracking-tight"
+                                            th:text="${quiz.questions.size()} + ' Questions'"></span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-300">Updated:
+                                        [[${#temporals.format(quiz.updated_at, 'dd/MM/yyyy')}]]</span>
+                                </div>
+
+                                <div class="arrow-icon opacity-0 -translate-x-2 transition-all duration-300">
+                                    <div
+                                        class="bg-blue-600 text-white w-10 h-10 flex items-center justify-center rounded-full shadow-lg shadow-blue-200">
+                                        <i class="fas fa-play text-[10px]"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <!-- End Loop -->
+
             </div>
-        </div>
-    </div>
-</div>
+
+            <!-- Pagination (Giữ nguyên logic của bạn) -->
+            <div class="flex justify-center items-center gap-3 border-t border-slate-100 pt-10 pb-20">
+                <button type="submit" th:name="cnt" th:value="${cnt - 1}" th:if="${cnt > 0}"
+                    class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-200 transition-all">
+                    <i class="fas fa-chevron-left text-sm"></i>
+                </button>
+
+                <div class="p-4 flex justify-end items-center gap-4 text-sm text-gray-600">
+                    <div class="flex items-center gap-2">
+                        <input type="submit" th:name="cnt" th:if="${cnt>1}"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt - 2}"></input>
+                        <input type="submit" th:name="cnt" th:if="${cnt>0}"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt - 1}"></input>
+                        <input type="submit" th:name="cnt"
+                            class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-bold shadow-xl shadow-blue-200 cursor-pointer"
+                            th:value="${cnt}"></input>
+                        <input type="submit" th:name="cnt"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt + 1}"></input>
+                        <input type="submit" th:name="cnt"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt + 2}"></input>
+                        <input type="submit" th:name="cnt" th:if="${1 >= cnt}"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt + 3}"></input>
+                        <input type="submit" th:name="cnt" th:if="${0 >= cnt}"
+                            class="w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 font-bold cursor-pointer transition-colors"
+                            th:value="${cnt + 4}"></input>
+                    </div>
+                    <select class="border rounded px-2 py-1 outline-none">
+                        <option>10 / page</option>
+                        <option>20 / page</option>
+                    </select>
+                </div>
+
+                <button type="submit" th:name="cnt" th:value="${cnt + 1}"
+                    class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-200 transition-all">
+                    <i class="fas fa-chevron-right text-sm"></i>
+                </button>
+            </div>
+
+        </form>
+    </main>
+
+</body>
+
 </html>

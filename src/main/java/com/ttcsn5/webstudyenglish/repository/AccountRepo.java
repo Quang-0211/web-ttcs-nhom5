@@ -1,6 +1,7 @@
 package com.ttcsn5.webstudyenglish.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,22 +17,24 @@ import com.ttcsn5.webstudyenglish.entity.User;
 @Repository
 public interface AccountRepo extends JpaRepository<User, Long> {
 
-    boolean existsByEmail(String email);
+        boolean existsByEmail(String email);
 
-    User findByEmail(String email);
+        Optional<User> findByEmail(String email);
 
-    boolean existsByUsername(String username);
+        boolean existsByUsername(String username);
 
-    List<User> searchByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCaseAndRoleId_Id(String username,
-            String email, int role);
+        List<User> searchByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCaseAndRoleId_Id(String username,
+                        String email, int role);
 
-    List<User> searchByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCase(String username, String email);
+        List<User> searchByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCase(String username, String email);
 
-    Slice<User> findByUsernameContainingAndEmailContaining(String username, String email, Pageable pageable);
+        Slice<User> findByUsernameContainingAndEmailContaining(String username, String email, Pageable pageable);
 
-    Slice<User> findByUsernameContainingAndEmailContainingAndRoleId_Id(String username, String email, int roleId,
-            Pageable pageable);
+        Slice<User> findByUsernameContainingAndEmailContainingAndRoleId_Id(String username, String email, int roleId,
+                        Pageable pageable);
 
-    @Query("SELECT COUNT(a) FROM User a")
-    long countUser();
+        @Query("SELECT COUNT(a) FROM User a")
+        long countUser();
+
+        Optional<User> findByUsername(String username);
 }

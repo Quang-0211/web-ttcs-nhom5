@@ -13,7 +13,6 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Table(name = "category")
 @Data
@@ -55,5 +54,19 @@ public class Category {
                 ", parent=" + parent +
                 '}';
     }
-}
 
+    public Category(String name, LocalDateTime created_at, User createdBy) {
+        this.name = name;
+        this.created_at = created_at;
+        this.createdBy = createdBy;
+    }
+
+    public Category(String name, LocalDateTime created_at, Category parent, User createdBy) {
+        this.name = name;
+        this.created_at = created_at;
+        this.parent = parent;
+        this.createdBy = createdBy;
+    }
+    
+
+}

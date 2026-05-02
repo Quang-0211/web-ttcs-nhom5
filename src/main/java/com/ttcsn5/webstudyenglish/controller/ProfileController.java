@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.ttcsn5.webstudyenglish.entity.Subscription;
 import com.ttcsn5.webstudyenglish.entity.User;
+import com.ttcsn5.webstudyenglish.repository.UserQuizAttemptRepo;
 import com.ttcsn5.webstudyenglish.service.SubscriptionService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,15 +20,17 @@ public class ProfileController {
 
     @Autowired
     private SubscriptionService subscriptionService;
+    @Autowired
+    private UserQuizAttemptRepo userQuizAttemptRepo;
 
     @GetMapping("/profile")
     public String profile(HttpSession session, Model model, HttpServletResponse response) {
         setNoCacheHeaders(response);
 
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
+        // if (user == null) {
+        // return "redirect:/login";
+        // }
 
         model.addAttribute("user", user);
         String roleCode = user.getRoleId() != null ? user.getRoleId().getCode() : "";
@@ -38,6 +41,8 @@ public class ProfileController {
             return "admin/adminhome";
         }
 
+        model.addAttribute("pointAvg", userQuizAttemptRepo.getAverageScoreByUserId(user.getId()));
+        model.addAttribute("baiDalam", userQuizAttemptRepo.countByUserId(user.getId()));
         Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
         model.addAttribute("subscriptions", subscriptions);
         model.addAttribute("activeMenu", "profile");

@@ -2,6 +2,8 @@ package com.ttcsn5.webstudyenglish.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,13 +19,13 @@ public class Answer {
 
     @ManyToOne
     @JoinColumn(name = "question_id")
+    @JsonBackReference
     private Question question;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
     private Boolean isCorrect = false;
-
     private Integer orderIndex = 0;
 
     @Column(nullable = false, updatable = false)

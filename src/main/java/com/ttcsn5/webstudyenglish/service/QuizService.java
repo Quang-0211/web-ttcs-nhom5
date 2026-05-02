@@ -1,8 +1,11 @@
 package com.ttcsn5.webstudyenglish.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -116,5 +119,117 @@ public class QuizService {
     @Transactional
     public UserAnswer saveUserAnswer(UserAnswer userAnswer) {
         return userAnswerRepo.save(userAnswer);
+    }
+
+    @Transactional
+    public Quiz saveFullQuiz(Quiz quiz, List<Question> reqQuestions) {
+
+        // ===== MAP EXISTING QUESTIONS =====
+        Map<Integer, Question> existingMap = quiz.getQuestions().stream()
+                .filter(q -> q.getId() != null)
+                .collect(Collectors.toMap(Question::getId, q -> q));
+
+        List<Question> updatedQuestions = new ArrayList<>();
+
+        if (reqQuestions != null) {
+            for (Question qReq : reqQuestions) {
+
+                Question q;
+
+                // ===== UPDATE =====
+                if (qReq.getId() != null && existingMap.containsKey(qReq.getId())) {
+
+                    q = existingMap.get(qReq.getId());
+
+                    q.setQuestionType(qReq.getQuestionType());
+                    q.setQuestionOrder(qReq.getQuestionOrder());
+                    q.setPoints(qReq.getPoints());
+                    q.setContent(qReq.getContent());
+                    q.setUpdated_at(LocalDateTime.now());
+
+                } else {
+                    // ===== CREATE =====
+                    q = new Question();
+
+                    q.setQuiz(quiz);
+                    q.setCreated_at(LocalDateTime.now());
+
+                    q.setQuestionType(qReq.getQuestionType());
+                    q.setQuestionOrder(qReq.getQuestionOrder());
+                    q.setPoints(qReq.getPoints());
+                    q.setContent(qReq.getContent());
+                }
+
+                // ===== UPDATE ANSWERS =====
+                updateAnswers(q, qReq.getAnswers());
+
+                updatedQuestions.add(q);
+            }
+        }
+
+        // ===== REMOVE QUESTIONS =====
+        quiz.getQuestions().removeIf(q -> q.getId() != null &&
+                updatedQuestions.stream().noneMatch(nq -> nq.getId() != null && nq.getId().equals(q.getId())));
+
+        // ===== ADD NEW =====
+        for (Question q : updatedQuestions) {
+            if (!quiz.getQuestions().contains(q)) {
+                q.setQuiz(quiz);
+                quiz.getQuestions().add(q);
+            }
+        }
+
+        return quizRepo.save(quiz);
+    }
+
+    private void updateAnswers(Question question, List<Answer> reqAnswers) {
+
+        Map<Integer, Answer> existingMap = question.getAnswers().stream()
+                .filter(a -> a.getId() != null)
+                .collect(Collectors.toMap(Answer::getId, a -> a));
+
+        List<Answer> updatedAnswers = new ArrayList<>();
+
+        if (reqAnswers != null) {
+            for (Answer aReq : reqAnswers) {
+
+                Answer a;
+
+                // ===== UPDATE =====
+                if (aReq.getId() != null && existingMap.containsKey(aReq.getId())) {
+
+                    a = existingMap.get(aReq.getId());
+
+                    a.setContent(aReq.getContent());
+                    a.setIsCorrect(aReq.getIsCorrect());
+                    a.setOrderIndex(aReq.getOrderIndex());
+
+                } else {
+                    // ===== CREATE =====
+                    a = new Answer();
+
+                    a.setQuestion(question);
+                    a.setCreated_at(LocalDateTime.now());
+
+                    a.setContent(aReq.getContent());
+                    a.setIsCorrect(aReq.getIsCorrect());
+                    a.setOrderIndex(aReq.getOrderIndex());
+                }
+
+                updatedAnswers.add(a);
+            }
+        }
+
+        // ===== REMOVE =====
+        question.getAnswers().removeIf(a -> a.getId() != null &&
+                updatedAnswers.stream().noneMatch(na -> na.getId() != null && na.getId().equals(a.getId())));
+
+        // ===== ADD NEW =====
+        for (Answer a : updatedAnswers) {
+            if (!question.getAnswers().contains(a)) {
+                a.setQuestion(question);
+                question.getAnswers().add(a);
+            }
+        }
     }
 }

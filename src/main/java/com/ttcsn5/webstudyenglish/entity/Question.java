@@ -1,9 +1,15 @@
 package com.ttcsn5.webstudyenglish.entity;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 @Entity
 @Table(name = "question")
 @Data
@@ -15,10 +21,8 @@ public class Question {
     private Integer id;
 
     @ManyToOne
+    @JsonBackReference
     private Quiz quiz;
-
-    @ManyToOne
-    private Vocabulary vocabulary;
 
     private String questionType;
     private Integer questionOrder;
@@ -26,12 +30,14 @@ public class Question {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime created_at;
+
     private LocalDateTime updated_at;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("orderIndex ASC")
-    private List<Answer> answers;
+    @JsonManagedReference
+    private List<Answer> answers = new ArrayList<>();
 }

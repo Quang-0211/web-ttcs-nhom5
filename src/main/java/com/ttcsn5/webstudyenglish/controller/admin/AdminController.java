@@ -9,10 +9,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.ttcsn5.webstudyenglish.entity.Question;
+import com.ttcsn5.webstudyenglish.entity.Quiz;
 import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
 import com.ttcsn5.webstudyenglish.repository.VocabularyRepo;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.repository.GrammarRepo;
+import com.ttcsn5.webstudyenglish.repository.QuestionRepo;
+import com.ttcsn5.webstudyenglish.repository.QuizRepo;
 import com.ttcsn5.webstudyenglish.repository.DictationTopicRepo;
 
 @Controller
@@ -32,6 +36,11 @@ public class AdminController {
 
     @Autowired
     private DictationTopicRepo dictationTopicRepo;
+
+    @Autowired
+    private QuestionRepo questionRepo;
+    @Autowired
+    private QuizRepo quizRepo;
 
     @GetMapping("/admin/{path}")
     public String redirect(@PathVariable("path") String path, Model model, jakarta.servlet.http.HttpSession session,
@@ -110,9 +119,13 @@ public class AdminController {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
 
+        Quiz quiz = quizRepo.findById(id).orElse(null);
+        List<Question> questions = questionRepo.findByQuizOrderByQuestionOrder(quiz);
+        
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("questions", questions);
         model.addAttribute("categories", categoryService.findAllNameCate("Quiz"));
         model.addAttribute("path", "admin/quiz/edit");
-        model.addAttribute("current", "quiz");
         return "admin/adminhome";
     }
 }

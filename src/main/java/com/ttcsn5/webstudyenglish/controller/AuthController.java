@@ -1,7 +1,5 @@
 package com.ttcsn5.webstudyenglish.controller;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,19 +34,20 @@ public class AuthController {
     @Autowired
     private SubscriptionService subscriptionService;
     @Autowired
-    private SubscriptionService subService;
-    @Autowired
     private PlanService planService;
 
-    @GetMapping(path = { "/", "/login" })
+    @GetMapping(path = { "/login" })
     public String login(Model model) {
-
         return "login";
+    }
+
+    @GetMapping(path = { "/" })
+    public String trangChu(Model model) {
+        return "index";
     }
 
     @GetMapping("/register")
     public String register() {
-
         return "register";
     }
 
@@ -114,14 +113,13 @@ public class AuthController {
                 break;
         }
         User user = loginStatus.getUser();
+        ase.updateStreak(user);
         session.setAttribute("user", user);
         session.setAttribute("userId", user.getId());
         if (user.getRoleId().getCode().equals("ADMIN")) {
-
             return "redirect:/admin/dashboard";
         }
         return "redirect:/home";
-
     }
 
     @GetMapping("/home")

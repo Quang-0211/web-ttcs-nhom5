@@ -1,5 +1,6 @@
 package com.ttcsn5.webstudyenglish.controller.admin;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,25 @@ public class AdminQuizApiController {
         }
         Quiz savedQuiz = quizService.save(quiz);
         return ResponseEntity.ok(savedQuiz);
+    }
+
+    @PutMapping("/{id}/full-update")
+    public ResponseEntity<?> updateFullQuiz(@PathVariable Integer id, @RequestBody Quiz quizData) {
+
+        Optional<Quiz> existingQuizOpt = quizService.findById(id);
+        if (existingQuizOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Quiz existingQuiz = existingQuizOpt.get();
+
+        existingQuiz.setTitle(quizData.getTitle());
+        existingQuiz.setDescription(quizData.getDescription());
+        existingQuiz.setUpdated_at(LocalDateTime.now());
+
+        Quiz updatedQuiz = quizService.saveFullQuiz(existingQuiz, quizData.getQuestions());
+
+        return ResponseEntity.ok(updatedQuiz);
     }
 
     @PutMapping("/{id}")
@@ -147,7 +167,8 @@ public class AdminQuizApiController {
 
     @PutMapping("/answers/{id}")
     public ResponseEntity<Answer> updateAnswer(@PathVariable Integer id, @RequestBody Answer answer) {
-        // First get the existing answer to preserve question relationship if not provided
+        // First get the existing answer to preserve question relationship if not
+        // provided
         answer.setId(id);
         if (answer.getQuestion() != null && answer.getQuestion().getId() != null) {
             Optional<Question> question = quizService.findQuestionById(answer.getQuestion().getId());

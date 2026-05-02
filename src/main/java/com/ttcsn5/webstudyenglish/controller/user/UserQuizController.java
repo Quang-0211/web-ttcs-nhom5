@@ -2,9 +2,15 @@ package com.ttcsn5.webstudyenglish.controller.user;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +21,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ttcsn5.webstudyenglish.entity.Answer;
+import com.ttcsn5.webstudyenglish.entity.Category;
 import com.ttcsn5.webstudyenglish.entity.Question;
 import com.ttcsn5.webstudyenglish.entity.Quiz;
+import com.ttcsn5.webstudyenglish.entity.Subscription;
 import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.entity.UserAnswer;
 import com.ttcsn5.webstudyenglish.entity.UserQuizAttempt;
 import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
+import com.ttcsn5.webstudyenglish.repository.QuestionRepo;
+import com.ttcsn5.webstudyenglish.repository.QuizRepo;
 import com.ttcsn5.webstudyenglish.service.QuizService;
+import com.ttcsn5.webstudyenglish.service.SubscriptionService;
 import com.ttcsn5.webstudyenglish.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -33,41 +44,64 @@ public class UserQuizController {
     private QuizService quizService;
 
     @Autowired
+    private QuestionRepo questionRepo;
+
+    @Autowired
+    private QuizRepo quizRepo;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
     private CategoryRepo categoryRepo;
 
+    @Autowired
+    private SubscriptionService subscriptionService;
+
     @GetMapping("/quizzes")
-    public String getQuizzes(Model model, HttpSession session) {
-        List<Quiz> quizzes = quizService.findAll();
-        model.addAttribute("quizzes", quizzes);
+    public String getQuizzes(
+            @RequestParam(name = "cnt", required = false, defaultValue = "0") Integer cnt,
+            @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,
+            @RequestParam(name = "categorySearch", required = false, defaultValue = "0") Integer categorySearch,
+            Model model, HttpSession session) {
+
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRoleId().getCode().equals("USER")) {
+            return "redirect:/login";
+        }
+
+        Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
+
+        Set<Category> categories = subscriptions.stream().map(subscription -> subscription.getPlan().getQuizzes())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
+        Pageable pageable = PageRequest.of(cnt, 12, Sort.by("created_at").descending());
+
+        model.addAttribute("quizzes",
+                quizRepo.findQuizUserHomeAndCategoryPlan(pageable, keyword, categorySearch, categories));
         model.addAttribute("activeMenu", "quiz");
         model.addAttribute("userPath", "user/quiz/list");
+        model.addAttribute("categories", categories);
 
-        Object roleIdObj = session.getAttribute("roleId");
-        if (roleIdObj != null) {
-            model.addAttribute("roleId", (int) roleIdObj);
-        }
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("categorySearch", categorySearch);
+        model.addAttribute("cnt", cnt);
+
+        // Object roleIdObj = session.getAttribute("roleId");
+        // if (roleIdObj != null) {
+        // model.addAttribute("roleId", (int) roleIdObj);
+        // }
 
         return "user/index";
     }
 
-    @GetMapping("/quiz/{id}")
+    @GetMapping("/user/quiz/take/{id}")
     public String takeQuiz(@PathVariable Integer id, Model model, HttpSession session) {
-        Optional<Quiz> quizOpt = quizService.findById(id);
-        if (!quizOpt.isPresent()) {
-            return "redirect:/quizzes";
-        }
 
-        Quiz quiz = quizOpt.get();
-        List<Question> questions = quizService.findQuestionsByQuiz(quiz);
+        Quiz quiz = quizService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
 
-        // Load answers for each question
-        for (Question question : questions) {
-            List<Answer> answers = quizService.findAnswersByQuestion(question);
-            question.setAnswers(answers);
-        }
+        List<Question> questions = questionRepo.findByQuizWithAnswers(quiz);
 
         model.addAttribute("quiz", quiz);
         model.addAttribute("questions", questions);
@@ -84,72 +118,68 @@ public class UserQuizController {
 
     @PostMapping("/quiz/{quizId}/submit")
     @ResponseBody
-    public String submitQuiz(@PathVariable Integer quizId, @RequestBody List<UserAnswer> userAnswers, HttpSession session) {
-        Optional<Quiz> quizOpt = quizService.findById(quizId);
-        if (!quizOpt.isPresent()) {
-            return "error";
-        }
+    public String submitQuiz(@PathVariable Integer quizId,
+            @RequestBody List<UserAnswer> userAnswers,
+            HttpSession session) {
 
-        Quiz quiz = quizOpt.get();
-        User user = getCurrentUser(session);
+        Quiz quiz = quizService.findById(quizId)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+
+        User user = (User) session.getAttribute("user");
         if (user == null) {
             return "not_logged_in";
         }
+
+        // Load full question + answers (1 query)
+        List<Question> questions = questionRepo.findByQuizWithAnswers(quiz);
+
+        // Map để lookup nhanh
+        Map<Integer, Question> questionMap = questions.stream()
+                .collect(Collectors.toMap(Question::getId, q -> q));
 
         // Create attempt
         UserQuizAttempt attempt = new UserQuizAttempt();
         attempt.setUser(user);
         attempt.setQuiz(quiz);
         attempt.setStartedAt(LocalDateTime.now());
-        attempt.setStatus("completed");
         attempt.setCompletedAt(LocalDateTime.now());
+        attempt.setStatus("completed");
 
-        // Calculate score
         int correctCount = 0;
-        List<Question> questions = quizService.findQuestionsByQuiz(quiz);
-        int totalQuestions = questions.size();
 
-        for (UserAnswer userAnswer : userAnswers) {
-            userAnswer.setAttempt(attempt);
+        for (UserAnswer ua : userAnswers) {
 
-            // Find the question and check correctness
-            Optional<Question> questionOpt = quizService.findQuestionById(userAnswer.getQuestion().getId());
+            Question question = questionMap.get(ua.getQuestion().getId());
+            if (question == null)
+                continue;
 
-            if (questionOpt.isPresent()) {
-                Question question = questionOpt.get();
-                userAnswer.setQuestion(question);
+            ua.setAttempt(attempt);
+            ua.setQuestion(question);
 
-                // Check if answer is correct
-                List<Answer> answers = quizService.findAnswersByQuestion(question);
-                boolean isCorrect = answers.stream()
-                    .anyMatch(ans -> ans.getId().equals(userAnswer.getSelectedChoiceId()) && ans.getIsCorrect());
+            // check đúng
+            boolean isCorrect = question.getAnswers().stream()
+                    .anyMatch(a -> a.getId().equals(ua.getSelectedChoiceId())
+                            && Boolean.TRUE.equals(a.getIsCorrect()));
 
-                userAnswer.setIsCorrect(isCorrect);
-                if (isCorrect) {
-                    correctCount++;
-                }
+            ua.setIsCorrect(isCorrect);
 
-                // Save user answer
-                quizService.saveUserAnswer(userAnswer);
-            }
+            if (isCorrect)
+                correctCount++;
+
+            quizService.saveUserAnswer(ua);
         }
 
-        float score = totalQuestions > 0 ? (float) correctCount / totalQuestions * 100 : 0;
+        int totalQuestions = questions.size();
+
+        float score = totalQuestions > 0
+                ? (float) correctCount / totalQuestions * 100
+                : 0;
+
         attempt.setScore(score);
 
-        // Save attempt
         quizService.saveAttempt(attempt);
 
         return String.valueOf(correctCount);
-    }
-
-    private User getCurrentUser(HttpSession session) {
-        Object userIdObj = session.getAttribute("userId");
-        if (userIdObj != null) {
-            Integer userId = (Integer) userIdObj;
-            return userService.findById(userId).orElse(null);
-        }
-        return null;
     }
 
     @GetMapping("/quiz/create")

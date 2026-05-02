@@ -27,7 +27,6 @@
                         <i class="fa fa-chart-line"></i> Dashboard
                     </a>
                 </li>
-
                 <li>
                     <a th:href="@{/admin/users}"
                         th:classappend="${path.startsWith('admin/user')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -52,37 +51,12 @@
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/profile}"
-                        th:classappend="${current == 'profile'} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
-                        <i class="fa fa-user"></i> Profile
-                    </a>
-                </li>
-
-                <li>
-                    <a th:href="@{/admin/statistic}"
-                        th:classappend="${path.startsWith('admin/statistic')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
-                        <i class="fa fa-chart-bar"></i> Statistic
-                    </a>
-                </li>
-
-                <li>
                     <a th:href="@{/admin/articles}"
                         th:classappend="${path.startsWith('admin/article')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
                         <i class="fa fa-file"></i> Article
                     </a>
                 </li>
-
-                <li>
-                    <a th:href="@{/admin/courses}"
-                        th:classappend="${path.startsWith('admin/course')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
-                        <i class="fa fa-graduation-cap"></i> Course
-                    </a>
-                </li>
-
                 <li>
                     <a th:href="@{/admin/videos}"
                         th:classappend="${path.startsWith('admin/video')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -90,7 +64,6 @@
                         <i class="fa fa-video"></i> Video
                     </a>
                 </li>
-
                 <li>
                     <a th:href="@{/admin/grammar}"
                         th:classappend="${path.startsWith('admin/grammar')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
@@ -114,12 +87,18 @@
                         <i class="fa fa-question-circle"></i> Quiz
                     </a>
                 </li>
-
                 <li>
                     <a th:href="@{/admin/dictation}"
                         th:classappend="${path.startsWith('admin/dictation')} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
                         <i class="fa fa-microphone"></i> Dictation
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/profile}"
+                        th:classappend="${current == 'profile'} ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100'"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-blue-500">
+                        <i class="fa fa-user"></i> Profile
                     </a>
                 </li>
             </ul>

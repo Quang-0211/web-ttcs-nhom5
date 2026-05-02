@@ -1,6 +1,8 @@
 package com.ttcsn5.webstudyenglish.controller.user;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ import com.ttcsn5.webstudyenglish.entity.Answer;
 import com.ttcsn5.webstudyenglish.entity.Category;
 import com.ttcsn5.webstudyenglish.entity.Question;
 import com.ttcsn5.webstudyenglish.entity.Quiz;
+import com.ttcsn5.webstudyenglish.entity.User;
+import com.ttcsn5.webstudyenglish.entity.UserQuizAttempt;
+import com.ttcsn5.webstudyenglish.repository.UserQuizAttemptRepo;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.service.QuizService;
 
@@ -30,7 +35,35 @@ public class UserQuizApiController {
     private QuizService quizService;
 
     @Autowired
+    private UserQuizAttemptRepo attemptRepository;
+
+    @Autowired
     private CategoryService categoryService;
+
+    @PostMapping("/save-attempt")
+    public ResponseEntity<?> saveAttempt(@RequestBody Map<String, Object> payload, HttpSession session) {
+        // 1. Lấy thông tin user từ session (Bạn điều chỉnh theo logic login của mình)
+        User user = (User) session.getAttribute("user");
+        if (user == null)
+            return ResponseEntity.status(401).body("Unauthorized");
+        Integer quizId = (Integer) payload.get("quizId");
+        Float score = Float.parseFloat(payload.get("score").toString());
+
+        Quiz quiz = quizService.findById(quizId).orElse(null);
+
+        // 2. Tạo bản ghi nỗ lực làm bài
+        UserQuizAttempt attempt = new UserQuizAttempt();
+        attempt.setUser(user);
+        attempt.setQuiz(quiz);
+        attempt.setScore(score);
+        attempt.setStatus("COMPLETED");
+        attempt.setStartedAt(LocalDateTime.now().minusMinutes(5)); // Hoặc lấy từ client gửi lên
+        attempt.setCompletedAt(LocalDateTime.now());
+
+        attemptRepository.save(attempt);
+
+        return ResponseEntity.ok("Saved successfully");
+    }
 
     @GetMapping
     public ResponseEntity<List<Quiz>> getAllQuizzes() {
@@ -49,7 +82,7 @@ public class UserQuizApiController {
         if (session.getAttribute("userId") == null) {
             return ResponseEntity.status(401).build();
         }
-        
+
         if (quiz.getCategory() != null && quiz.getCategory().getId() != null) {
             Category category = categoryService.findById(quiz.getCategory().getId());
             if (category != null) {
@@ -65,7 +98,7 @@ public class UserQuizApiController {
         if (session.getAttribute("userId") == null) {
             return ResponseEntity.status(401).build();
         }
-        
+
         Optional<Quiz> existingQuiz = quizService.findById(id);
         if (!existingQuiz.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -96,7 +129,7 @@ public class UserQuizApiController {
         if (session.getAttribute("userId") == null) {
             return ResponseEntity.status(401).build();
         }
-        
+
         if (question.getQuiz() != null && question.getQuiz().getId() != null) {
             Optional<Quiz> quiz = quizService.findById(question.getQuiz().getId());
             if (quiz.isPresent()) {
@@ -108,11 +141,12 @@ public class UserQuizApiController {
     }
 
     @PutMapping("/questions/{id}")
-    public ResponseEntity<Question> updateQuestion(@PathVariable Integer id, @RequestBody Question question, HttpSession session) {
+    public ResponseEntity<Question> updateQuestion(@PathVariable Integer id, @RequestBody Question question,
+            HttpSession session) {
         if (session.getAttribute("userId") == null) {
             return ResponseEntity.status(401).build();
         }
-        
+
         Optional<Question> existingQuestion = quizService.findQuestionById(id);
         if (!existingQuestion.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -143,7 +177,7 @@ public class UserQuizApiController {
         if (session.getAttribute("userId") == null) {
             return ResponseEntity.status(401).build();
         }
-        
+
         if (answer.getQuestion() != null && answer.getQuestion().getId() != null) {
             Optional<Question> question = quizService.findQuestionById(answer.getQuestion().getId());
             if (question.isPresent()) {
@@ -155,11 +189,12 @@ public class UserQuizApiController {
     }
 
     @PutMapping("/answers/{id}")
-    public ResponseEntity<Answer> updateAnswer(@PathVariable Integer id, @RequestBody Answer answer, HttpSession session) {
+    public ResponseEntity<Answer> updateAnswer(@PathVariable Integer id, @RequestBody Answer answer,
+            HttpSession session) {
         if (session.getAttribute("userId") == null) {
             return ResponseEntity.status(401).build();
         }
-        
+
         answer.setId(id);
         if (answer.getQuestion() != null && answer.getQuestion().getId() != null) {
             Optional<Question> question = quizService.findQuestionById(answer.getQuestion().getId());

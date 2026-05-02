@@ -1,62 +1,91 @@
 <!DOCTYPE html>
 <html th:fragment="content" xmlns:th="http://www.thymeleaf.org">
-<div class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6">
+<div class="flex-1 min-h-0 min-w-0 overflow-y-auto p-6 flex flex-col gap-6 bg-gray-50">
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col items-center">
+
+        <!-- Nhận dữ liệu từ Controller -->
         <script th:inline="javascript">
             /*<![CDATA[*/
             const quizData = /*[[${quiz}]]*/ {};
-            const questionsData = /*[[${questions}]]*/ [];
+            const questionsData = /*[[${questions}]]*/[];
             /*]]>*/
         </script>
 
         <div x-data="takeQuizApp()" class="w-full h-full flex flex-col items-center max-w-4xl pt-4">
 
-            <!-- Top Bar -->
+            <!-- Header: Thông tin chung -->
             <div class="w-full flex justify-between items-center mb-8 gap-4">
-                <a href="javascript:history.back()" class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition shrink-0">
-                    <i class="fa fa-arrow-left"></i> Back
+                <a href="/user/quiz"
+                    class="text-gray-400 hover:text-blue-500 font-bold text-sm flex items-center gap-2 transition shrink-0">
+                    <i class="fa fa-arrow-left"></i> Thoát
                 </a>
 
                 <div class="flex flex-col items-center text-center min-w-0">
-                    <h2 class="text-xl font-extrabold text-gray-700 tracking-wide uppercase" x-text="quizData.title"></h2>
-                    <p class="text-xs font-bold text-gray-400 tracking-widest uppercase" x-text="quizData.category ? quizData.category.name : 'General'"></p>
+                    <h2 class="text-xl font-extrabold text-gray-700 tracking-wide uppercase truncate w-full"
+                        x-text="quizData.title"></h2>
+                    <p class="text-xs font-bold text-blue-400 tracking-widest uppercase"
+                        x-text="quizData.category ? quizData.category.name : 'Chung'"></p>
                 </div>
 
                 <div class="shrink-0">
-                    <span class="text-sm font-bold text-gray-400">Question <span x-text="currentIndex + 1"></span>/<span x-text="questions.length"></span></span>
+                    <div class="bg-blue-50 px-4 py-2 rounded-2xl">
+                        <span class="text-sm font-black text-blue-600">
+                            Câu <span x-text="currentIndex + 1"></span>/<span x-text="questions.length"></span>
+                        </span>
+                    </div>
                 </div>
             </div>
 
+            <!-- Giao diện đang làm bài -->
             <template x-if="questions.length > 0 && !submitted">
-                <div class="w-full max-w-[680px]">
-                    <div class="rounded-[2rem] border border-gray-100 bg-white shadow-lg p-8 md:p-10">
-                        <div class="flex flex-col gap-6">
+                <div class="w-full max-w-[720px] animate-fade-in">
+                    <div
+                        class="rounded-[2.5rem] border border-gray-100 bg-white shadow-2xl p-8 md:p-12 relative overflow-hidden">
+                        <!-- Thanh tiến trình nhỏ -->
+                        <div class="absolute top-0 left-0 h-1.5 bg-blue-500 transition-all duration-500"
+                            :style="'width: ' + ((currentIndex + 1) / questions.length * 100) + '%'"></div>
+
+                        <div class="flex flex-col gap-8">
                             <div>
-                                <p class="text-[11px] font-extrabold text-blue-500 uppercase tracking-[0.28em] mb-3">Question <span x-text="currentIndex + 1"></span></p>
-                                <h3 class="text-3xl md:text-4xl font-extrabold text-gray-800 leading-tight" x-text="currentQuestion.content"></h3>
+                                <p class="text-[11px] font-extrabold text-blue-500 uppercase tracking-[0.3em] mb-4">
+                                    Question Details</p>
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-gray-800 leading-tight"
+                                    x-text="currentQuestion.content"></h3>
                             </div>
 
+                            <!-- Danh sách đáp án -->
                             <div class="grid grid-cols-1 gap-4">
                                 <template x-for="answer in currentQuestion.answers" :key="answer.id">
-                                    <label class="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-blue-300 cursor-pointer transition"
-                                           :class="selectedAnswers.includes(answer.id) ? 'border-blue-500 bg-blue-50' : ''">
-                                        <input type="radio" :name="'question-' + currentQuestion.id" :value="answer.id"
-                                               x-model="selectedAnswer" class="text-blue-500 focus:ring-blue-500">
-                                        <span class="font-bold text-gray-700" x-text="answer.content"></span>
+                                    <label
+                                        class="group flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200"
+                                        :class="selectedAnswer == answer.id ? 'border-blue-500 bg-blue-50 ring-4 ring-blue-50' : 'border-gray-100 hover:border-blue-200 hover:bg-gray-50'">
+                                        <div class="relative flex items-center justify-center">
+                                            <input type="radio" :name="'question-' + currentQuestion.id"
+                                                :value="answer.id" x-model="selectedAnswer" class="hidden">
+                                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 group-hover:border-blue-400 flex items-center justify-center"
+                                                :class="selectedAnswer == answer.id ? 'border-blue-500 bg-blue-500' : ''">
+                                                <div class="w-2 h-2 rounded-full bg-white"
+                                                    x-show="selectedAnswer == answer.id"></div>
+                                            </div>
+                                        </div>
+                                        <span class="font-bold text-gray-700 text-lg" x-text="answer.content"></span>
                                     </label>
                                 </template>
                             </div>
 
-                            <div class="flex justify-between">
+                            <!-- Nút điều hướng -->
+                            <div class="flex justify-between items-center pt-4">
                                 <button @click="prevQuestion()" :disabled="currentIndex === 0"
-                                        class="px-6 py-3 border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition"
-                                        :class="currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''">
-                                    Previous
+                                    class="px-8 py-4 font-bold text-gray-400 hover:text-gray-600 disabled:opacity-0 transition">
+                                    Quay lại
                                 </button>
+
                                 <button @click="nextQuestion()" :disabled="!selectedAnswer"
-                                        class="px-6 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition"
-                                        :class="!selectedAnswer ? 'opacity-50 cursor-not-allowed' : ''">
-                                    <span x-text="currentIndex === questions.length - 1 ? 'Submit Quiz' : 'Next'"></span>
+                                    class="px-10 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all disabled:grayscale disabled:opacity-50">
+                                    <span
+                                        x-text="currentIndex === questions.length - 1 ? 'Nộp bài ngay' : 'Câu tiếp theo'"></span>
+                                    <i class="fa ml-2"
+                                        :class="currentIndex === questions.length - 1 ? 'fa-paper-plane' : 'fa-arrow-right'"></i>
                                 </button>
                             </div>
                         </div>
@@ -64,22 +93,45 @@
                 </div>
             </template>
 
+            <!-- Giao diện kết quả (Sau khi nộp bài) -->
             <template x-if="submitted">
-                <div class="w-full max-w-[680px]">
-                    <div class="rounded-[2rem] border border-gray-100 bg-white shadow-lg p-8 md:p-10 text-center">
-                        <div class="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center bg-green-50 text-green-500">
-                            <i class="fa fa-check text-3xl"></i>
+                <div class="w-full max-w-[600px] animate-bounce-in">
+                    <div class="rounded-[3rem] border border-gray-100 bg-white shadow-2xl p-10 md:p-14 text-center">
+                        <div
+                            class="w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center bg-yellow-50 text-yellow-500 shadow-inner">
+                            <i class="fa fa-trophy text-4xl"></i>
                         </div>
-                        <p class="text-[11px] font-extrabold text-green-500 uppercase tracking-[0.28em] mb-3">Quiz completed</p>
-                        <h3 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-3">
-                            You scored <span x-text="score"></span>/<span x-text="questions.length"></span>
-                        </h3>
-                        <p class="text-gray-500 font-medium mb-8">
-                            Thank you for completing the quiz!
-                        </p>
-                        <a href="/quizzes" class="px-6 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition">
-                            Back to Quizzes
-                        </a>
+
+                        <h3 class="text-2xl font-black text-gray-800 mb-2">Chúc mừng bạn!</h3>
+                        <p class="text-gray-400 font-medium mb-8">Bạn đã hoàn thành bài trắc nghiệm.</p>
+
+                        <!-- Vùng hiển thị điểm -->
+                        <div class="mb-10">
+                            <div class="text-7xl font-black text-blue-600 leading-none" x-text="score"></div>
+                            <div class="text-sm font-bold text-gray-400 uppercase tracking-widest mt-2">Điểm số (Hệ 10)
+                            </div>
+                        </div>
+
+                        <!-- Thống kê chi tiết -->
+                        <div class="grid grid-cols-2 gap-4 mb-10">
+                            <div class="bg-gray-50 rounded-3xl p-6">
+                                <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Số câu đúng</p>
+                                <p class="text-2xl font-black text-gray-700"><span x-text="correctCount"></span>/<span
+                                        x-text="questions.length"></span></p>
+                            </div>
+                            <div class="bg-gray-50 rounded-3xl p-6">
+                                <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Tỷ lệ chính xác</p>
+                                <p class="text-2xl font-black text-gray-700"
+                                    x-text="Math.round((correctCount/questions.length)*100) + '%'"></p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-4">
+                            <a th:href="@{/quizzes}"
+                                class="block w-full py-5 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition shadow-xl">
+                                Quay lại danh sách
+                            </a>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -92,9 +144,10 @@
                     questions: questionsData,
                     currentIndex: 0,
                     selectedAnswer: null,
-                    userAnswers: new Array(questionsData.length).fill(null),
+                    userAnswers: {}, // Cấu trúc: { questionId: answerId }
                     submitted: false,
                     score: 0,
+                    correctCount: 0,
 
                     get currentQuestion() {
                         return this.questions[this.currentIndex] || null;
@@ -103,55 +156,114 @@
                     nextQuestion() {
                         if (!this.selectedAnswer) return;
 
-                        // Save answer
-                        this.userAnswers[this.currentIndex] = {
-                            question: { id: this.currentQuestion.id },
-                            selectedChoiceId: this.selectedAnswer
-                        };
+                        // Lưu đáp án đã chọn vào object tạm
+                        this.userAnswers[this.currentQuestion.id] = this.selectedAnswer;
 
                         if (this.currentIndex < this.questions.length - 1) {
                             this.currentIndex++;
-                            this.selectedAnswer = null;
+                            // Phục hồi lại đáp án nếu người dùng đã từng chọn (khi nhấn Back rồi nhấn Next lại)
+                            this.selectedAnswer = this.userAnswers[this.questions[this.currentIndex].id] || null;
                         } else {
-                            this.submitQuiz();
+                            // Nếu là câu cuối cùng thì tính điểm
+                            this.calculateResult();
                         }
                     },
 
                     prevQuestion() {
                         if (this.currentIndex > 0) {
                             this.currentIndex--;
-                            this.selectedAnswer = this.userAnswers[this.currentIndex]?.selectedChoiceId || null;
+                            // Hiển thị lại đáp án đã chọn của câu trước
+                            this.selectedAnswer = this.userAnswers[this.questions[this.currentIndex].id] || null;
                         }
                     },
 
-                    submitQuiz() {
-                        const answersToSubmit = this.userAnswers.filter(answer => answer !== null);
-                        fetch(`/quiz/${quizData.id}/submit`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(answersToSubmit)
-                        })
-                        .then(res => res.text())
-                        .then(result => {
-                            if (result === 'error' || result === 'not_logged_in') {
-                                alert('Error submitting quiz');
-                            } else {
-                                this.score = parseInt(result);
-                                this.submitted = true;
+                    calculateResult() {
+                        let correct = 0;
+
+                        this.questions.forEach(q => {
+                            const userAnswerId = this.userAnswers[q.id];
+                            // Tìm đáp án đúng trong list answers của câu hỏi
+                            const correctAnswer = q.answers.find(a => a.isCorrect === true || a.correct === true);
+
+                            if (correctAnswer && userAnswerId == correctAnswer.id) {
+                                correct++;
                             }
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            alert('Error submitting quiz');
                         });
+
+                        this.correctCount = correct;
+
+                        // Công thức: (Số câu đúng / Tổng số câu) * 10. Làm tròn 1 chữ số thập phân.
+                        const finalScore = (correct / this.questions.length) * 10;
+                        this.score = parseFloat(finalScore.toFixed(1));
+
+                        this.submitted = true;
+
+                        // Gửi dữ liệu về Server để lưu vào bảng UserQuizAttempt
+                        this.saveAttempt();
                     },
 
-                    calculateScore() {
-                        // Score is now received from server
+                    async saveAttempt() {
+                        try {
+                            const response = await fetch('/api/quiz/save-attempt', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    quizId: quizData.id,
+                                    score: this.score
+                                    // Bạn có thể gửi thêm startedAt/completedAt nếu muốn chính xác tuyệt đối
+                                })
+                            });
+
+                            if (!response.ok) {
+                                console.error("Server returned error when saving attempt");
+                            }
+                        } catch (error) {
+                            console.error("Lỗi khi kết nối với server:", error);
+                        }
                     }
                 }
             }
         </script>
+
+        <style>
+            @keyframes fade-in {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes bounce-in {
+                0% {
+                    opacity: 0;
+                    transform: scale(0.9);
+                }
+
+                70% {
+                    opacity: 1;
+                    transform: scale(1.05);
+                }
+
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            .animate-fade-in {
+                animation: fade-in 0.4s ease-out;
+            }
+
+            .animate-bounce-in {
+                animation: bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+        </style>
+
     </div>
 </div>
+
 </html>

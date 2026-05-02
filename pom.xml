@@ -65,10 +65,6 @@
 			<artifactId>lombok-mapstruct-binding</artifactId>
 			<version>0.2.0</version>
 		</dependency>
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security</artifactId>
-</dependency>
 		<!-- Lombok for compile-time annotation generation -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
