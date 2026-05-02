@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
 import com.ttcsn5.webstudyenglish.repository.VocabularyRepo;
+import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.repository.GrammarRepo;
 import com.ttcsn5.webstudyenglish.repository.DictationTopicRepo;
 
@@ -25,6 +26,9 @@ public class AdminController {
 
     @Autowired
     private GrammarRepo grammarRepo;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private DictationTopicRepo dictationTopicRepo;
@@ -88,7 +92,7 @@ public class AdminController {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
 
-        model.addAttribute("categories", categoryRepo.findAll());
+        model.addAttribute("categories", categoryService.findAllNameCate("Quiz"));
         model.addAttribute("path", "admin/quiz/create");
         model.addAttribute("current", "quiz");
         return "admin/adminhome";
@@ -106,7 +110,7 @@ public class AdminController {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
 
-        model.addAttribute("categories", categoryRepo.findAll());
+        model.addAttribute("categories", categoryService.findAllNameCate("Quiz"));
         model.addAttribute("path", "admin/quiz/edit");
         model.addAttribute("current", "quiz");
         return "admin/adminhome";
