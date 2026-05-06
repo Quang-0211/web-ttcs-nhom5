@@ -12,8 +12,10 @@ import com.ttcsn5.webstudyenglish.entity.Role;
 import com.ttcsn5.webstudyenglish.entity.User;
 import com.ttcsn5.webstudyenglish.repository.AccountRepo;
 import com.ttcsn5.webstudyenglish.repository.CategoryRepo;
+import com.ttcsn5.webstudyenglish.repository.PlanRepository;
 import com.ttcsn5.webstudyenglish.repository.RoleRepo;
 import com.ttcsn5.webstudyenglish.service.HashPassword;
+import com.ttcsn5.webstudyenglish.entity.Plan;
 
 @Component
 public class DataIn implements CommandLineRunner {
@@ -30,8 +32,21 @@ public class DataIn implements CommandLineRunner {
     @Autowired
     private HashPassword hashPassword;
 
+    @Autowired
+    private PlanRepository planRepo;
+
     @Override
     public void run(String... args) throws Exception {
+
+        // ===== ROLE =====
+        Role adminRole = roleRepo.findByCode("ADMIN");
+        if (adminRole == null) {
+            adminRole = roleRepo.save(new Role("ADMIN", "Admin"));
+        }
+        Role userRole = roleRepo.findByCode("USER");
+        if (userRole == null) {
+            userRole = roleRepo.save(new Role("USER", "User"));
+        }
 
         // ===== CHECK CATEGORY EXIST (TRÁNH INSERT TRÙNG) =====
         if (cateRepo.count() > 0) {
@@ -39,21 +54,14 @@ public class DataIn implements CommandLineRunner {
             return;
         }
 
-        // ===== ROLE =====
-        Role adminRole = roleRepo.findByCode("ADMIN");
-        if (adminRole == null) {
-            adminRole = roleRepo.save(new Role("ADMIN", "Admin"));
-        }
-
         // ===== USER =====
-        User user = accountRepo.findByUsername("admin").get();
+        User user = accountRepo.findByUsername("admin").orElse(null);
         if (user == null) {
             user = new User(
                     "admin",
                     hashPassword.hashPassword("123456"),
                     "admin@gmail.com",
-                    adminRole
-            );
+                    adminRole);
             accountRepo.save(user);
         }
 

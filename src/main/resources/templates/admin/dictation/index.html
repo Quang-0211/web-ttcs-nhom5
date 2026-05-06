@@ -155,6 +155,8 @@
 
         function dictationApp() { return {}; }
 
+        let currentAudio = null;
+
         // Audio TTS
         function playTTS(btnEl) {
             const block = btnEl.closest('.sentence-block');
@@ -162,11 +164,19 @@
             if (!text) return;
             const url = block.querySelector('input[name="sentenceAudioUrls"]').value;
             const fileInput = block.querySelector('input[name="sentenceAudios"]');
+
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            window.speechSynthesis.cancel();
+
             if (fileInput.files.length > 0) {
-                const audio = new Audio(URL.createObjectURL(fileInput.files[0]));
-                audio.play();
+                currentAudio = new Audio(URL.createObjectURL(fileInput.files[0]));
+                currentAudio.play();
             } else if (url && url.length > 5) {
-                new Audio(url).play();
+                currentAudio = new Audio(url);
+                currentAudio.play();
             } else {
                 const u = new SpeechSynthesisUtterance(text);
                 u.lang = 'en-US';
@@ -175,8 +185,21 @@
         }
 
         function playTopicAudio(url, text) {
-            if (url && url.length > 5) { new Audio(url).play(); }
-            else if (text) { const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; window.speechSynthesis.speak(u); }
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            window.speechSynthesis.cancel();
+
+            if (url && url.length > 5) { 
+                currentAudio = new Audio(url);
+                currentAudio.play(); 
+            }
+            else if (text) { 
+                const u = new SpeechSynthesisUtterance(text); 
+                u.lang = 'en-US'; 
+                window.speechSynthesis.speak(u); 
+            }
         }
 
         function markModified(input) {

@@ -15,7 +15,11 @@ import com.ttcsn5.webstudyenglish.entity.DictationSentences;
 import com.ttcsn5.webstudyenglish.entity.DictationTopics;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.service.DictationService;
-
+import com.ttcsn5.webstudyenglish.entity.Subscription;
+import com.ttcsn5.webstudyenglish.entity.User;
+import com.ttcsn5.webstudyenglish.service.SubscriptionService;
+import java.util.Set;
+import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -28,6 +32,9 @@ public class DictationPageController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private SubscriptionService subscriptionService;
+
     private void addCommonAttributes(Model model, HttpSession session, String userPath) {
         model.addAttribute("activeMenu", "dictation");
         model.addAttribute("userPath", userPath);
@@ -39,7 +46,14 @@ public class DictationPageController {
 
     @GetMapping
     public String getCategories(Model model, HttpSession session) {
-        List<Category> categories = dictationService.getDictationCategories();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
+        Set<Category> categories = subscriptions.stream().map(subscription -> subscription.getPlan().getDictationTopics())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
         model.addAttribute("categories", categories);
         addCommonAttributes(model, session, "user/dictation/categories");
         return "user/index";
