@@ -44,38 +44,40 @@
 
                     <!-- Card Area -->
                     <template x-if="cards.length > 0">
-                        <div class="w-full max-w-[600px] aspect-[4/3] relative">
+                        <div class="w-full max-w-[600px] flex flex-col gap-10 mb-8">
                             
-                            <div class="flip-card w-full h-full cursor-pointer" :class="isFlipped ? 'flipped' : ''" @click="isFlipped = !isFlipped">
-                                <div class="flip-card-inner rounded-3xl bg-white shadow-lg border border-gray-100 transition hover:shadow-xl">
-                                    
-                                    <!-- FRONT (Word) -->
-                                    <div class="flip-card-front p-8">
-                                        <h3 class="text-[44px] font-extrabold text-gray-800 mb-2" x-text="currentCard.word">Word</h3>
-                                        <p class="text-gray-400 font-bold tracking-wide text-lg mb-8" x-text="currentCard.pronunciation">/pron/</p>
+                            <div class="aspect-[4/3] w-full relative">
+                                <div class="flip-card w-full h-full cursor-pointer" :class="isFlipped ? 'flipped' : ''" @click="isFlipped = !isFlipped">
+                                    <div class="flip-card-inner rounded-3xl bg-white shadow-lg border border-gray-100 transition hover:shadow-xl">
                                         
-                                        <button @click.stop="playAudio()" class="w-14 h-14 rounded-full border-2 border-blue-100 text-blue-500 flex items-center justify-center hover:bg-blue-50 shadow-sm mb-8 transition">
-                                            <i class="fa fa-volume-up text-xl"></i>
-                                        </button>
-                                        
-                                        <p class="text-gray-500 font-bold text-center px-4" x-text="currentCard.exampleEn">Example sentence</p>
-                                    </div>
-                                    
-                                    <!-- BACK (Meaning) -->
-                                    <div class="flip-card-back p-8 text-center bg-gray-50 rounded-3xl border border-gray-200 shadow-inner">
-                                        <h3 class="text-3xl font-extrabold text-blue-600 mb-6" x-text="currentCard.meaningVi">Nghĩa tiếng Việt</h3>
-                                        <p class="text-gray-700 font-bold text-lg mb-8" x-text="currentCard.definitionEn">English Definition</p>
-                                        
-                                        <div class="absolute bottom-6 left-0 w-full flex justify-center">
-                                            <span class="text-xs font-bold text-gray-400 tracking-widest uppercase"><i class="fa fa-undo"></i> Click to flip back</span>
+                                        <!-- FRONT (Word) -->
+                                        <div class="flip-card-front p-8">
+                                            <h3 class="text-[44px] font-extrabold text-gray-800 mb-2" x-text="currentCard.word">Word</h3>
+                                            <p class="text-gray-400 font-bold tracking-wide text-lg mb-8" x-text="currentCard.pronunciation">/pron/</p>
+                                            
+                                            <button @click.stop="playAudio()" class="w-14 h-14 rounded-full border-2 border-blue-100 text-blue-500 flex items-center justify-center hover:bg-blue-50 shadow-sm mb-8 transition">
+                                                <i class="fa fa-volume-up text-xl"></i>
+                                            </button>
+                                            
+                                            <p class="text-gray-500 font-bold text-center px-4" x-text="currentCard.exampleEn">Example sentence</p>
                                         </div>
+                                        
+                                        <!-- BACK (Meaning) -->
+                                        <div class="flip-card-back p-8 text-center bg-gray-50 rounded-3xl border border-gray-200 shadow-inner">
+                                            <h3 class="text-3xl font-extrabold text-blue-600 mb-6" x-text="currentCard.meaningVi">Nghĩa tiếng Việt</h3>
+                                            <p class="text-gray-700 font-bold text-lg mb-8" x-text="currentCard.definitionEn">English Definition</p>
+                                            
+                                            <div class="absolute bottom-6 left-0 w-full flex justify-center">
+                                                <span class="text-xs font-bold text-gray-400 tracking-widest uppercase"><i class="fa fa-undo"></i> Click to flip back</span>
+                                            </div>
+                                        </div>
+                                        
                                     </div>
-                                    
                                 </div>
                             </div>
                             
-                            <!-- Next/Prev Buttons Absolute positioned -->
-                            <div class="absolute -bottom-24 left-0 w-full flex justify-center gap-6 px-4">
+                            <!-- Next/Prev Buttons -->
+                            <div class="w-full flex justify-center gap-6 px-4">
                                 <button @click="prevCard()" class="px-8 py-3 bg-white border border-gray-200 hover:border-gray-300 text-gray-600 font-bold rounded-xl transition shadow-sm flex items-center gap-2" :class="currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''" :disabled="currentIndex === 0">
                                     <i class="fa fa-arrow-left text-xs"></i> Prev
                                 </button>
