@@ -23,4 +23,10 @@ public interface SubscriptionRepo extends JpaRepository<Subscription, Integer> {
             LocalDateTime start,
             LocalDateTime end,
             Pageable pageable);
+
+    @Query("select count(a.id) from Subscription a")
+    int countSubscription();
+
+    @Query("select sum(p.price) from Subscription s join s.plan p where s.active = true")
+    Double sumRevenue();
 }

@@ -1,6 +1,5 @@
 package com.ttcsn5.webstudyenglish.repository;
 
-
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -14,8 +13,6 @@ import com.ttcsn5.webstudyenglish.entity.Plan;
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Integer> {
 
-
-
     @Query("""
                 SELECT p FROM Plan p
                 WHERE (:name IS NULL OR p.name LIKE CONCAT('%', :name, '%'))
@@ -25,5 +22,8 @@ public interface PlanRepository extends JpaRepository<Plan, Integer> {
     Page<Plan> searchPlans(String name, Boolean active, Double maxPrice, Pageable pageable);
 
     Plan findByName(String name);
+
+    @Query("select count(a.id) from Plan a")
+    int countPlan();
 
 }

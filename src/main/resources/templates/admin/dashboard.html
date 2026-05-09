@@ -33,24 +33,36 @@
 
             <div class="bg-white p-4 rounded-xl shadow">
                 <p class="text-gray-500">Total Revenue</p>
-                <h2 class="text-2xl font-bold">6.474.000 đ</h2>
+                <h2 class="text-2xl font-bold" th:text="${#numbers.formatCurrency(totalRevenue)}">6.474.000 đ</h2>
             </div>
 
             <div class="bg-white p-4 rounded-xl shadow">
                 <p class="text-gray-500">Active Subscriptions</p>
-                <h2 class="text-2xl font-bold text-blue-500">5</h2>
+                <h2 class="text-2xl font-bold text-blue-500" th:text="${totalSubscription}">5</h2>
             </div>
 
         </div>
 
         <!-- SECOND ROW -->
-        <div class="grid grid-cols-4 gap-4 mb-6">
-
-            <div class="bg-white p-4 rounded-xl shadow">Total Vocabularies: 10</div>
-            <div class="bg-white p-4 rounded-xl shadow">Total Quizzes: 10</div>
-            <div class="bg-white p-4 rounded-xl shadow" th:text="'Total Vocabularies: '+${totalArticle}">Total Articles: 10</div>
-            <div class="bg-white p-4 rounded-xl shadow">Total Posts: 10</div>
-
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-xl shadow" th:text="'Total Vocabularies: '+${totalVocabulary}">
+                Total Vocabularies: 10
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow" th:text="'Total Quizzes: '+${totalQuiz}">
+                Total Quizzes: 10
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow" th:text="'Total Articles: '+${totalArticle}">
+                Total Articles: 10
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow" th:text="'Total Videos: '+${totalVideo}">
+                Total Videos: 10
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow" th:text="'Total Dictation Topics: '+${totalDictationTopics}">
+                Total Dictation Topics: 10
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow" th:text="'Total Grammar: '+${totalGrammar}">
+                Total Grammar: 10
+            </div>
         </div>
 
         <!-- CHART 1 -->

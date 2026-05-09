@@ -28,4 +28,7 @@ public interface QuizRepo extends JpaRepository<Quiz, Integer> {
     Page<Quiz> findQuizUserHomeAndCategoryPlan(Pageable pageable,
             @Param("title") String title,
             @Param("categorySearch") Integer categorySearch, @Param("categories") Set<Category> categories);
+
+        @Query("select count(a.id) from Quiz a")
+        int countQuiz();
 }

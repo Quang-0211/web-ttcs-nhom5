@@ -35,4 +35,6 @@ public interface VideoRepo extends JpaRepository<Video, Integer> {
             @Param("title") String title,
             @Param("categorySearch") Integer categorySearch,
             @Param("categories") Set<Category> categories);
+        @Query("select count(a.id) from Video a")
+        int countVideo();
 }

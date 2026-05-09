@@ -1,6 +1,7 @@
 package com.ttcsn5.webstudyenglish.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import com.ttcsn5.webstudyenglish.entity.DictationTopics;
 
@@ -10,4 +11,6 @@ import java.util.List;
 public interface DictationTopicRepo extends JpaRepository<DictationTopics, Integer> {
     List<DictationTopics> findByCategory_Id(Integer categoryId);
     List<DictationTopics> findByCategory_IdAndTitleContainingIgnoreCase(Integer categoryId, String title);
+    @Query("select count(a.id) from DictationTopics a")
+        int countDictationTopics();
 }
