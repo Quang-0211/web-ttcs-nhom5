@@ -13,7 +13,11 @@ import com.ttcsn5.webstudyenglish.entity.Category;
 import com.ttcsn5.webstudyenglish.entity.Vocabulary;
 import com.ttcsn5.webstudyenglish.service.CategoryService;
 import com.ttcsn5.webstudyenglish.service.VocabularyService;
-
+import com.ttcsn5.webstudyenglish.entity.Subscription;
+import com.ttcsn5.webstudyenglish.entity.User;
+import com.ttcsn5.webstudyenglish.service.SubscriptionService;
+import java.util.Set;
+import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -25,9 +29,19 @@ public class VocabularyPageController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private SubscriptionService subscriptionService;
+
     @GetMapping("/vocabularies")
     public String getTopics(Model model, HttpSession session) {
-        List<Category> topics = vocabularyService.getVocabularyTopics();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        Set<Subscription> subscriptions = subscriptionService.getSubscriptionRepobyUserId(user.getId());
+        Set<Category> topics = subscriptions.stream().map(subscription -> subscription.getPlan().getVocabulary())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
         model.addAttribute("topics", topics);
         model.addAttribute("activeMenu", "vocabulary");
         model.addAttribute("userPath", "user/vocabulary/topics");

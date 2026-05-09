@@ -51,7 +51,8 @@ public class AdminPlanController {
         model.addAttribute("allVocabularies", cateService.findAllNameCate("Vocab"));
         model.addAttribute("allDictations", cateService.findAllNameCate("Dictation"));
 
-        System.out.println("set : " + planService.searchPlans(name, status, price, cnt).get(0).getDictationTopics());
+        // Removed to prevent IndexOutOfBoundsException when database is empty
+        // System.out.println("set : " + planService.searchPlans(name, status, price, cnt).get(0).getDictationTopics());
 
         model.addAttribute("name", name);
         model.addAttribute("active", status);
